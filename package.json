@@ -1,6 +1,6 @@
 {
   "name": "heroku-cli-util",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Set of helpful CLI utilities",
   "main": "cli.js",
   "repository": {
@@ -12,5 +12,8 @@
   "bugs": {
     "url": "https://github.com/heroku/heroku-cli-util/issues"
   },
-  "homepage": "https://github.com/heroku/heroku-cli-util"
+  "homepage": "https://github.com/heroku/heroku-cli-util",
+  "devDependencies": {
+    "netrc": "^0.1.3"
+  }
 }
