@@ -1,5 +1,4 @@
 var util = require('util');
-var netrc = require('netrc')()['api.heroku.com'];
 
 function usage (commands) {
   console.error('USAGE: heroku COMMAND [--app APP] [command-specific-options]\n');
@@ -57,6 +56,7 @@ function parseArgs (cmd, args) {
 
 
 module.exports = function run (commands, args) {
+  var netrc = require('netrc')()['api.heroku.com'];
   var cmd = findCmd(commands, args[0]);
   if (!cmd) { usage(commands); process.exit(1); }
 
