@@ -24,4 +24,19 @@ describe('run', function () {
     run([cmd], ['foo:bar']);
     cmdRan.should.equal(true);
   });
+
+  it('gets an app via env var', function () {
+    process.env.HEROKU_APP = 'myappname';
+    var appName;
+    var cmd = {
+      topic: 'foo',
+      name: 'bar',
+      needsApp: true,
+      run: function (context) {
+        appName = context.app;
+      }
+    };
+    run([cmd], ['foo:bar']);
+    appName.should.equal('myappname');
+  });
 });
