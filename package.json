@@ -13,7 +13,12 @@
     "url": "https://github.com/heroku/heroku-cli-util/issues"
   },
   "homepage": "https://github.com/heroku/heroku-cli-util",
+  "scripts": {
+    "test": "jshint . && mocha"
+  },
   "devDependencies": {
-    "netrc": "^0.1.3"
+    "chai": "*",
+    "mocha": "*",
+    "netrc": "*"
   }
 }
