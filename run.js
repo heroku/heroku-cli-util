@@ -76,7 +76,12 @@ module.exports = function run (commands, args) {
   }
 
   if (cmd.needsApp) {
-    options.app = options.args.app;
+    if (process.env.HEROKU_APP) {
+      options.app = process.env.HEROKU_APP;
+    }
+    if (options.args.app) {
+      options.app = options.args.app;
+    }
     if (!options.app) {
       console.error(' !    No app specified.');
       console.error(' !    Run this command from an app folder or specify which app to use with --app APP');

@@ -1,4 +1,6 @@
-function Process() {}
+function Process() {
+  this.env = process.env;
+}
 Process.prototype.mock = function () {
   this.mocking = true;
 };
