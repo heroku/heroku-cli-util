@@ -1,4 +1,6 @@
 var util = require('util');
+var console = require('./console');
+var process = require('./process');
 
 function usage (commands) {
   console.error('USAGE: heroku COMMAND [--app APP] [command-specific-options]\n');
@@ -21,26 +23,26 @@ function findCmd (commands, cmd) {
 }
 
 function parseArgs (cmd, args) {
-  var argTemplates = cmd.args.slice(0);
+  var argTemplates = cmd.args ? cmd.args.slice(0) : [];
   var parsed = {};
   for (var i=0; i<args.length; i++) {
     if (args[i][0] === '-') {
       if (args[i] === '-a' || args[i] === '--app') {
         if (!cmd.needsApp) {
           console.error('Invalid argument. No app is needed');
-          process.exit(1);
+          return process.exit(1);
         }
         parsed.app = args[i+1];
       } else {
         console.error('TODO: parse flags');
-        process.exit(1);
+        return process.exit(1);
       }
       i++;
     } else {
       var current = argTemplates.pop();
       if (!current) {
         console.error('Too many arguments');
-        process.exit(1);
+        return process.exit(1);
       }
       parsed[current.name] = args[i];
     }
@@ -48,7 +50,7 @@ function parseArgs (cmd, args) {
   argTemplates.forEach(function (arg) {
     if (!arg.optional) {
       console.error('Missing argument:', arg.name);
-      process.exit(1);
+      return process.exit(1);
     }
   });
   return parsed;
@@ -56,9 +58,10 @@ function parseArgs (cmd, args) {
 
 
 module.exports = function run (commands, args) {
+  var argName = args && args.length > 0 ? args[0] : '';
   var netrc = require('netrc')()['api.heroku.com'];
-  var cmd = findCmd(commands, args[0]);
-  if (!cmd) { usage(commands); process.exit(1); }
+  var cmd = findCmd(commands, argName);
+  if (!cmd) { usage(commands); return process.exit(1); }
 
   var options = {
     args: parseArgs(cmd, args.slice(1))
@@ -67,7 +70,7 @@ module.exports = function run (commands, args) {
   if (cmd.needsAuth) {
     if (!netrc) {
       console.log(' !    Not logged in');
-      process.exit(1);
+      return process.exit(1);
     }
     options.auth = { username: netrc.login, password: netrc.password };
   }
@@ -77,7 +80,7 @@ module.exports = function run (commands, args) {
     if (!options.app) {
       console.error(' !    No app specified.');
       console.error(' !    Run this command from an app folder or specify which app to use with --app APP');
-      process.exit(1);
+      return process.exit(1);
     }
   }
 
