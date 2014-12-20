@@ -18,7 +18,7 @@ describe('run', function () {
     var cmdRan;
     var cmd = {
       topic: 'foo',
-      name: 'bar',
+      command: 'bar',
       run: function () { cmdRan = true; }
     };
     run([cmd], ['foo:bar']);
@@ -30,7 +30,7 @@ describe('run', function () {
     var appName;
     var cmd = {
       topic: 'foo',
-      name: 'bar',
+      command: 'bar',
       needsApp: true,
       run: function (context) {
         appName = context.app;
