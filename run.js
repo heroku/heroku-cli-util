@@ -9,7 +9,7 @@ function usage (commands) {
   } else {
     console.error('Commands:\n');
     commands.forEach(function (command) {
-      console.error(util.format('  heroku %s:%s # %s', command.topic, command.name, command.shortHelp));
+      console.error(util.format('  heroku %s:%s # %s', command.topic, command.command, command.shortHelp));
     });
   }
 }
@@ -18,7 +18,7 @@ function findCmd (commands, cmd) {
   if (!cmd) { return null; }
   var c = cmd.split(':');
   return commands.filter(function (command) {
-    return command.topic === c[0] && command.name === c[1];
+    return command.topic === c[0] && command.command === c[1];
   })[0];
 }
 
