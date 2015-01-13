@@ -39,7 +39,7 @@ function parseArgs (cmd, args) {
       }
       i++;
     } else {
-      var current = argTemplates.pop();
+      var current = argTemplates.shift();
       if (!current) {
         console.error('Too many arguments');
         return process.exit(1);
