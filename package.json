@@ -23,6 +23,7 @@
     "netrc": "*"
   },
   "dependencies": {
-    "chalk": "^1.0.0"
+    "chalk": "^1.0.0",
+    "columnify": "^1.4.1"
   }
 }
