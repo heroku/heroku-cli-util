@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/heroku/heroku-cli-util.svg?branch=master)](https://travis-ci.org/heroku/heroku-cli-util)
 [![npm version](https://badge.fury.io/js/heroku-cli-util.svg)](http://badge.fury.io/js/heroku-cli-util)
-[![License](https://img.shields.io/npm/l/express.svg)](./LICENSE)
+[![License](https://img.shields.io/npm/l/heroku-cli-util.svg)](./LICENSE)
 
 Set of helpful CLI utilities
 
