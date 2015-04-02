@@ -11,9 +11,7 @@ Set of helpful CLI utilities
 npm install heroku-cli-util --save
 ```
 
-## Output
-
-Errors (display in red)
+## Errors (display in red)
 
 ```js
 var h = require('heroku-cli-util');
@@ -21,12 +19,26 @@ h.error("App not found");
 // !    App not found
 ```
 
-Warnings (display in yellow)
+## Warnings (display in yellow)
 
 ```js
 var h = require('heroku-cli-util');
 h.warn("App not found");
 // !    App not found
+```
+
+## Tables/Columns
+
+```js
+var h = require('heroku-cli-util');
+h.columnify({
+  'Dynos':  1,
+  'Region': 'us',
+  'Stack':  'cedar-14'
+});
+// Dynos  1
+// Region us
+// Stack  cedar-14
 ```
 
 ## Dates
