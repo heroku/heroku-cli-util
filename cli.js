@@ -8,3 +8,5 @@ exports.error = errors.error;
 exports.warn = errors.warn;
 exports.columnify = require('./columnify');
 exports.console = console;
+exports.preauth = require('./preauth');
+exports.prompt = require('./prompt');
