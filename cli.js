@@ -10,3 +10,4 @@ exports.columnify = require('./columnify');
 exports.console = console;
 exports.preauth = require('./preauth');
 exports.prompt = require('./prompt');
+exports.command = require('./command');
