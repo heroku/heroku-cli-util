@@ -1,5 +1,6 @@
 var console = require('./console');
 var errors = require('./errors');
+var config = require('./config');
 
 exports.run = require('./run');
 exports.log = console.log.bind(console);
@@ -11,3 +12,8 @@ exports.console = console;
 exports.preauth = require('./preauth');
 exports.prompt = require('./prompt');
 exports.command = require('./command');
+
+exports.defaultHost = config.defaultHost;
+exports.httpGitHost = config.httpGitHost;
+exports.gitHost = config.gitHost;
+exports.host = config.host;
