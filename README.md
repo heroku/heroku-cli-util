@@ -67,6 +67,8 @@ It will set the `cwd` to the user's current location,
 give you an auth'ed instance of `heroku-client`,
 and cleanly handle API exceptions.
 
+It uses `co` so you can `yield` promises.
+
 ```js
 let h = require('heroku-cli-util');
 module.exports.commands = [
