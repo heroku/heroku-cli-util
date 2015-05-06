@@ -1,13 +1,14 @@
 'use strict';
 let co     = require('co');
 let Heroku = require('heroku-client');
+let errors = require('./errors');
 
 function handleErr(err) {
   if (err.body) {
     if (err.body.message) {
-      console.error("\n !  " + err.body.message);
+      errors.error(err.body.message);
     } else if (err.body.error) {
-      console.error("\n !  " + err.body.error);
+      errors.error(err.body.error);
     }
   } else {
     console.error(err.stack);
