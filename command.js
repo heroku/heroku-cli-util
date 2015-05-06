@@ -17,6 +17,7 @@ function handleErr(err) {
 
 module.exports = function command (fn) {
   return function (context) {
+    process.chdir(context.cwd);
     co(function *() {
       let heroku;
       if (context.auth.password) {
