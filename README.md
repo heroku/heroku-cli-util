@@ -60,6 +60,26 @@ console.log(h.formatDate(d));
 // 2001-01-01T08:00:00.000Z
 ```
 
+## Command
+
+Used for initializing a plugin command
+
+```js
+let h = require('heroku-cli-util');
+module.exports.commands = [
+  {
+    topic: 'apps',
+    command: 'info',
+    needsAuth: true,
+    needsApp: true,
+    run: h.command(function* (context, heroku) {
+      let app = yield heroku.apps(context.app).info();
+      console.dir(app);
+    })
+  }
+];
+```
+
 ## Preauth
 
 ```js
