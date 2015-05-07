@@ -9,11 +9,11 @@ describe('errors', function () {
 
   it('prints out errors', function () {
     errors.error('foobar');
-    console.stderr.should.contain(' \u001b[41m!\u001b[49m    foobar\n');
+    console.stderr.should.contain(' !    foobar\n');
   });
 
   it('prints out warnings', function () {
     errors.warn('foobar');
-    console.stderr.should.contain(' \u001b[43m!\u001b[49m    foobar\n');
+    console.stderr.should.contain(' !    foobar\n');
   });
 });
