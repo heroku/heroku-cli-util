@@ -1,16 +1,19 @@
 'use strict';
-let Heroku = require('heroku-client');
 let prompt = require('./prompt');
+let util   = require('./util');
 
-module.exports = function preauth (app, token, cb) {
-  prompt('Two-factor code', function (second_factor) {
-    let heroku = new Heroku({token: token});
-    return heroku.request({
-      method: 'PUT',
-      path:   `/apps/${app}/pre-authorizations`,
-      headers: {
-        'Heroku-Two-Factor-Code': second_factor
-      }
-    }, cb);
+function preauth (app, heroku) {
+  return new Promise(function (fulfill, reject) {
+    prompt.prompt('Two-factor code').then(function (second_factor) {
+      fulfill(heroku.request({
+        method: 'PUT',
+        path:   `/apps/${app}/pre-authorizations`,
+        headers: {
+          'Heroku-Two-Factor-Code': second_factor
+        }
+      }));
+    }).catch(reject);
   });
-};
+}
+
+module.exports = util.promiseOrCallback(preauth);
