@@ -150,12 +150,27 @@ module.exports.commands = [
 ];
 ```
 
-## Preauth
+With options:
 
 ```js
-var h = require('heroku-cli-util');
-yield h.preauth("APPNAME", heroku);
+let h = require('heroku-cli-util');
+module.exports.commands = [
+  {
+    topic: 'apps',
+    command: 'info',
+    needsAuth: true,
+    needsApp: true,
+    run: h.command({preauth: true},
+    function* (context, heroku) {
+      let app = yield heroku.apps(context.app).info();
+      console.dir(app);
+    })
+  }
+];
 ```
+
+If the command has a `two_factor` API error, it will ask the user for a 2fa code and retry.
+If you set `preauth: true` it will preauth against the current app instead of just setting the header on an app. (This is necessary if you need to do more than 1 API call that will require 2fa)
 
 ## Tests
 

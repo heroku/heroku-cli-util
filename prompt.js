@@ -30,7 +30,8 @@ function promptMasked (options) {
         return;
       case "\u0003":
         // Ctrl-c
-        reject();
+        console.error();
+        reject('canceled');
         return;
       default:
         if (c.charCodeAt(0) === 127) {

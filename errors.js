@@ -7,7 +7,7 @@ function wrap (msg) {
   return linewrap(6,
     process.stderr.getWindowSize()[0], {
     skipScheme: 'ansi-color'
-  })(msg);
+  })(msg || '');
 }
 
 function bangify (msg) {
@@ -28,9 +28,6 @@ function warn (msg) {
 }
 
 function getErrorMessage (err) {
-  if (!err) {
-    return "unspecified error";
-  }
   if (err.body) {
     // API error
     if (err.body.message) {
@@ -65,7 +62,7 @@ function errorHandler(options) {
   return function handleErr(err) {
     options = options || {};
     error(getErrorMessage(err));
-    if (options.stackTrace && err.stack) {
+    if (!err.body && options.stackTrace && err.stack) {
       if (options.logPath) {
         logErr(err, options.logPath);
       } else {
@@ -76,6 +73,6 @@ function errorHandler(options) {
   };
 }
 
-module.exports.error     = error;
-module.exports.warn      = warn;
+module.exports.error        = error;
+module.exports.warn         = warn;
 module.exports.errorHandler = errorHandler;
