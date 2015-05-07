@@ -1,6 +1,7 @@
 var console = require('./console');
 var errors = require('./errors');
 var config = require('./config');
+var prompt = require('./prompt');
 
 exports.run = require('./run');
 exports.log = console.log.bind(console);
@@ -9,8 +10,9 @@ exports.error = errors.error;
 exports.warn = errors.warn;
 exports.columnify = require('./columnify');
 exports.console = console;
+exports.prompt = prompt.prompt;
+exports.confirmApp = prompt.confirmApp;
 exports.preauth = require('./preauth');
-exports.prompt = require('./prompt');
 exports.command = require('./command');
 
 exports.defaultHost = config.defaultHost;
