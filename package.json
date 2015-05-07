@@ -26,6 +26,7 @@
     "chalk": "^1.0.0",
     "co": "^4.5.4",
     "columnify": "^1.4.1",
-    "heroku-client": "^1.10.0"
+    "heroku-client": "^1.10.0",
+    "linewrap": "^0.2.1"
   }
 }

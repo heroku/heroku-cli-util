@@ -33,7 +33,7 @@ function confirmApp (app, confirm, message) {
       message = `WARNING: Destructive Action\nThis command will affect the app ${chalk.bold.red(app)}`;
     }
     errors.warn(message);
-    errors.warn(`To proceed, type ${chalk.bold.red(app)} or re-run this command with ${chalk.bold.red('--confirm ' + app)}`);
+    errors.warn(`To proceed, type ${chalk.bold.red(app)} or re-run this command with ${chalk.bold.red('--confirm', app)}`);
     console.error();
     prompt().then(function (confirm) {
       if (confirm === app) {
