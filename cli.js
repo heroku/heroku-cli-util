@@ -2,6 +2,7 @@ var console = require('./console');
 var errors  = require('./errors');
 var config  = require('./config');
 var prompt  = require('./prompt');
+var output  = require('./output');
 
 exports.run          = require('./run');
 exports.log          = console.log.bind(console);
@@ -19,3 +20,4 @@ exports.defaultHost  = config.defaultHost;
 exports.httpGitHost  = config.httpGitHost;
 exports.gitHost      = config.gitHost;
 exports.host         = config.host;
+exports.action       = output.action;
