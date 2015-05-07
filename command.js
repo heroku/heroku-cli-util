@@ -1,4 +1,5 @@
 'use strict';
+
 let co     = require('co');
 let Heroku = require('heroku-client');
 let errors = require('./errors');
@@ -12,6 +13,9 @@ module.exports = function command (fn) {
         heroku = new Heroku({token: context.auth.password});
       }
       yield fn(context, heroku);
-    }).catch(errors.handleErr(context));
+    }).catch(errors.errorHandler({
+      logPath:     context.herokuDir + '/error.log',
+      stackTrace:  true,
+    }));
   };
 };
