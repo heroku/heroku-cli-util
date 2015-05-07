@@ -12,6 +12,18 @@ Set of helpful CLI utilities
 npm install heroku-cli-util --save
 ```
 
+## Action
+
+```js
+let h = require('heroku-cli-util');
+let promise = heroku.apps(appname).info();
+let app = yield h.action('getting apps', promise);
+console.log(`app name: ${app.name}`);
+
+// getting apps... done
+// app name: appname
+```
+
 ## Prompt
 
 Callback style
