@@ -1,17 +1,29 @@
 'use strict';
-var console = require('./console');
-const BANG = ' !     ';
+let console  = require('./console');
+let linewrap = require('linewrap');
 
 function wrap (msg) {
-  return BANG + msg.split('\n').join('\n' + BANG);
+  return linewrap(6,
+    process.stderr.getWindowSize()[0], {
+    skipScheme: 'ansi-color'
+  })(msg);
+}
+
+function bangify (msg) {
+  let lines = msg.split('\n');
+  for(let i=0; i<lines.length; i++) {
+    let line = lines[i];
+    lines[i] = ' !' + line.substr(2,line.length);
+  }
+  return lines.join('\n');
 }
 
 function error (msg) {
-  console.error(wrap(msg));
+  console.error(bangify(wrap(msg)));
 }
 
 function warn (msg) {
-  console.error(wrap(msg));
+  console.error(bangify(wrap(msg)));
 }
 
 function handleErr (context) {
