@@ -18,7 +18,7 @@ Callback style
 
 ```js
 var h = require('heroku-cli-util');
-h.prompt('email', function (_, email) {
+h.prompt('email', {}, function (_, email) {
   console.log(`your email is: ${email}`);
 });
 ```
@@ -27,7 +27,7 @@ Promise style
 
 ```js
 var h = require('heroku-cli-util');
-h.prompt('email').then(function (email) {
+h.prompt('email', {}).then(function (email) {
   console.log(`your email is: ${email}`);
 });
 ```
@@ -36,9 +36,14 @@ Generator style (must be wrapped in h.command() or co block)
 
 ```js
 var h = require('heroku-cli-util');
-var email = yield h.prompt('email');
+var email = yield h.prompt('email', {});
 console.log(`your email is: ${email}`);
 ```
+
+**Options**
+
+`mask: true`: mask input field after submitting.
+`hide: true`: mask characters while entering.
 
 ## Confirm App
 
