@@ -137,11 +137,8 @@ module.exports.commands = [
 
 ```js
 var h = require('heroku-cli-util');
-h.preauth("APPNAME", "APITOKEN", function (err) {
-  console.log('preauthed');
-});
+yield h.preauth("APPNAME", heroku);
 ```
-
 
 ## Tests
 
