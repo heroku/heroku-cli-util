@@ -14,14 +14,62 @@ npm install heroku-cli-util --save
 
 ## Prompt
 
+Callback style
+
 ```js
 var h = require('heroku-cli-util');
-h.prompt('email', function (email) {
+h.prompt('email', function (_, email) {
   console.log(`your email is: ${email}`);
 });
 ```
 
-## Errors (display in red)
+Promise style
+
+```js
+var h = require('heroku-cli-util');
+h.prompt('email').then(function (email) {
+  console.log(`your email is: ${email}`);
+});
+```
+
+Generator style (must be wrapped in h.command() or co block)
+
+```js
+var h = require('heroku-cli-util');
+var email = yield h.prompt('email');
+console.log(`your email is: ${email}`);
+```
+
+## Confirm App
+
+Supports the same async styles as `prompt()`. Errors if not confirmed.
+
+Basic
+
+```js
+var h = require('heroku-cli-util');
+yield h.confirmApp('appname', context.flags.confirm);
+
+// !     WARNING: Destructive Action
+// !     This command will affect the app appname
+// !     To proceed, type appname or re-run this command with --confirm appname
+
+> appname
+```
+
+Custom message
+
+```js
+var h = require('heroku-cli-util');
+yield h.confirmApp('appname', context.flags.confirm, 'foo');
+
+// !     foo
+// !     To proceed, type appname or re-run this command with --confirm appname
+
+> appname
+```
+
+## Errors
 
 ```js
 var h = require('heroku-cli-util');
@@ -29,7 +77,7 @@ h.error("App not found");
 // !    App not found
 ```
 
-## Warnings (display in yellow)
+## Warnings
 
 ```js
 var h = require('heroku-cli-util');
