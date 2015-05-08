@@ -25,10 +25,7 @@ module.exports = function command (options, fn) {
       options = {};
     }
     process.chdir(context.cwd);
-    let handleErr = h.errorHandler({
-      logPath:     context.herokuDir + '/error.log',
-      stackTrace:  true,
-    });
+    let handleErr = h.errorHandler({logPath: context.herokuDir+'/error.log'});
     let run = function () {
       co.wrap(fn)(context, heroku(context))
       .catch(function (err) {

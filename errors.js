@@ -19,14 +19,6 @@ function bangify (msg) {
   return lines.join('\n');
 }
 
-function error (msg) {
-  console.error(bangify(wrap(msg)));
-}
-
-function warn (msg) {
-  console.error(bangify(wrap(msg)));
-}
-
 function getErrorMessage (err) {
   if (err.body) {
     // API error
@@ -45,6 +37,14 @@ function getErrorMessage (err) {
   return err;
 }
 
+function error (err) {
+  console.error(bangify(wrap(getErrorMessage(err))));
+}
+
+function warn (msg) {
+  console.error(bangify(wrap(msg)));
+}
+
 function logtimestamp() {
   return new Date().toISOString()
   .replace(/T/, ' ')
@@ -52,27 +52,30 @@ function logtimestamp() {
   .replace(/\..+/, '');
 }
 
-function logErr(err, logPath) {
+function log(msg, logPath) {
   let fs = require('fs');
-  fs.appendFileSync(logPath, logtimestamp() + ' ' + err.stack + '\n');
-  error(`See ${logPath}` + logPath + ' for more info.');
+  fs.appendFileSync(logPath, logtimestamp() + ' ' + msg + '\n');
 }
 
 function errorHandler(options) {
   return function handleErr(err) {
     options = options || {};
-    error(getErrorMessage(err));
-    if (!err.body && options.stackTrace && err.stack) {
-      if (options.logPath) {
-        logErr(err, options.logPath);
-      } else {
-        console.error(err.stack);
+    error(err);
+    if (options.logPath) {
+      if (err.stack) {
+        log(err.stack, options.logPath);
       }
+      if (err.body) {
+        log(JSON.stringify(err.body), options.logPath);
+      }
+      //error(`See ${options.logPath} for more info.`);
     }
-    process.exit(1);
+    if (options.exit !== false) {
+      process.exit(1);
+    }
   };
 }
 
-module.exports.error        = error;
-module.exports.warn         = warn;
-module.exports.errorHandler = errorHandler;
+module.exports.error           = error;
+module.exports.warn            = warn;
+module.exports.errorHandler    = errorHandler;
