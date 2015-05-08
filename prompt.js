@@ -1,6 +1,6 @@
 'use strict';
 
-let chalk  = require('chalk');
+let h      = require('./');
 let errors = require('./errors');
 let util   = require('./util');
 
@@ -82,19 +82,19 @@ function confirmApp (app, confirm, message) {
       if (confirm === app) {
         return fulfill();
       }
-      return reject(`Confirmation ${chalk.bold.red(confirm)} did not match ${chalk.bold.red(app)}. Aborted.`);
+      return reject(`Confirmation ${h.color.bold.red(confirm)} did not match ${h.color.bold.red(app)}. Aborted.`);
     }
     if (!message) {
-      message = `WARNING: Destructive Action\nThis command will affect the app ${chalk.bold.red(app)}`;
+      message = `WARNING: Destructive Action\nThis command will affect the app ${h.color.bold.red(app)}`;
     }
     errors.warn(message);
-    errors.warn(`To proceed, type ${chalk.bold.red(app)} or re-run this command with ${chalk.bold.red('--confirm', app)}`);
+    errors.warn(`To proceed, type ${h.color.bold.red(app)} or re-run this command with ${h.color.bold.red('--confirm', app)}`);
     console.error();
     prompt().then(function (confirm) {
       if (confirm === app) {
         return fulfill();
       }
-      return reject(`Confirmation did not match ${chalk.bold.red(app)}. Aborted.`);
+      return reject(`Confirmation did not match ${h.color.bold.red(app)}. Aborted.`);
     });
   });
 }
