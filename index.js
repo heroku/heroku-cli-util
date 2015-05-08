@@ -4,7 +4,6 @@ var errors  = require('./errors');
 var prompt  = require('./prompt');
 var output  = require('./output');
 
-exports.run             = require('./run');
 exports.log             = console.log.bind(console);
 exports.formatDate      = require('./date').formatDate;
 exports.error           = errors.error;
