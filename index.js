@@ -1,6 +1,6 @@
+'use strict';
 var console = require('./console');
 var errors  = require('./errors');
-var config  = require('./config');
 var prompt  = require('./prompt');
 var output  = require('./output');
 
@@ -16,8 +16,6 @@ exports.prompt          = prompt.prompt;
 exports.confirmApp      = prompt.confirmApp;
 exports.preauth         = require('./preauth');
 exports.command         = require('./command');
-exports.defaultHost     = config.defaultHost;
-exports.httpGitHost     = config.httpGitHost;
-exports.gitHost         = config.gitHost;
-exports.host            = config.host;
+exports.config          = require('./config');
+exports.color           = require('./color');
 exports.action          = output.action;

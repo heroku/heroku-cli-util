@@ -1,5 +1,6 @@
 'use strict';
-let chalk = require('chalk');
+
+let h = require('./');
 
 function action (message, promise, options) {
   return new Promise(function (fulfill, reject) {
@@ -11,7 +12,7 @@ function action (message, promise, options) {
       }
       fulfill(result);
     }).catch(function (err) {
-      console.error(chalk.red.bold('!!!'));
+      console.error(h.color.red.bold('!!!'));
       reject(err);
     });
   });
