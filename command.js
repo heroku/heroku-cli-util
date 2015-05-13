@@ -9,7 +9,7 @@ function heroku (context) {
     return 'set `needsApp: true` on the command';
   }
   let opts = {
-    log:    context.debug,
+    debug:  context.debug,
     token:  context.auth.password,
   };
   if (context.secondFactor) {
