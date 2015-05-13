@@ -3,6 +3,7 @@
 let co      = require('co');
 let Heroku  = require('heroku-client');
 let h       = require('./');
+let url     = require('url');
 
 function heroku (context) {
   if (!context.auth.password) {
@@ -18,6 +19,13 @@ function heroku (context) {
   return new Heroku(opts);
 }
 
+function setupHttpProxy() {
+  if (!process.env.HTTPS_PROXY) { return; }
+  let proxy = url.parse(process.env.HTTPS_PROXY);
+  process.env.HEROKU_HTTP_PROXY_HOST = proxy.hostname;
+  process.env.HEROKU_HTTP_PROXY_PORT = proxy.port;
+}
+
 module.exports = function command (options, fn) {
   return function (context) {
     if (typeof options === 'function') {
@@ -25,6 +33,7 @@ module.exports = function command (options, fn) {
       options = {};
     }
     process.chdir(context.cwd);
+    setupHttpProxy();
     let handleErr = h.errorHandler({logPath: context.herokuDir+'/error.log'});
     let run = function () {
       co.wrap(fn)(context, heroku(context))
