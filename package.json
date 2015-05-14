@@ -18,10 +18,12 @@
     "doc": "jsdoc lib"
   },
   "devDependencies": {
-    "chai": "*",
+    "chai": "^2.3.0",
+    "chai-as-promised": "^5.0.0",
+    "jsdoc": "*",
     "jshint": "*",
-    "mocha": "*",
-    "jsdoc": "*"
+    "mocha": "^2.2.4",
+    "nock": "^2.0.1"
   },
   "dependencies": {
     "chalk": "^1.0.0",

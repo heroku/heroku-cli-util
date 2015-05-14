@@ -1,0 +1,4 @@
+--require ./test/helpers/nock
+--require ./test/helpers/chai
+--require ./test/helpers/cli
+--reporter list

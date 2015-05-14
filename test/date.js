@@ -1,7 +1,4 @@
 'use strict';
-require('chai').should();
-var cli = require('..');
-
 describe('date', function () {
   it('formats a date', function () {
     var d = new Date('2011-10-10');
