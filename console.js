@@ -1,4 +1,7 @@
+'use strict';
+
 function Console () {}
+
 Console.prototype.log = function () {
   if (this.mocking) {
     this.stdout += Array.prototype.slice.call(arguments, 0).join() + '\n';
@@ -6,6 +9,7 @@ Console.prototype.log = function () {
     console.log.apply(this, arguments);
   }
 };
+
 Console.prototype.error = function () {
   if (this.mocking) {
     this.stderr += Array.prototype.slice.call(arguments, 0).join() + '\n';
@@ -13,9 +17,15 @@ Console.prototype.error = function () {
     console.error.apply(this, arguments);
   }
 };
+
 Console.prototype.mock = function () {
   this.mocking = true;
   this.stderr = '';
   this.stdout = '';
 };
+
+Console.prototype.debug = function (obj) {
+  console.dir(obj, {colors: true});
+};
+
 module.exports = new Console();
