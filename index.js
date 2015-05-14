@@ -21,3 +21,4 @@ exports.color        = require('./lib/color');
 exports.action       = output.action;
 exports.extend       = require('./lib/extend');
 exports.debug        = console.debug;
+exports.mockConsole  = console.mock;
