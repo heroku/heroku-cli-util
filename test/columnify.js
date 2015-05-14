@@ -1,14 +1,13 @@
 require('chai').should();
-var console = require('../console');
-var columnify = require('../columnify');
+var cli = require('../');
 
 describe('columns', function () {
   beforeEach(function () {
-    console.mock();
+    cli.console.mock();
   });
 
   it('prints out data in columns', function () {
-    columnify({foo: 1, bar: 2});
-    console.stdout.should.contain('foo 1\nbar 2\n');
+    cli.columnify({foo: 1, bar: 2});
+    cli.console.stdout.should.contain('foo 1\nbar 2\n');
   });
 });
