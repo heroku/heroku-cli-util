@@ -4,7 +4,7 @@ let Heroku = require('heroku-client');
 let nock   = require('nock');
 
 describe('preauth', function () {
-  it('makes a POST to /apps/myapp/pre-authorizations', function (done) {
+  it('makes a POST to /apps/myapp/pre-authorizations', function () {
     let heroku = new Heroku();
     nock('https://api.heroku.com', {
       reqheaders: {'Heroku-Two-Factor-Code': '2fa key'}
@@ -12,6 +12,6 @@ describe('preauth', function () {
     .put('/apps/myapp/pre-authorizations')
     .reply(200, {});
 
-    cli.preauth('myapp', heroku, '2fa key').should.eventually.notify(done);
+    return cli.preauth('myapp', heroku, '2fa key');
   });
 });
