@@ -1,3 +1,2 @@
---require ./test/helpers/chai
---require ./test/helpers/cli
+--require ./test/helpers
 --reporter list
