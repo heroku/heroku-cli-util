@@ -14,12 +14,14 @@
   },
   "homepage": "https://github.com/heroku/heroku-cli-util",
   "scripts": {
-    "test": "jshint . && mocha"
+    "test": "jshint . && mocha",
+    "doc": "jsdoc lib"
   },
   "devDependencies": {
     "chai": "*",
     "jshint": "*",
-    "mocha": "*"
+    "mocha": "*",
+    "jsdoc": *
   },
   "dependencies": {
     "chalk": "^1.0.0",
