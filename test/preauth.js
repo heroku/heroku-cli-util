@@ -1,6 +1,7 @@
 'use strict';
 
 let Heroku = require('heroku-client');
+let nock   = require('nock');
 
 describe('preauth', function () {
   it('makes a POST to /apps/myapp/pre-authorizations', function (done) {
