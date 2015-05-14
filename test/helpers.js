@@ -1,5 +1,5 @@
 'use strict';
-global.cli = require('heroku-cli-util');
+global.cli = require('..');
 cli.mockConsole();
 cli.config.raiseErrors = true;
 
