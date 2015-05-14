@@ -1,19 +1,20 @@
+'use strict';
+
 require('chai').should();
-var console = require('../console');
-var errors = require('../errors');
+var cli = require('..');
 
 describe('errors', function () {
   beforeEach(function () {
-    console.mock();
+    cli.console.mock();
   });
 
   it('prints out errors', function () {
-    errors.error('foobar');
-    console.stderr.should.contain(' !    foobar\n');
+    cli.error('foobar');
+    cli.console.stderr.should.contain(' !    foobar\n');
   });
 
   it('prints out warnings', function () {
-    errors.warn('foobar');
-    console.stderr.should.contain(' !    foobar\n');
+    cli.warn('foobar');
+    cli.console.stderr.should.contain(' !    foobar\n');
   });
 });
