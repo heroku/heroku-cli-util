@@ -32,7 +32,6 @@ module.exports = function command (options, fn) {
       fn = options;
       options = {};
     }
-    process.chdir(context.cwd);
     setupHttpProxy();
     let handleErr = h.errorHandler({logPath: context.herokuDir+'/error.log'});
     let run = function () {
