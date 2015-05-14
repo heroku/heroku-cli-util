@@ -129,9 +129,7 @@ console.log(h.formatDate(d));
 ## Command
 
 Used for initializing a plugin command.
-It will set the `cwd` to the user's current location,
-give you an auth'ed instance of `heroku-client`,
-and cleanly handle API exceptions.
+give you an auth'ed instance of `heroku-client` and cleanly handle API exceptions.
 
 It uses `co` so you can `yield` promises.
 
