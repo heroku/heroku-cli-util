@@ -21,7 +21,7 @@
     "chai": "*",
     "jshint": "*",
     "mocha": "*",
-    "jsdoc": *
+    "jsdoc": "*"
   },
   "dependencies": {
     "chalk": "^1.0.0",
