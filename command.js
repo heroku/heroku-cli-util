@@ -6,7 +6,7 @@ let h       = require('./');
 let url     = require('url');
 
 function heroku (context) {
-  if (!context.auth.password) {
+  if (!context.auth || !context.auth.password) {
     return 'set `needsApp: true` on the command';
   }
   let opts = {
