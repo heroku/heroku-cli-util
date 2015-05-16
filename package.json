@@ -19,7 +19,6 @@
   },
   "devDependencies": {
     "chai": "^2.3.0",
-    "chai-as-promised": "^5.0.0",
     "jsdoc": "*",
     "jshint": "*",
     "mocha": "^2.2.4",
@@ -31,7 +30,6 @@
     "columnify": "^1.4.1",
     "heroku-client": "^1.10.2",
     "ini": "^1.3.3",
-    "linewrap": "^0.2.1",
-    "lodash": "^3.8.0"
+    "linewrap": "^0.2.1"
   }
 }
