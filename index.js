@@ -2,7 +2,6 @@
 var console = require('./lib/console');
 var errors  = require('./lib/errors');
 var prompt  = require('./lib/prompt');
-var output  = require('./lib/output');
 
 exports.log          = console.log.bind(console);
 exports.formatDate   = require('./lib/date').formatDate;
@@ -17,7 +16,7 @@ exports.preauth      = require('./lib/preauth');
 exports.command      = require('./lib/command');
 exports.config       = require('./lib/config');
 exports.color        = require('./lib/color');
-exports.action       = output.action;
+exports.action       = require('./lib/action');
 exports.extend       = require('./lib/extend');
 exports.debug        = console.debug;
 exports.mockConsole  = console.mock;
