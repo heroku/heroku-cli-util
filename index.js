@@ -8,7 +8,6 @@ exports.formatDate   = require('./lib/date').formatDate;
 exports.error        = errors.error;
 exports.warn         = errors.warn;
 exports.errorHandler = errors.errorHandler;
-exports.columnify    = require('./lib/columnify');
 exports.console      = console;
 exports.prompt       = prompt.prompt;
 exports.confirmApp   = prompt.confirmApp;
