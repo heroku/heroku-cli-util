@@ -103,20 +103,6 @@ h.warn("App not found");
 // !    App not found
 ```
 
-## Tables/Columns
-
-```js
-var h = require('heroku-cli-util');
-h.columnify({
-  'Dynos':  1,
-  'Region': 'us',
-  'Stack':  'cedar-14'
-});
-// Dynos  1
-// Region us
-// Stack  cedar-14
-```
-
 ## Dates
 
 ```js
