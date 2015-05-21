@@ -1,6 +1,6 @@
 # heroku-cli-util
 
-[![Build Status](https://travis-ci.org/heroku/heroku-cli-util.svg?branch=master)](https://travis-ci.org/heroku/heroku-cli-util)
+[![Circle CI](https://circleci.com/gh/heroku/heroku-cli-util/tree/master.svg?style=svg)](https://circleci.com/gh/heroku/heroku-cli-util/tree/master)
 [![npm version](https://badge.fury.io/js/heroku-cli-util.svg)](http://badge.fury.io/js/heroku-cli-util)
 [![License](https://img.shields.io/npm/l/heroku-cli-util.svg)](./LICENSE)
 [![Inline docs](http://inch-ci.org/github/heroku/heroku-cli-util.svg?branch=master)](http://inch-ci.org/github/heroku/heroku-cli-util)
