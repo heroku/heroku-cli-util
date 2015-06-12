@@ -16,9 +16,9 @@ npm install heroku-cli-util --save
 ## Action
 
 ```js
-let h = require('heroku-cli-util');
+let cli     = require('heroku-cli-util');
 let promise = heroku.apps(appname).info();
-let app = yield h.action('getting apps', promise);
+let app     = yield cli.action('getting apps', promise);
 console.log(`app name: ${app.name}`);
 
 // getting apps... done
@@ -30,8 +30,8 @@ console.log(`app name: ${app.name}`);
 Callback style
 
 ```js
-var h = require('heroku-cli-util');
-h.prompt('email', {}, function (_, email) {
+let cli = require('heroku-cli-util');
+cli.prompt('email', {}, function (_, email) {
   console.log(`your email is: ${email}`);
 });
 ```
@@ -39,8 +39,8 @@ h.prompt('email', {}, function (_, email) {
 Promise style
 
 ```js
-var h = require('heroku-cli-util');
-h.prompt('email', {}).then(function (email) {
+let cli = require('heroku-cli-util');
+cli.prompt('email', {}).then(function (email) {
   console.log(`your email is: ${email}`);
 });
 ```
@@ -48,15 +48,19 @@ h.prompt('email', {}).then(function (email) {
 Generator style (must be wrapped in h.command() or co block)
 
 ```js
-var h = require('heroku-cli-util');
-var email = yield h.prompt('email', {});
+let cli   = require('heroku-cli-util');
+let email = yield cli.prompt('email', {});
 console.log(`your email is: ${email}`);
 ```
 
-**Options**
+**cli.prompt options**
 
-`mask: true`: mask input field after submitting.
-`hide: true`: mask characters while entering.
+```js
+cli.prompt('email', {
+  mask: true, // mask input field after submitting
+  hide: true // mask characters while entering
+}
+```
 
 ## Confirm App
 
@@ -65,8 +69,8 @@ Supports the same async styles as `prompt()`. Errors if not confirmed.
 Basic
 
 ```js
-var h = require('heroku-cli-util');
-yield h.confirmApp('appname', context.flags.confirm);
+let cli = require('heroku-cli-util');
+yield cli.confirmApp('appname', context.flags.confirm);
 
 // !     WARNING: Destructive Action
 // !     This command will affect the app appname
@@ -78,8 +82,8 @@ yield h.confirmApp('appname', context.flags.confirm);
 Custom message
 
 ```js
-var h = require('heroku-cli-util');
-yield h.confirmApp('appname', context.flags.confirm, 'foo');
+let cli = require('heroku-cli-util');
+yield cli.confirmApp('appname', context.flags.confirm, 'foo');
 
 // !     foo
 // !     To proceed, type appname or re-run this command with --confirm appname
@@ -90,25 +94,25 @@ yield h.confirmApp('appname', context.flags.confirm, 'foo');
 ## Errors
 
 ```js
-var h = require('heroku-cli-util');
-h.error("App not found");
+let cli = require('heroku-cli-util');
+cli.error("App not found");
 // !    App not found
 ```
 
 ## Warnings
 
 ```js
-var h = require('heroku-cli-util');
-h.warn("App not found");
+let cli = require('heroku-cli-util');
+cli.warn("App not found");
 // !    App not found
 ```
 
 ## Dates
 
 ```js
-var h = require('heroku-cli-util');
-var d = new Date();
-console.log(h.formatDate(d));
+let cli = require('heroku-cli-util');
+let d   = new Date();
+console.log(cli.formatDate(d));
 // 2001-01-01T08:00:00.000Z
 ```
 
@@ -120,14 +124,14 @@ give you an auth'ed instance of `heroku-client` and cleanly handle API exception
 It uses `co` so you can `yield` promises.
 
 ```js
-let h = require('heroku-cli-util');
+let cli = require('heroku-cli-util');
 module.exports.commands = [
   {
     topic: 'apps',
     command: 'info',
     needsAuth: true,
     needsApp: true,
-    run: h.command(function* (context, heroku) {
+    run: cli.command(function* (context, heroku) {
       let app = yield heroku.apps(context.app).info();
       console.dir(app);
     })
@@ -138,14 +142,14 @@ module.exports.commands = [
 With options:
 
 ```js
-let h = require('heroku-cli-util');
+let cli = require('heroku-cli-util');
 module.exports.commands = [
   {
     topic: 'apps',
     command: 'info',
     needsAuth: true,
     needsApp: true,
-    run: h.command({preauth: true},
+    run: cli.command({preauth: true},
     function* (context, heroku) {
       let app = yield heroku.apps(context.app).info();
       console.dir(app);
