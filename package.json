@@ -12,10 +12,12 @@
   "homepage": "https://github.com/heroku/heroku-cli-util",
   "scripts": {
     "test": "jshint . && mocha",
-    "doc": "jsdoc lib"
+    "doc": "jsdoc lib",
+    "changelog": "conventional-changelog -i CHANGELOG.md --overwrite -v"
   },
   "devDependencies": {
     "chai": "^2.3.0",
+    "conventional-changelog": "ajoslin/conventional-changelog",
     "jsdoc": "*",
     "jshint": "*",
     "mocha": "^2.2.4",
