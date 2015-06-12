@@ -1,13 +1,15 @@
 'use strict';
 
+let expect = require('chai').expect;
+
 describe('errors', function () {
   it('prints out errors', function () {
     cli.error('foobar');
-    cli.color.stripColor(cli.stderr).should.contain(' ▸    foobar\n');
+    expect(cli.color.stripColor(cli.stderr)).to.contain(' ▸    foobar\n');
   });
 
   it('prints out warnings', function () {
     cli.warn('foobar');
-    cli.color.stripColor(cli.stderr).should.contain(' ▸    foobar\n');
+    expect(cli.color.stripColor(cli.stderr)).to.contain(' ▸    foobar\n');
   });
 });
