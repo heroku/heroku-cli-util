@@ -1,5 +1,15 @@
 ## Change Log
 
+### v5.0.2 (2015/06/12 22:47 +00:00)
+- [#17](https://github.com/heroku/heroku-cli-util/pull/17) use proxy if env var is lowercase (@heroku)
+- [4c77fba](https://github.com/heroku/heroku-cli-util/commit/4c77fbaec111cd6daad3751c679685e142ea6ee8) correctly default api host (@dickeyxxx)
+- [a9fbdeb](https://github.com/heroku/heroku-cli-util/commit/a9fbdeb5a2a395d30be24ac5c73342a71c17f476) use proxy if env var is lowercase (@dickeyxxx)
+- [#16](https://github.com/heroku/heroku-cli-util/pull/16) default api hostname (@heroku)
+- [1f679eb](https://github.com/heroku/heroku-cli-util/commit/1f679ebe587178d156c6dda55398921a0af8c804) default api hostname (@dickeyxxx)
+- [#15](https://github.com/heroku/heroku-cli-util/pull/15) use commit body for changelog (@heroku)
+- [544ef47](https://github.com/heroku/heroku-cli-util/commit/544ef47d910b274df7467ad05487905afc30921f) updated CHANGELOG (@dickeyxxx)
+- [4e1cc28](https://github.com/heroku/heroku-cli-util/commit/4e1cc28e036dd1e2288e8e545e6bd317ac7f0205) use commit body for changelog (@dickeyxxx)
+
 ### v5.0.1 (2015/06/12 21:16 +00:00)
 - [de25aa0](https://github.com/heroku/heroku-cli-util/commit/de25aa00d186817be572a99708700210e8c91d0e) v5.0.1 (@dickeyxxx)
 - [7a1c739](https://github.com/heroku/heroku-cli-util/commit/7a1c739a47990638c570324b615931a5e90d5e83) use github token with github changelog (@dickeyxxx)
