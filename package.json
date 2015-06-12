@@ -1,6 +1,6 @@
 {
   "name": "heroku-cli-util",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Set of helpful CLI utilities",
   "main": "index.js",
   "repository": "heroku/heroku-cli-util",
@@ -12,12 +12,10 @@
   "homepage": "https://github.com/heroku/heroku-cli-util",
   "scripts": {
     "test": "jshint . && mocha",
-    "doc": "jsdoc lib",
-    "changelog": "conventional-changelog -i CHANGELOG.md --overwrite -v"
+    "doc": "jsdoc lib"
   },
   "devDependencies": {
     "chai": "^3.0.0",
-    "conventional-changelog": "ajoslin/conventional-changelog",
     "jsdoc": "*",
     "jshint": "*",
     "mocha": "^2.2.4",
