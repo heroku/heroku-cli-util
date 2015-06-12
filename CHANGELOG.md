@@ -1,8 +1,9 @@
 ## Change Log
 
-### v5.0.1 (2015/06/12 21:15 +00:00)
+### v5.0.1 (2015/06/12 21:16 +00:00)
+- [de25aa0](https://github.com/heroku/heroku-cli-util/commit/de25aa00d186817be572a99708700210e8c91d0e) v5.0.1 (@dickeyxxx)
 - [7a1c739](https://github.com/heroku/heroku-cli-util/commit/7a1c739a47990638c570324b615931a5e90d5e83) use github token with github changelog (@dickeyxxx)
-- [#13](https://github.com/heroku/heroku-cli-util/pull/13) Merge pull request #13 from heroku/changelog (@heroku)
+- [#13](https://github.com/heroku/heroku-cli-util/pull/13) added github-changes changelog (@heroku)
 - [7eacf1a](https://github.com/heroku/heroku-cli-util/commit/7eacf1a106f02cf7e9cb9148bd0186d22646251e) added github-changes changelog (@dickeyxxx)
 - [d8fbdd9](https://github.com/heroku/heroku-cli-util/commit/d8fbdd96971092036cc29926c076c32335613d2d) removed conventional changelog (@dickeyxxx)
 - [34928a8](https://github.com/heroku/heroku-cli-util/commit/34928a84d15febe0f7c33a38e8493cf521345e9a) chai update (@dickeyxxx)
@@ -13,7 +14,7 @@
 
 ### v5.0.0 (2015/06/08 23:28 +00:00)
 - [358c131](https://github.com/heroku/heroku-cli-util/commit/358c13191f37ced0c28e88803c8faadfa2332667) 5.0.0 (@dickeyxxx)
-- [#12](https://github.com/heroku/heroku-cli-util/pull/12) Merge pull request #12 from heroku/rm-config (@heroku)
+- [#12](https://github.com/heroku/heroku-cli-util/pull/12) remove config in favor of go context object (@heroku)
 - [22895e2](https://github.com/heroku/heroku-cli-util/commit/22895e2121103fe0d7a637cd6184bb30c6053f7d) remove config in favor of go context object (@dickeyxxx)
 - [68294bb](https://github.com/heroku/heroku-cli-util/commit/68294bb0b77522a35e2301e043421cfad37cb5a8) bundle dependencies (@dickeyxxx)
 
@@ -91,7 +92,7 @@
 - [3b35aa5](https://github.com/heroku/heroku-cli-util/commit/3b35aa55049412c72d27a1c96c880a27155b81f6) added debugging tools (@dickeyxxx)
 - [dd52bc9](https://github.com/heroku/heroku-cli-util/commit/dd52bc978d89cab94393e07106e319a624e79a8d) skip heroku client creation if no auth is present (@dickeyxxx)
 - [bf800d4](https://github.com/heroku/heroku-cli-util/commit/bf800d4e497a8a5c84dab38e300e98f6f189bc8f) removed context.cwd since heroku-cli does that now (@dickeyxxx)
-- [#11](https://github.com/heroku/heroku-cli-util/pull/11) Merge pull request #11 from heroku/http-proxy (@heroku)
+- [#11](https://github.com/heroku/heroku-cli-util/pull/11) support http proxy (@heroku)
 - [c541eeb](https://github.com/heroku/heroku-cli-util/commit/c541eebb4708a0b5551ba17a9a2b59de566baffb) support http proxy (@dickeyxxx)
 
 ### v3.5.2 (2015/05/13 22:04 +00:00)
@@ -114,12 +115,12 @@
 - [0603a61](https://github.com/heroku/heroku-cli-util/commit/0603a6160762acfbcdca35c5d67d6fefd94195ce) 3.2.1 (@dickeyxxx)
 
 ### v3.2.1 (2015/05/08 01:44 +00:00)
-- [#10](https://github.com/heroku/heroku-cli-util/pull/10) Merge pull request #10 from heroku/error-handling (@heroku)
+- [#10](https://github.com/heroku/heroku-cli-util/pull/10) cleaner error output (@heroku)
 - [3d3628c](https://github.com/heroku/heroku-cli-util/commit/3d3628c6cdc121d7087b92e66658f535eb1ca506) cleaner error output (@dickeyxxx)
 
 ### v3.2.0 (2015/05/07 23:19 +00:00)
 - [de5812f](https://github.com/heroku/heroku-cli-util/commit/de5812f0ac1f7f86eaaed60137adda648ba08b90) 3.2.0 (@dickeyxxx)
-- [#9](https://github.com/heroku/heroku-cli-util/pull/9) Merge pull request #9 from heroku/2fa (@heroku)
+- [#9](https://github.com/heroku/heroku-cli-util/pull/9) added 2fa and preauth (@heroku)
 - [5ecc908](https://github.com/heroku/heroku-cli-util/commit/5ecc908f78849f21d9fca0810358b6111054b6ff) added 2fa and preauth (@dickeyxxx)
 
 ### v3.1.0 (2015/05/07 20:13 +00:00)
@@ -128,7 +129,7 @@
 
 ### v3.0.0 (2015/05/07 19:03 +00:00)
 - [c874cd0](https://github.com/heroku/heroku-cli-util/commit/c874cd0dbf788dca38521722e77b2aa1734ac983) 3.0.0 (@dickeyxxx)
-- [#8](https://github.com/heroku/heroku-cli-util/pull/8) Merge pull request #8 from heroku/handlerr (@heroku)
+- [#8](https://github.com/heroku/heroku-cli-util/pull/8) error updates (@heroku)
 - [1da8ec1](https://github.com/heroku/heroku-cli-util/commit/1da8ec1f39932636a7d2efa95a016d321a9f8601) error updates (@dickeyxxx)
 - [ee007dd](https://github.com/heroku/heroku-cli-util/commit/ee007dd45883ecbd53eb9f1d8dda6b154ad1ecfd) added masking for prompt() (@dickeyxxx)
 
@@ -175,23 +176,23 @@
 
 ### v1.8.1 (2015/04/29 20:25 +00:00)
 - [3781adf](https://github.com/heroku/heroku-cli-util/commit/3781adf30578f3ab33cf52eb819359c486562f99) 1.8.1 (@dickeyxxx)
-- [#7](https://github.com/heroku/heroku-cli-util/pull/7) Merge pull request #7 from heroku/expose-console (@heroku)
+- [#7](https://github.com/heroku/heroku-cli-util/pull/7) bind exposed console (@heroku)
 - [abbc096](https://github.com/heroku/heroku-cli-util/commit/abbc096f62cac3eea42895d923cb6dc8ff0e77b4) bind exposed console (@hunterloftis)
 
 ### v1.8.0 (2015/04/29 20:13 +00:00)
 - [7d4ca75](https://github.com/heroku/heroku-cli-util/commit/7d4ca75372a074671a7b25a1f893a3d3a86ebab3) 1.8.0 (@dickeyxxx)
-- [#6](https://github.com/heroku/heroku-cli-util/pull/6) Merge pull request #6 from heroku/expose-console (@heroku)
+- [#6](https://github.com/heroku/heroku-cli-util/pull/6) expose console on cli object (@heroku)
 - [aaf1c68](https://github.com/heroku/heroku-cli-util/commit/aaf1c6848a3defa489e4d7e54c14eddbc5556671) expose console on cli object (@hunterloftis)
 - [6b4dd58](https://github.com/heroku/heroku-cli-util/commit/6b4dd58cc0a9212dd66de188a032a6bfc37897e2) fixed license badge (@dickeyxxx)
 - [012e154](https://github.com/heroku/heroku-cli-util/commit/012e154b6ec7685523e7efcdefc90d26ce5c1e5e) added license (@dickeyxxx)
 
 ### v1.7.0 (2015/04/02 00:59 +00:00)
 - [b6211a4](https://github.com/heroku/heroku-cli-util/commit/b6211a4d322c127648a587694c14cbe7aa86bba3) 1.7.0 (@dickeyxxx)
-- [#5](https://github.com/heroku/heroku-cli-util/pull/5) Merge pull request #5 from heroku/columnify (@heroku)
+- [#5](https://github.com/heroku/heroku-cli-util/pull/5) added columns/tables (@heroku)
 - [8293caf](https://github.com/heroku/heroku-cli-util/commit/8293cafe8c80a1cd57481d715c99b95a93fbb75f) added columns/tables (@dickeyxxx)
-- [#3](https://github.com/heroku/heroku-cli-util/pull/3) Merge pull request #3 from heroku/errors (@heroku)
+- [#3](https://github.com/heroku/heroku-cli-util/pull/3) added error/warn methods (@heroku)
 - [9549ae1](https://github.com/heroku/heroku-cli-util/commit/9549ae113e31805d71913349d6557d38d4f95a1e) added error/warn methods (@dickeyxxx)
-- [#4](https://github.com/heroku/heroku-cli-util/pull/4) Merge pull request #4 from heroku/iojs (@heroku)
+- [#4](https://github.com/heroku/heroku-cli-util/pull/4) travis iojs (@heroku)
 - [227bc57](https://github.com/heroku/heroku-cli-util/commit/227bc57a10ecce519fac31292e1543282de7b0e8) travis iojs (@dickeyxxx)
 
 ### v1.6.0 (2015/03/18 23:12 +00:00)
@@ -200,7 +201,7 @@
 
 ### v1.5.0 (2015/03/18 23:11 +00:00)
 - [37c87a8](https://github.com/heroku/heroku-cli-util/commit/37c87a8b2fb01dcf82d638df6761fbec4e44b7e8) 1.5.0 (@dickeyxxx)
-- [#2](https://github.com/heroku/heroku-cli-util/pull/2) Merge pull request #2 from heroku/date (@heroku)
+- [#2](https://github.com/heroku/heroku-cli-util/pull/2) added formatDate() (@heroku)
 - [6c92b69](https://github.com/heroku/heroku-cli-util/commit/6c92b69c228306bda325d9c67b6f2bf01a6f4792) added formatDate() (@dickeyxxx)
 
 ### v1.4.1 (2015/01/13 23:55 +00:00)
