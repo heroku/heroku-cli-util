@@ -16,7 +16,7 @@
     "changelog": "conventional-changelog -i CHANGELOG.md --overwrite -v"
   },
   "devDependencies": {
-    "chai": "^2.3.0",
+    "chai": "^3.0.0",
     "conventional-changelog": "ajoslin/conventional-changelog",
     "jsdoc": "*",
     "jshint": "*",
@@ -31,7 +31,6 @@
   "bundledDependencies": [
     "chalk",
     "co",
-    "heroku-client",
-    "ini"
+    "heroku-client"
   ]
 }

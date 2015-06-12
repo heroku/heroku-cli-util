@@ -2,6 +2,3 @@
 global.cli = require('..');
 cli.mockConsole();
 cli.raiseErrors = true;
-
-let chai = require('chai');
-chai.should();
