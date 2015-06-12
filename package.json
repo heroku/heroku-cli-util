@@ -3,10 +3,7 @@
   "version": "5.0.0",
   "description": "Set of helpful CLI utilities",
   "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/heroku/heroku-cli-util.git"
-  },
+  "repository": "heroku/heroku-cli-util",
   "author": "Jeff Dickey (@dickeyxxx)",
   "license": "ISC",
   "bugs": {
