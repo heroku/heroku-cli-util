@@ -1,6 +1,9 @@
 ## Change Log
 
-### upcoming (2015/06/12 21:03 +00:00)
+### v5.0.1 (2015/06/12 21:15 +00:00)
+- [7a1c739](https://github.com/heroku/heroku-cli-util/commit/7a1c739a47990638c570324b615931a5e90d5e83) use github token with github changelog (@dickeyxxx)
+- [#13](https://github.com/heroku/heroku-cli-util/pull/13) Merge pull request #13 from heroku/changelog (@heroku)
+- [7eacf1a](https://github.com/heroku/heroku-cli-util/commit/7eacf1a106f02cf7e9cb9148bd0186d22646251e) added github-changes changelog (@dickeyxxx)
 - [d8fbdd9](https://github.com/heroku/heroku-cli-util/commit/d8fbdd96971092036cc29926c076c32335613d2d) removed conventional changelog (@dickeyxxx)
 - [34928a8](https://github.com/heroku/heroku-cli-util/commit/34928a84d15febe0f7c33a38e8493cf521345e9a) chai update (@dickeyxxx)
 - [731e9b7](https://github.com/heroku/heroku-cli-util/commit/731e9b726cf20ad60fad8ca6d7181ac58246b023) removed unused ini package (@dickeyxxx)
@@ -107,8 +110,8 @@
 
 ### v3.4.0 (2015/05/08 01:44 +00:00)
 - [55d12a6](https://github.com/heroku/heroku-cli-util/commit/55d12a66a2ddb3c4a04bccd661e7277862a2acdc) 3.4.0 (@dickeyxxx)
-- [0603a61](https://github.com/heroku/heroku-cli-util/commit/0603a6160762acfbcdca35c5d67d6fefd94195ce) 3.2.1 (@dickeyxxx)
 - [48f347d](https://github.com/heroku/heroku-cli-util/commit/48f347d12b712cbab31735fb33931e9d12039d1f) 3.3.0 (@dickeyxxx)
+- [0603a61](https://github.com/heroku/heroku-cli-util/commit/0603a6160762acfbcdca35c5d67d6fefd94195ce) 3.2.1 (@dickeyxxx)
 
 ### v3.2.1 (2015/05/08 01:44 +00:00)
 - [#10](https://github.com/heroku/heroku-cli-util/pull/10) Merge pull request #10 from heroku/error-handling (@heroku)
