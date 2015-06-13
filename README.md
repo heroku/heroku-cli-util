@@ -45,7 +45,7 @@ cli.prompt('email', {}).then(function (email) {
 });
 ```
 
-Generator style (must be wrapped in h.command() or co block)
+Generator style (must be wrapped in cli.command() or co block)
 
 ```js
 let cli   = require('heroku-cli-util');
