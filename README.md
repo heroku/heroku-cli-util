@@ -121,19 +121,22 @@ console.log(cli.formatDate(d));
 Used for initializing a plugin command.
 give you an auth'ed instance of `heroku-client` and cleanly handle API exceptions.
 
-It uses `co` so you can `yield` promises.
+It expects you to return a promise chain. This is usually done with [co](https://github.com/tj/co).
 
 ```js
 let cli = require('heroku-cli-util');
+let co  = require('co');
 module.exports.commands = [
   {
     topic: 'apps',
     command: 'info',
     needsAuth: true,
     needsApp: true,
-    run: cli.command(function* (context, heroku) {
-      let app = yield heroku.apps(context.app).info();
-      console.dir(app);
+    run: cli.command(function (context, heroku) {
+      return co(function* () {
+        let app = yield heroku.apps(context.app).info();
+        console.dir(app);
+      });
     })
   }
 ];
@@ -143,17 +146,22 @@ With options:
 
 ```js
 let cli = require('heroku-cli-util');
+let co  = require('co');
 module.exports.commands = [
   {
     topic: 'apps',
     command: 'info',
     needsAuth: true,
     needsApp: true,
-    run: cli.command({preauth: true},
-    function* (context, heroku) {
-      let app = yield heroku.apps(context.app).info();
-      console.dir(app);
-    })
+    run: cli.command(
+      {preauth: true},
+      function (context, heroku) {
+        return co(function* () {
+          let app = yield heroku.apps(context.app).info();
+          console.dir(app);
+        });
+      }
+    )
   }
 ];
 ```
