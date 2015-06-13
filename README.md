@@ -59,7 +59,7 @@ console.log(`your email is: ${email}`);
 cli.prompt('email', {
   mask: true, // mask input field after submitting
   hide: true // mask characters while entering
-}
+});
 ```
 
 ## Confirm App
