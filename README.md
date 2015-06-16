@@ -116,6 +116,38 @@ console.log(cli.formatDate(d));
 // 2001-01-01T08:00:00.000Z
 ```
 
+## Hush
+
+Use hush for verbose logging when `HEROKU_DEBUG=1`.
+
+```js
+let cli = require('heroku-cli-util');
+cli.hush('foo');
+// only prints if HEROKU_DEBUG is set
+```
+
+## Debug
+
+Pretty print an object.
+
+```js
+let cli = require('heroku-cli-util');
+cli.debug({foo: [1,2,3]});
+// { foo: [ 1, 2, 3 ] }
+```
+
+## Mocking
+
+Mock stdout and stderr by using `cli.log()` and `cli.error()`.
+
+```js
+let cli = require('heroku-cli-util');
+cli.log('message 1'); // prints 'message 1'
+cli.mockConsole();
+cli.log('message 2'); // prints nothing
+cli.stdout.should.eq('message 2\n');
+```
+
 ## Command
 
 Used for initializing a plugin command.
