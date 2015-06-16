@@ -3,6 +3,7 @@ var console = require('./lib/console');
 var errors  = require('./lib/errors');
 var prompt  = require('./lib/prompt');
 
+exports.hush         = console.hush;
 exports.log          = console.log.bind(console);
 exports.formatDate   = require('./lib/date').formatDate;
 exports.error        = errors.error;
