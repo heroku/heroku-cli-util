@@ -26,7 +26,7 @@
   "dependencies": {
     "chalk": "^1.0.0",
     "co": "^4.5.4",
-    "heroku-client": "^1.11.0"
+    "heroku-client": "^2.0.0"
   },
   "bundledDependencies": [
     "chalk",
