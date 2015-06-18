@@ -25,6 +25,8 @@ console.log(`app name: ${app.name}`);
 // app name: appname
 ```
 
+Note: to use `yield` you need to wrap this in a [co](https://github.com/tj/co) block.
+
 ## Prompt
 
 Callback style
@@ -45,7 +47,7 @@ cli.prompt('email', {}).then(function (email) {
 });
 ```
 
-Generator style (must be wrapped in cli.command() or co block)
+Generator style (must be wrapped in a [co](https://github.com/tj/co) block)
 
 ```js
 let cli   = require('heroku-cli-util');
