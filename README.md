@@ -138,6 +138,24 @@ cli.debug({foo: [1,2,3]});
 // { foo: [ 1, 2, 3 ] }
 ```
 
+## Stylized output
+
+Pretty print a header and hash
+```js
+let cli = require('heroku-cli-util');
+cli.styledHeader("MyApp");
+cli.styledHash({name: "myapp", collaborators: ["user1@example.com", "user2@example.com"]});
+```
+
+Produces
+
+```
+=== MyApp
+Collaborators: user1@example.com
+               user1@example.com
+Name:          myapp
+```
+
 ## Mocking
 
 Mock stdout and stderr by using `cli.log()` and `cli.error()`.

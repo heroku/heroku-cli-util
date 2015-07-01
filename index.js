@@ -2,6 +2,7 @@
 var console = require('./lib/console');
 var errors  = require('./lib/errors');
 var prompt  = require('./lib/prompt');
+var styled  = require('./lib/styled');
 
 exports.hush         = console.hush;
 exports.log          = console.log.bind(console);
@@ -21,3 +22,5 @@ exports.debug        = console.debug;
 exports.mockConsole  = console.mock;
 exports.stdout       = '';
 exports.stderr       = '';
+exports.styledHeader = styled.styledHeader;
+exports.styledHash   = styled.styledHash;
