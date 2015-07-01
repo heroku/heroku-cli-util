@@ -145,7 +145,7 @@ Pretty print a header and hash
 let cli = require('heroku-cli-util');
 cli.styledHeader("MyApp");
 cli.styledHash({name: "myapp", collaborators: ["user1@example.com", "user2@example.com"]});
-```js
+```
 
 Produces
 
