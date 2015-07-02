@@ -12,19 +12,17 @@
   "homepage": "https://github.com/heroku/heroku-cli-util",
   "scripts": {
     "test": "jshint . && mocha",
-    "doc": "jsdoc lib",
-    "changelog": "github-changes -o heroku -r heroku-cli-util --use-commit-body -k $GITHUB_TOKEN"
+    "doc": "jsdoc lib"
   },
   "devDependencies": {
     "chai": "^3.0.0",
-    "github-changes": "^1.0.0",
     "jsdoc": "*",
     "jshint": "*",
     "mocha": "^2.2.4",
-    "nock": "^2.0.1"
+    "nock": "^2.6.0"
   },
   "dependencies": {
-    "chalk": "^1.0.0",
+    "chalk": "^1.1.0",
     "co": "^4.5.4",
     "heroku-client": "^2.0.0",
     "inflection": "^1.7.1"
