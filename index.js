@@ -24,3 +24,4 @@ exports.stdout       = '';
 exports.stderr       = '';
 exports.styledHeader = styled.styledHeader;
 exports.styledHash   = styled.styledHash;
+exports.rollbar      = require('./lib/rollbar');
