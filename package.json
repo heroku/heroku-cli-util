@@ -30,6 +30,7 @@
   "bundledDependencies": [
     "chalk",
     "co",
-    "heroku-client"
+    "heroku-client",
+    "inflection"
   ]
 }
