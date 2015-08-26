@@ -23,5 +23,6 @@ exports.mockConsole  = console.mock;
 exports.stdout       = '';
 exports.stderr       = '';
 exports.styledHeader = styled.styledHeader;
-exports.styledHash   = styled.styledHash;
+exports.styledObject = styled.styledObject;
+exports.styledHash   = styled.styledObject;
 exports.rollbar      = require('./lib/rollbar');
