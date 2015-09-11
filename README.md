@@ -178,18 +178,19 @@ It expects you to return a promise chain. This is usually done with [co](https:/
 ```js
 let cli = require('heroku-cli-util');
 let co  = require('co');
+
+function* run (context, heroku) {
+  let app = yield heroku.apps(context.app).info();
+  console.dir(app);
+}
+
 module.exports.commands = [
   {
     topic: 'apps',
     command: 'info',
     needsAuth: true,
     needsApp: true,
-    run: cli.command(function (context, heroku) {
-      return co(function* () {
-        let app = yield heroku.apps(context.app).info();
-        console.dir(app);
-      });
-    })
+    run: cli.command(co.wrap(run))
   }
 ];
 ```
@@ -199,21 +200,19 @@ With options:
 ```js
 let cli = require('heroku-cli-util');
 let co  = require('co');
+
+function* run (heroku, context) {
+  let app = yield heroku.apps(context.app).info();
+  console.dir(app);
+}
+
 module.exports.commands = [
   {
     topic: 'apps',
     command: 'info',
     needsAuth: true,
     needsApp: true,
-    run: cli.command(
-      {preauth: true},
-      function (context, heroku) {
-        return co(function* () {
-          let app = yield heroku.apps(context.app).info();
-          console.dir(app);
-        });
-      }
-    )
+    run: cli.command({preauth: true}, co.wrap(run))
   }
 ];
 ```
