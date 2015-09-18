@@ -22,14 +22,12 @@
     "nock": "^2.6.0"
   },
   "dependencies": {
-    "chalk": "^1.1.0",
-    "co": "^4.5.4",
-    "heroku-client": "^2.1.0",
-    "inflection": "^1.7.1"
+    "chalk": "1.1.1",
+    "heroku-client": "2.1.0",
+    "inflection": "1.7.1"
   },
   "bundledDependencies": [
     "chalk",
-    "co",
     "heroku-client",
     "inflection"
   ]
