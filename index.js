@@ -11,6 +11,7 @@ exports.error        = errors.error;
 exports.warn         = errors.warn;
 exports.errorHandler = errors.errorHandler;
 exports.console      = console;
+exports.yubikey      = require('./lib/yubikey');
 exports.prompt       = prompt.prompt;
 exports.confirmApp   = prompt.confirmApp;
 exports.preauth      = require('./lib/preauth');
