@@ -1,6 +1,6 @@
 {
   "name": "heroku-cli-util",
-  "version": "5.4.10",
+  "version": "5.4.11",
   "description": "Set of helpful CLI utilities",
   "main": "index.js",
   "repository": "heroku/heroku-cli-util",
