@@ -26,11 +26,5 @@
     "co": "4.6.0",
     "heroku-client": "2.3.0",
     "inflection": "1.7.2"
-  },
-  "bundledDependencies": [
-    "chalk",
-    "co",
-    "heroku-client",
-    "inflection"
-  ]
+  }
 }
