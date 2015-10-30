@@ -156,6 +156,30 @@ Collaborators: user1@example.com
 Name:          myapp
 ```
 
+## Table
+
+```js
+cli.table([
+  {app: 'first-app',  language: 'ruby', dyno_count: 3},
+  {app: 'second-app', language: 'node', dyno_count: 2},
+], {
+  columns: [
+    {key: 'app'},
+    {key: 'dyno_count', label: 'Dyno Count'},
+    {key: 'language', format: language => cli.color.red(language)},
+  ]
+});
+```
+
+Produces:
+
+```
+app         Dyno Count  language
+──────────  ──────────  ────────
+first-app   3           ruby
+second-app  2           node
+```
+
 ## Mocking
 
 Mock stdout and stderr by using `cli.log()` and `cli.error()`.
