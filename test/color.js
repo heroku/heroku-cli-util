@@ -3,7 +3,7 @@
 let expect = require('chai').expect;
 let chalk  = require('chalk');
 
-describe('style', function () {
+describe('color', function () {
   beforeEach(function() {
     cli.mockConsole();
   });
