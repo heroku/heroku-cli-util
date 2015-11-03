@@ -21,6 +21,7 @@ exports.action       = require('./lib/action');
 exports.extend       = require('./lib/extend');
 exports.debug        = console.debug;
 exports.mockConsole  = console.mock;
+exports.table        = require('./lib/table');
 exports.stdout       = '';
 exports.stderr       = '';
 exports.styledHeader = styled.styledHeader;
