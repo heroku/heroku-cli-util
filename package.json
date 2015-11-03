@@ -19,7 +19,8 @@
     "jsdoc": "*",
     "jshint": "*",
     "mocha": "^2.2.4",
-    "nock": "^2.6.0"
+    "nock": "^2.6.0",
+    "lodash": "3.10.1"
   },
   "dependencies": {
     "chalk": "1.1.1",
