@@ -25,7 +25,6 @@
     "chalk": "1.1.1",
     "co": "4.6.0",
     "heroku-client": "2.3.2",
-    "inflection": "1.7.2",
     "lodash": "3.10.1"
   }
 }
