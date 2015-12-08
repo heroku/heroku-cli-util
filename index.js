@@ -27,4 +27,5 @@ exports.stderr       = '';
 exports.styledHeader = styled.styledHeader;
 exports.styledObject = styled.styledObject;
 exports.styledHash   = styled.styledObject;
+exports.styledNameValues = styled.styledNameValues;
 exports.rollbar      = require('./lib/rollbar');
