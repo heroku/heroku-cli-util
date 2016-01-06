@@ -12,6 +12,6 @@ describe('errors', function () {
 
   it('prints out warnings', function () {
     cli.warn('foobar');
-    expect(cli.color.stripColor(cli.stderr)).to.equal(' ▸    WARNING: foobar\n');
+    expect(cli.color.stripColor(cli.stderr)).to.equal(' ▸    foobar\n');
   });
 });
