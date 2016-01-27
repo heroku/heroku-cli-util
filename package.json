@@ -12,6 +12,8 @@
   "homepage": "https://github.com/heroku/heroku-cli-util",
   "scripts": {
     "test": "jshint . && mocha",
+    "preversion": "npm test",
+    "postversion": "npm publish && git push && git push --tags",
     "doc": "jsdoc lib"
   },
   "devDependencies": {
