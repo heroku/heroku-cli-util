@@ -29,3 +29,4 @@ exports.styledObject     = styled.styledObject;
 exports.styledHash       = styled.styledObject;
 exports.styledNameValues = styled.styledNameValues;
 exports.rollbar          = require('./lib/rollbar');
+exports.open             = require('./lib/open');
