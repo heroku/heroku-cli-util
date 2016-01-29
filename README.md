@@ -180,6 +180,12 @@ first-app   3           ruby
 second-app  2           node
 ```
 
+## Open Web Browser
+
+```js
+yield cli.open('https://github.com');
+```
+
 ## Mocking
 
 Mock stdout and stderr by using `cli.log()` and `cli.error()`.
