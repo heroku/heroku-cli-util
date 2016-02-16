@@ -21,13 +21,13 @@
     "jsdoc": "*",
     "jshint": "*",
     "mocha": "^2.2.4",
-    "nock": "7.0.1"
+    "nock": "7.2.1"
   },
   "dependencies": {
     "chalk": "1.1.1",
     "co": "4.6.0",
-    "heroku-client": "2.4.0",
-    "lodash": "4.0.1",
+    "heroku-client": "2.4.1",
+    "lodash": "4.4.0",
     "opn": "3.0.3"
   }
 }
