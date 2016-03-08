@@ -21,6 +21,7 @@
     "jsdoc": "*",
     "jshint": "*",
     "mocha": "^2.2.4",
+    "mocha-junit-reporter": "1.9.1",
     "nock": "7.2.1"
   },
   "dependencies": {
