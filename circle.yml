@@ -1,3 +1,8 @@
 machine:
   node:
     version: 5.7.1
+test:
+  override:
+    - mkdir -p $CIRCLE_TEST_REPORTS/mocha
+    - MOCHA_FILE=$CIRCLE_TEST_REPORTS/mocha/junit.xml mocha --reporter mocha-junit-reporter
+    - jshint .
