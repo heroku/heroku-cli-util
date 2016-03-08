@@ -21,15 +21,21 @@
   "noempty": true,
   "nonbsp": true,
   "nonew": true,
+  "noyield": true,
+  "sub": true,
   "trailing": true,
   "undef": true,
   "unused": true,
   "globals": {
     "cli": true,
-    "nock": true
+    "expect": true,
+    "nock": true,
+    "commands": true
   },
   "predef": [
+    "after",
     "afterEach",
+    "before",
     "beforeEach",
     "describe",
     "it",
