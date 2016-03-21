@@ -190,6 +190,15 @@ second-app  2           node
 yield cli.open('https://github.com');
 ```
 
+## HTTP calls
+
+`heroku-cli-util` includes an instance of [got](https://www.npmjs.com/package/got) that will correctly use HTTP proxies.
+
+```js
+let cli = require('heroku-cli-util');
+let rsp = yield cli.got('https://google.com');
+```
+
 ## Mocking
 
 Mock stdout and stderr by using `cli.log()` and `cli.error()`.
