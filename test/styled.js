@@ -29,3 +29,12 @@ describe('styledNameValues', function () {
     expect(cli.color.stripColor(cli.stdout)).to.contain('=== MyApp\n');
   });
 });
+
+describe('styledJSON', function () {
+  it('prints out indented json', function () {
+    cli.styledJSON({name: 'Name', values: ["myapp"]});
+    expect(cli.stdout).to.eq('Collaborators: user1@example.com\n' +
+     '               user2@example.com\n' +
+     'Name:          myapp\n');
+  });
+});
