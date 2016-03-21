@@ -25,6 +25,7 @@
     "nock": "7.2.2"
   },
   "dependencies": {
+    "cardinal": "0.6.0",
     "chalk": "1.1.1",
     "co": "4.6.0",
     "heroku-client": "2.4.1",
