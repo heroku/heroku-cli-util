@@ -24,29 +24,7 @@ yield cli.action('restarting dynos', co(function* () {
 // restarting dynos... done
 ```
 
-Note: to use `yield` you need to wrap this in a [co](https://github.com/tj/co) block.
-
 ## Prompt
-
-Callback style
-
-```js
-let cli = require('heroku-cli-util');
-cli.prompt('email', {}, function (_, email) {
-  console.log(`your email is: ${email}`);
-});
-```
-
-Promise style
-
-```js
-let cli = require('heroku-cli-util');
-cli.prompt('email', {}).then(function (email) {
-  console.log(`your email is: ${email}`);
-});
-```
-
-Generator style (must be wrapped in a [co](https://github.com/tj/co) block)
 
 ```js
 let cli   = require('heroku-cli-util');
