@@ -15,10 +15,11 @@ npm install heroku-cli-util --save
 ## Action
 
 ```js
-let cli     = require('heroku-cli-util');
-let promise = heroku.apps(appname).info();
-let app     = yield cli.action('getting apps', promise);
-console.log(`app name: ${app.name}`);
+let cli = require('heroku-cli-util');
+yield cli.action('restarting dynos', co(function* () {
+  let app = yield heroku.get(`/apps/${context.app}`);
+  yield heroku.request({method: 'DELETE', path: `/apps/${app.name}/dynos`});
+}));
 
 // getting apps... done
 // app name: appname
