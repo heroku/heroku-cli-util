@@ -20,9 +20,6 @@ yield cli.action('restarting dynos', co(function* () {
   let app = yield heroku.get(`/apps/${context.app}`);
   yield heroku.request({method: 'DELETE', path: `/apps/${app.name}/dynos`});
 }));
-
-// getting apps... done
-// app name: appname
 ```
 
 Note: to use `yield` you need to wrap this in a [co](https://github.com/tj/co) block.
