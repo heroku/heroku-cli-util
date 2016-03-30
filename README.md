@@ -162,6 +162,23 @@ first-app   3           ruby
 second-app  2           node
 ```
 
+## Linewrap
+
+Used to indent output with wrapping around words:
+
+```js
+cli.log(cli.linewrap(2, 10, 'this is text is longer than 10 characters'));
+// Outputs:
+//
+// this
+// text is
+//  longer
+//  than 10
+//  characters`);
+```
+
+Useful with `process.stdout.columns || 80`.
+
 ## Open Web Browser
 
 ```js
