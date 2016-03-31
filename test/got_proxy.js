@@ -3,6 +3,7 @@
 let nock   = require('nock');
 let expect = require('chai').expect;
 
+var fs     = require('fs');
 var proxyquire = require('proxyquire').noCallThru();
 
 let gotProxy = function(url, opts) {
@@ -21,7 +22,7 @@ gotProxy.stream = function(url, opts) {
 
 let cli_got = proxyquire('../lib/got', {
   'got': gotProxy,
-  'tunnel-agent': {
+  'tunnel': {
     httpOverHttp:   function(opts) {
                       return Object.assign({}, opts, {_method: 'httpOverHttp'});
                     },
@@ -55,7 +56,7 @@ let shouldHaveProperProxying = function(got_method) {
       let promise = got_method('https://example.com', {headers: {foo: 'bar'}});
       expect('https://example.com').to.equal(promise._calledWith.url);
       expect('bar').to.eql(promise._calledWith.opts.headers.foo);
-      expect({proxy: {host: 'proxy.com', port: '3128', proxyAuth: 'foo:bar'}, _method: 'httpsOverHttp'}).to.eql(promise._calledWith.opts.agent);
+      expect({proxy: {host: 'proxy.com', port: '3128', proxyAuth: 'foo:bar'}, defaultPort: 443, _method: 'httpsOverHttp'}).to.eql(promise._calledWith.opts.agent);
     });
 
     it(`HTTP_PROXY http://proxy.com for https://example.com`, function() {
@@ -63,7 +64,7 @@ let shouldHaveProperProxying = function(got_method) {
       let promise = got_method('https://example.com', {headers: {foo: 'bar'}});
       expect('https://example.com').to.equal(promise._calledWith.url);
       expect('bar').to.eql(promise._calledWith.opts.headers.foo);
-      expect({proxy: {host: 'proxy.com', port: '3128'}, _method: 'httpsOverHttp'}).to.eql(promise._calledWith.opts.agent);
+      expect({proxy: {host: 'proxy.com', port: '3128'}, defaultPort: 443, _method: 'httpsOverHttp'}).to.eql(promise._calledWith.opts.agent);
     });
   
     it(`HTTP_PROXY https://proxy.com for https://example.com`, function() {
@@ -71,7 +72,7 @@ let shouldHaveProperProxying = function(got_method) {
       let promise = got_method('https://example.com', {headers: {foo: 'bar'}});
       expect('https://example.com').to.equal(promise._calledWith.url);
       expect('bar').to.eql(promise._calledWith.opts.headers.foo);
-      expect({proxy: {host: 'proxy.com', port: '3128'}, _method: 'httpsOverHttp'}).to.eql(promise._calledWith.opts.agent);
+      expect({proxy: {host: 'proxy.com', port: '3128'}, defaultPort: 443, _method: 'httpsOverHttp'}).to.eql(promise._calledWith.opts.agent);
     });
 
     it(`HTTP_PROXY http://proxy.com for http://example.com`, function() {
@@ -95,7 +96,7 @@ let shouldHaveProperProxying = function(got_method) {
       let promise = got_method('https://example.com', {headers: {foo: 'bar'}});
       expect('https://example.com').to.equal(promise._calledWith.url);
       expect('bar').to.eql(promise._calledWith.opts.headers.foo);
-      expect({proxy: {host: 'proxy.com', port: '3128'}, _method: 'httpsOverHttp'}).to.eql(promise._calledWith.opts.agent);
+      expect({proxy: {host: 'proxy.com', port: '3128'}, defaultPort: 443, _method: 'httpsOverHttp'}).to.eql(promise._calledWith.opts.agent);
     });
 
     it(`HTTPS_PROXY https://proxy.com for https://example.com`, function() {
@@ -103,7 +104,7 @@ let shouldHaveProperProxying = function(got_method) {
       let promise = got_method('https://example.com', {headers: {foo: 'bar'}});
       expect('https://example.com').to.equal(promise._calledWith.url);
       expect('bar').to.eql(promise._calledWith.opts.headers.foo);
-      expect({proxy: {host: 'proxy.com', port: '3128'}, _method: 'httpsOverHttp'}).to.eql(promise._calledWith.opts.agent);
+      expect({proxy: {host: 'proxy.com', port: '3128'}, defaultPort: 443, _method: 'httpsOverHttp'}).to.eql(promise._calledWith.opts.agent);
     });
 
     it(`HTTPS_PROXY http://proxy.com for http://example.com`, function() {
@@ -123,18 +124,89 @@ let shouldHaveProperProxying = function(got_method) {
   });
 };
 
+let shouldHaveProperTrustedCerts = function(got_method) {
+  describe('ssl_cert_dir', function() {
+    beforeEach(function() {
+      nock.disableNetConnect();
+      sinon.stub(fs, 'readFileSync');
+      sinon.stub(fs, 'readdirSync');
+      process.env.SSL_CERT_FILE = '';
+      process.env.SSL_CERT_DIR  = '';
+    });
+
+    afterEach(function() {
+      process.env.SSL_CERT_FILE = '';
+      process.env.SSL_CERT_DIR  = '';
+      fs.readFileSync.restore();
+      fs.readdirSync.restore();
+    });
+
+    it('when SSL_CERT_FILE is set it is used as a ca', function () {
+      process.env.SSL_CERT_FILE = '/foo/bar.crt';
+
+      fs.readFileSync
+        .withArgs('/foo/bar.crt')
+        .returns('--- cert ---');
+
+      let promise = got_method('https://example.com', {headers: {foo: 'bar'}});
+      expect('https://example.com').to.equal(promise._calledWith.url);
+      expect({headers: {foo: 'bar'}, ca: ['--- cert ---']}).to.eql(promise._calledWith.opts);
+    });
+
+    it('when SSL_CERT_DIR is set it is used as a ca', function () {
+      process.env.SSL_CERT_DIR = '/foo';
+
+      fs.readdirSync
+        .withArgs('/foo')
+        .returns(['bar.crt']);
+
+      fs.readFileSync
+        .withArgs('/foo/bar.crt')
+        .returns('--- cert ---');
+
+      let promise = got_method('https://example.com', {headers: {foo: 'bar'}});
+      expect('https://example.com').to.equal(promise._calledWith.url);
+      expect({headers: {foo: 'bar'}, ca: ['--- cert ---']}).to.eql(promise._calledWith.opts);
+    });
+
+    it('when SSL_CERT_FILE and SSL_CERT_DIR are set they are used as cas', function () {
+      process.env.SSL_CERT_FILE = '/foo/bar.crt';
+      process.env.SSL_CERT_DIR = '/bar';
+
+      fs.readdirSync
+        .withArgs('/bar')
+        .returns(['foo.crt']);
+
+      fs.readFileSync
+        .withArgs('/foo/bar.crt')
+        .returns('--- cert file ---');
+
+      fs.readFileSync
+        .withArgs('/bar/foo.crt')
+        .returns('--- cert dir ---');
+
+      let promise = got_method('https://example.com', {headers: {foo: 'bar'}});
+      expect('https://example.com').to.equal(promise._calledWith.url);
+      expect({headers: {foo: 'bar'}, ca: ['--- cert file ---', '--- cert dir ---']}).to.eql(promise._calledWith.opts);
+    });
+
+  });
+};
+
 describe('got()', function () {
   beforeEach(function() {
     nock.disableNetConnect();
   });
 
   shouldHaveProperProxying(cli_got);
+  shouldHaveProperTrustedCerts(cli_got);
 
   it('when no proxy is used, the standard agent is passed', function () {
     let promise = cli_got('https://example.com', {headers: {foo: 'bar'}});
     expect('https://example.com').to.equal(promise._calledWith.url);
     expect({headers: {foo: 'bar'}}).to.eql(promise._calledWith.opts);
   });
+
 });
 
 describe('got.stream()', function () {
@@ -143,10 +215,12 @@ describe('got.stream()', function () {
   });
 
   shouldHaveProperProxying(cli_got.stream);
+  shouldHaveProperTrustedCerts(cli_got.stream);
 
   it('when no proxy is used, the standard agent is passed', function () {
     let promise = cli_got.stream('https://example.com', {headers: {foo: 'bar'}});
     expect('https://example.com').to.equal(promise._calledWith.url);
     expect({headers: {foo: 'bar'}}).to.eql(promise._calledWith.opts);
   });
+
 });
