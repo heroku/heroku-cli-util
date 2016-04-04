@@ -35,6 +35,6 @@
     "heroku-client": "2.4.3",
     "lodash": "4.7.0",
     "opn": "3.0.3",
-    "tunnel": "0.0.4"
+    "tunnel-agent": "0.4.2"
   }
 }
