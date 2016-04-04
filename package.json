@@ -23,7 +23,9 @@
     "mocha": "^2.2.4",
     "mocha-junit-reporter": "1.10.0",
     "nock": "7.7.2",
-    "proxyquire": "1.7.4"
+    "proxyquire": "1.7.4",
+    "sinon": "1.17.2",
+    "sinon-chai": "2.8.0"
   },
   "dependencies": {
     "cardinal": "0.7.1",
@@ -33,6 +35,6 @@
     "heroku-client": "2.4.3",
     "lodash": "4.7.0",
     "opn": "3.0.3",
-    "tunnel-agent": "0.4.2"
+    "tunnel": "0.0.4"
   }
 }
