@@ -30,11 +30,13 @@
   "dependencies": {
     "cardinal": "0.7.1",
     "chalk": "1.1.3",
+    "cli-cursor": "1.0.2",
     "co": "4.6.0",
     "got": "6.2.0",
     "heroku-client": "2.4.3",
     "lodash": "4.7.0",
     "opn": "3.0.3",
+    "supports-color": "3.1.2",
     "tunnel-agent": "0.4.2"
   }
 }
