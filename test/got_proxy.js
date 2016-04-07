@@ -22,7 +22,7 @@ gotProxy.stream = function(url, opts) {
 
 let cli_got = proxyquire('../lib/got', {
   'got': gotProxy,
-  'tunnel': {
+  'tunnel-agent': {
     httpOverHttp:   function(opts) {
                       return Object.assign({}, opts, {_method: 'httpOverHttp'});
                     },
