@@ -20,6 +20,7 @@
   "devDependencies": {
     "chai": "^3.0.0",
     "coveralls": "2.11.9",
+    "hook-std": "0.2.0",
     "jsdoc": "*",
     "jshint": "*",
     "mocha": "^2.2.4",
