@@ -37,7 +37,7 @@ describe('spinner', () => {
     spinner.enabled = true;
 
     readOutput(spinner, (output) => {
-      expect(chalk.stripColor(output)).to.eq('foo ⣾foo');
+      expect(chalk.stripColor(output)).to.eq('foo  \b⣾foo');
     });
   });
 });
