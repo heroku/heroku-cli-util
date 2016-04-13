@@ -11,18 +11,22 @@
   },
   "homepage": "https://github.com/heroku/heroku-cli-util",
   "scripts": {
-    "test": "jshint . && mocha",
+    "test": "nyc mocha --require ./test/helpers.js && jshint .",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "preversion": "npm test",
     "postversion": "npm publish && git push && git push --tags",
     "doc": "jsdoc lib"
   },
   "devDependencies": {
     "chai": "^3.0.0",
+    "coveralls": "2.11.9",
+    "hook-std": "0.2.0",
     "jsdoc": "*",
     "jshint": "*",
     "mocha": "^2.2.4",
     "mocha-junit-reporter": "1.10.0",
     "nock": "8.0.0",
+    "nyc": "6.2.1",
     "proxyquire": "1.7.4",
     "sinon": "1.17.3",
     "sinon-chai": "2.8.0"
