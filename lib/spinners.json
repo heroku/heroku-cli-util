@@ -1,4 +1,11 @@
 {
+	"hexagon": {
+		"interval": 400,
+		"frames": [
+			"⬡",
+			"⬢"
+		]
+	},
 	"dots": {
 		"interval": 80,
 		"frames": [
