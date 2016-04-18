@@ -10,7 +10,7 @@ describe('color', function () {
   });
 
   it('app is cyan', function () {
-    expect(cli.color.app('myapp')).to.equal(chalk.cyan('myapp'));
+    expect(cli.color.app('myapp')).to.equal(cli.color.heroku('⬢ myapp'));
   });
 
   it('attachments is green', function () {
