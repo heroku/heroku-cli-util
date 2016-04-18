@@ -1,21 +1,22 @@
 {
   "name": "heroku-cli-util",
-  "version": "5.10.6",
   "description": "Set of helpful CLI utilities",
-  "main": "index.js",
-  "repository": "heroku/heroku-cli-util",
+  "version": "5.10.6",
   "author": "Jeff Dickey (@dickeyxxx)",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/heroku/heroku-cli-util/issues"
   },
-  "homepage": "https://github.com/heroku/heroku-cli-util",
-  "scripts": {
-    "test": "nyc mocha --require ./test/helpers.js && jshint .",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "preversion": "npm test && changelog heroku-apps all -m > CHANGELOG.md && git add CHANGELOG.md",
-    "postversion": "npm publish && git push && git push --tags",
-    "doc": "jsdoc lib"
+  "dependencies": {
+    "cardinal": "0.7.1",
+    "chalk": "1.1.3",
+    "cli-cursor": "1.0.2",
+    "co": "4.6.0",
+    "got": "6.3.0",
+    "heroku-client": "2.4.3",
+    "lodash": "4.8.2",
+    "opn": "3.0.3",
+    "supports-color": "3.1.2",
+    "tunnel-agent": "0.4.2"
   },
   "devDependencies": {
     "chai": "^3.0.0",
@@ -32,16 +33,15 @@
     "sinon": "1.17.3",
     "sinon-chai": "2.8.0"
   },
-  "dependencies": {
-    "cardinal": "0.7.1",
-    "chalk": "1.1.3",
-    "cli-cursor": "1.0.2",
-    "co": "4.6.0",
-    "got": "6.3.0",
-    "heroku-client": "2.4.3",
-    "lodash": "4.8.2",
-    "opn": "3.0.3",
-    "supports-color": "3.1.2",
-    "tunnel-agent": "0.4.2"
+  "homepage": "https://github.com/heroku/heroku-cli-util",
+  "license": "ISC",
+  "main": "index.js",
+  "repository": "heroku/heroku-cli-util",
+  "scripts": {
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "doc": "jsdoc lib",
+    "postversion": "npm publish && git push && git push --tags",
+    "preversion": "npm test && changelog heroku-apps all -m > CHANGELOG.md && git add CHANGELOG.md",
+    "test": "nyc mocha --require ./test/helpers.js && jshint ."
   }
 }
