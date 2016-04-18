@@ -13,12 +13,13 @@
   "scripts": {
     "test": "nyc mocha --require ./test/helpers.js && jshint .",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "preversion": "npm test",
+    "preversion": "npm test && changelog heroku-apps all -m > CHANGELOG.md && git add CHANGELOG.md",
     "postversion": "npm publish && git push && git push --tags",
     "doc": "jsdoc lib"
   },
   "devDependencies": {
     "chai": "^3.0.0",
+    "changelog": "1.0.7",
     "coveralls": "2.11.9",
     "hook-std": "0.2.0",
     "jsdoc": "*",
