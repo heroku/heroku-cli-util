@@ -14,11 +14,11 @@ describe('color', function () {
   });
 
   it('attachments is green', function () {
-    expect(cli.color.attachment('myattachment')).to.equal(chalk.green('myattachment'));
+    expect(cli.color.attachment('myattachment')).to.equal(chalk.cyan('myattachment'));
   });
 
   it('addon is magenta', function () {
-    expect(cli.color.addon('myaddon')).to.equal(chalk.magenta('myaddon'));
+    expect(cli.color.addon('myaddon')).to.equal(chalk.yellow('myaddon'));
   });
 
   it('special colors respect supportsColor', function () {
