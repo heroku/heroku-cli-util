@@ -2,7 +2,8 @@
 
 [![Circle CI](https://circleci.com/gh/heroku/heroku-cli-util/tree/master.svg?style=svg)](https://circleci.com/gh/heroku/heroku-cli-util/tree/master)
 [![npm version](https://badge.fury.io/js/heroku-cli-util.svg)](http://badge.fury.io/js/heroku-cli-util)
-[![Coverage Status](https://coveralls.io/repos/github/heroku/heroku-cli-util/badge.svg?branch=master)](https://coveralls.io/github/heroku/heroku-cli-util?branch=master)
+[![Code Climate](https://codeclimate.com/github/heroku/heroku-cli-util/badges/gpa.svg)](https://codeclimate.com/github/heroku/heroku-cli-util)
+[![Test Coverage](https://codeclimate.com/github/heroku/heroku-cli-util/badges/coverage.svg)](https://codeclimate.com/github/heroku/heroku-cli-util/coverage)
 
 Set of helpful CLI utilities
 
