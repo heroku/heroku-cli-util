@@ -1,3 +1,10 @@
+5.10.9 / 2016-04-20
+===================
+
+  * 5.10.9
+  * added release color
+  * update badges
+
 5.10.8 / 2016-04-20
 ===================
 
@@ -190,33 +197,3 @@
 
   * Merge pull request [#48](https://github.com/heroku/heroku-cli-util/issues/48) from heroku/open
     added open function
-  * 5.7.4
-  * added pre/postversion steps
-  * updated lodash + nock
-
-5.7.4 / 2016-01-27
-==================
-
-  * 5.7.3
-  * 5.7.2
-
-5.7.2 / 2016-01-04
-==================
-
-  * Merge pull request [#42](https://github.com/heroku/heroku-cli-util/issues/42) from heroku/reason-required
-    prompt for reason if requested by API
-  * prompt for sudo reason
-  * Merge pull request [#40](https://github.com/heroku/heroku-cli-util/issues/40) from heroku/relogin
-    Use CLI to login again if the API key isn't valid.
-  * Use CLI to login again if the API key isn't valid.
-  * small refactor to command function
-  * 5.7.1
-
-5.7.1 / 2015-12-08
-==================
-
-  * Merge pull request [#46](https://github.com/heroku/heroku-cli-util/issues/46) from heroku/rollbar-context
-    fix rollbar context string with default topic commands
-  * fix rollbar context string with default topic commands
-  * Merge pull request [#45](https://github.com/heroku/heroku-cli-util/issues/45) from heroku/add_styled_name_values_to_exports
-    add styled name values to exports
