@@ -1,8 +1,5 @@
 'use strict';
 
-let sinon = require('sinon');
-let cp = require('child_process');
-
 describe('yubikey', () => {
   let mock, yubikey;
   beforeEach(() => {
