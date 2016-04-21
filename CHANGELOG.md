@@ -1,3 +1,16 @@
+5.10.8 / 2016-04-20
+===================
+
+  * 5.10.8
+  * fix tests
+  * update colors
+    added configVar color
+    changed colors around so app won't conflict with addon
+  * Revert "make changelog its own npm command"
+    This reverts commit 503ee73ad266ea8bec37c0967a326e7057b0fa14.
+  * make changelog its own npm command
+  * fixed changelog
+
 5.10.7 / 2016-04-18
 ===================
 
@@ -207,6 +220,3 @@
   * fix rollbar context string with default topic commands
   * Merge pull request [#45](https://github.com/heroku/heroku-cli-util/issues/45) from heroku/add_styled_name_values_to_exports
     add styled name values to exports
-  * formatting
-  * export styledNameValues from toplevel module
-  * 5.7.0
