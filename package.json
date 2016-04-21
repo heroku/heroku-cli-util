@@ -41,6 +41,6 @@
     "doc": "jsdoc lib",
     "postversion": "npm publish && git push && git push --tags",
     "preversion": "npm test && changelog heroku-cli-util all -m > CHANGELOG.md && git add CHANGELOG.md",
-    "test": "nyc mocha --require ./test/helpers.js && jshint ."
+    "test": "nyc mocha && jshint ."
   }
 }
