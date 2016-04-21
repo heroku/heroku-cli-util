@@ -1,8 +1,9 @@
 # heroku-cli-util [![Circle CI](https://circleci.com/gh/heroku/heroku-cli-util/tree/master.svg?style=svg)](https://circleci.com/gh/heroku/heroku-cli-util/tree/master)
 
-[![npm version](https://badge.fury.io/js/heroku-cli-util.svg)](http://badge.fury.io/js/heroku-cli-util)
 [![Code Climate](https://codeclimate.com/github/heroku/heroku-cli-util/badges/gpa.svg)](https://codeclimate.com/github/heroku/heroku-cli-util)
 [![Test Coverage](https://codeclimate.com/github/heroku/heroku-cli-util/badges/coverage.svg)](https://codeclimate.com/github/heroku/heroku-cli-util/coverage)
+[![npm version](https://badge.fury.io/js/heroku-cli-util.svg)](http://badge.fury.io/js/heroku-cli-util)
+[![License](https://img.shields.io/github/license/heroku/heroku-cli-util.svg)](https://github.com/heroku/heroku-cli-util/blob/master/LICENSE)
 
 Set of helpful CLI utilities
 
