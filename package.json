@@ -30,7 +30,8 @@
     "nock": "8.0.0",
     "nyc": "6.4.0",
     "proxyquire": "1.7.4",
-    "sinon": "1.17.3"
+    "sinon": "1.17.3",
+    "unexpected": "10.13.2"
   },
   "homepage": "https://github.com/heroku/heroku-cli-util",
   "license": "ISC",
@@ -42,5 +43,10 @@
     "postversion": "npm publish && git push && git push --tags",
     "preversion": "npm test && changelog heroku-cli-util all -m > CHANGELOG.md && git add CHANGELOG.md",
     "test": "nyc mocha && jshint ."
+  },
+  "nyc": {
+    "exclude": [
+      "lib/linewrap.js"
+    ]
   }
 }
