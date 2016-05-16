@@ -1,3 +1,21 @@
+5.10.10 / 2016-04-21
+====================
+
+  * 5.10.10
+  * added cmd style
+  * fix build
+  * ignore linewrap from codeclimate since we did not write it
+  * added yubikey test
+  * badging
+  * readme formatting
+  * fix npm test command
+  * remove unused dev dependencies
+  * mocha updates
+  * update node to 5.10.1
+  * code climate
+  * update deps
+  * update license
+
 5.10.9 / 2016-04-20
 ===================
 
@@ -158,42 +176,3 @@
   * added mocha junit reporter for circle ci
   * 5.8.2
   * removed non-displaying license badge
-
-5.8.2 / 2016-03-03
-==================
-
-  * Merge pull request [#47](https://github.com/heroku/heroku-cli-util/issues/47) from heroku/rm-warning-prepend
-    remove prepending warnings with WARNING:
-  * update node on circle
-  * remove prepending warnings with WARNING:
-    this has been getting in the way more than it has been helping. For
-    example, cli.confirmApp() is pretty broken looking because of it.
-    I still don't like that without colors warnings look like errors, but
-    we'll have to find a different solution to that problem.
-  * fix wrapping with command examples
-    turns this:
-    ```
-    ▸    To drain to splunk do the following:
-    ▸    $ heroku drains:add -a heroku-npm https://$(foo > /dev/null; foo-client
-    ▸    MAP | awk -F '|' {print
-    ▸    $2}')@logs.foo.com/logs
-    ```
-    into this:
-    ```
-    ▸    To drain to splunk do the following:
-    ▸    $ heroku drains:add -a heroku-npm https://$(foo > /dev/null; foo-client MAP | awk -F '|' {print $2}')@logs.foo.com/logs
-    ```
-
-5.8.1 / 2016-02-16
-==================
-
-  * 5.8.1
-  * updated deps
-  * 5.8.0
-  * added open function
-
-5.8.0 / 2016-01-28
-==================
-
-  * Merge pull request [#48](https://github.com/heroku/heroku-cli-util/issues/48) from heroku/open
-    added open function
