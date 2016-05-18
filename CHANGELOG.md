@@ -1,3 +1,16 @@
+5.10.11 / 2016-05-16
+====================
+
+  * 5.10.11
+  * Add exit.js extracted from heroku-certs ([#65](https://github.com/heroku/heroku-cli-util/issues/65))
+  * do log path lookup in node
+  * use cli.action.warn always
+  * action.warn improvements
+  * testing action
+  * linewrap testing
+  * ignore coverage directory
+  * fix exclusion
+
 5.10.10 / 2016-04-21
 ====================
 
@@ -174,5 +187,3 @@
   * Merge pull request [#50](https://github.com/heroku/heroku-cli-util/issues/50) from heroku/mocha-junit
     added mocha junit reporter for circle ci
   * added mocha junit reporter for circle ci
-  * 5.8.2
-  * removed non-displaying license badge
