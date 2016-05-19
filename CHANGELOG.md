@@ -1,3 +1,9 @@
+5.10.12 / 2016-05-18
+====================
+
+  * 5.10.12
+  * added ability to update action message
+
 5.10.11 / 2016-05-16
 ====================
 
@@ -176,14 +182,3 @@
   * strip color when mocking
   * ignore test directory from npm
   * updated jshintrc
-  * 5.8.3
-  * update dependencies
-
-5.8.3 / 2016-03-08
-==================
-
-  * Merge pull request [#51](https://github.com/heroku/heroku-cli-util/issues/51) from heroku/update-deps
-    update dependencies
-  * Merge pull request [#50](https://github.com/heroku/heroku-cli-util/issues/50) from heroku/mocha-junit
-    added mocha junit reporter for circle ci
-  * added mocha junit reporter for circle ci
