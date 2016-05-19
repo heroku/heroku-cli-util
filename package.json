@@ -12,7 +12,7 @@
     "cli-cursor": "^1.0.2",
     "co": "^4.6.0",
     "got": "^6.3.0",
-    "heroku-client": "2.4.3",
+    "heroku-client": "3.0.0-alpha2",
     "lodash.ary": "4.0.1",
     "lodash.defaults": "4.0.1",
     "lodash.get": "4.3.0",
