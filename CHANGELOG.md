@@ -1,3 +1,12 @@
+6.0.0 / 2016-05-19
+==================
+
+  * 6.0.0
+  * updated heroku-client
+  * optimize lodash requires
+  * loosely define dependencies
+  * updated deps
+
 5.10.12 / 2016-05-18
 ====================
 
@@ -181,4 +190,3 @@
     strip color when mocking
   * strip color when mocking
   * ignore test directory from npm
-  * updated jshintrc
