@@ -26,6 +26,7 @@
     "lodash.repeat": "4.0.3",
     "lodash.result": "4.4.0",
     "opn": "^3.0.3",
+    "standard": "7.1.0",
     "supports-color": "^3.1.2",
     "tunnel-agent": "^0.4.3"
   },
@@ -36,7 +37,6 @@
     "coveralls": "2.11.9",
     "hook-std": "0.2.0",
     "jsdoc": "*",
-    "jshint": "*",
     "mocha": "^2.2.4",
     "nock": "8.0.0",
     "nyc": "6.4.4",
@@ -54,7 +54,12 @@
     "postversion": "npm publish && git push && git push --tags",
     "changelog": "changelog heroku-cli-util all -m > CHANGELOG.md",
     "preversion": "npm test",
-    "test": "nyc mocha && jshint ."
+    "test": "nyc mocha && standard"
+  },
+  "standard": {
+    "ignore": [
+      "lib/linewrap.js"
+    ]
   },
   "nyc": {
     "exclude": [

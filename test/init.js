@@ -1,8 +1,6 @@
-'use strict';
+'use strict'
 
-global.cli    = require('..');
-global.expect = require('chai').expect;
-global.sinon  = require('sinon');
+const cli = require('..')
 
-cli.mockConsole();
-cli.raiseErrors = true;
+cli.mockConsole()
+cli.raiseErrors = true
