@@ -1,43 +1,45 @@
-'use strict';
+'use strict'
+/* globals describe it beforeEach afterEach */
 
-let Spinner     = require('../lib/spinner');
-let hookStd     = require('hook-std');
-let mockConsole = require('../lib/console');
-let chalk       = require('chalk');
+let Spinner = require('../lib/spinner')
+let hookStd = require('hook-std')
+let mockConsole = require('../lib/console')
+let chalk = require('chalk')
+const expect = require('chai').expect
 
 describe('spinner', () => {
-  function readOutput(spinner, callback) {
-    let out = '';
+  function readOutput (spinner, callback) {
+    let out = ''
 
     const unhook = hookStd.stderr({silent: true}, output => {
-      out += output;
-    });
+      out += output
+    })
 
-    spinner.start();
-    spinner.stop();
-    unhook();
+    spinner.start()
+    spinner.stop()
+    unhook()
 
-    callback(out);
+    callback(out)
   }
 
   beforeEach(() => {
-    mockConsole.mock(false);
-    process.stderr.isTTY = true;
-    process.stderr.clearLine = function () {};
-    process.stderr.cursorTo = function () {};
-  });
+    mockConsole.mock(false)
+    process.stderr.isTTY = true
+    process.stderr.clearLine = function () {}
+    process.stderr.cursorTo = function () {}
+  })
 
   afterEach(() => {
-    mockConsole.mock();
-  });
+    mockConsole.mock()
+  })
 
   it('main', () => {
-    const spinner = new Spinner({text: 'foo'});
+    const spinner = new Spinner({text: 'foo'})
 
-    spinner.enabled = true;
+    spinner.enabled = true
 
     readOutput(spinner, (output) => {
-      expect(chalk.stripColor(output)).to.eq('foo  \b⣾foo');
-    });
-  });
-});
+      expect(chalk.stripColor(output)).to.eq('foo  \b⣾foo')
+    })
+  })
+})

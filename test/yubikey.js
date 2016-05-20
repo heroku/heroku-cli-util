@@ -1,24 +1,27 @@
-'use strict';
+'use strict'
+/* globals describe it beforeEach afterEach */
+
+const sinon = require('sinon')
 
 describe('yubikey', () => {
-  let mock, yubikey;
+  let mock, yubikey
   beforeEach(() => {
-    mock = sinon.mock(require('child_process'));
-    yubikey = require('../lib/yubikey');
-    yubikey.platform = 'darwin';
-  });
+    mock = sinon.mock(require('child_process'))
+    yubikey = require('../lib/yubikey')
+    yubikey.platform = 'darwin'
+  })
   afterEach(() => {
-    mock.verify();
-    mock.restore();
-  });
+    mock.verify()
+    mock.restore()
+  })
 
   it('turns yubikey on', () => {
-    mock.expects('execSync').withExactArgs(`osascript -e 'if application "yubiswitch" is running then tell application "yubiswitch" to KeyOn'`, { stdio: "inherit" }).once();
-    yubikey.enable();
-  });
+    mock.expects('execSync').withExactArgs("osascript -e 'if application \"yubiswitch\" is running then tell application \"yubiswitch\" to KeyOn'", { stdio: 'inherit' }).once()
+    yubikey.enable()
+  })
 
   it('turns yubikey off', () => {
-    mock.expects('execSync').withExactArgs(`osascript -e 'if application "yubiswitch" is running then tell application "yubiswitch" to KeyOff'`, { stdio: "inherit" }).once();
-    yubikey.disable();
-  });
-});
+    mock.expects('execSync').withExactArgs("osascript -e 'if application \"yubiswitch\" is running then tell application \"yubiswitch\" to KeyOff'", { stdio: 'inherit' }).once()
+    yubikey.disable()
+  })
+})
