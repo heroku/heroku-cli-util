@@ -12,7 +12,7 @@
     "cli-cursor": "^1.0.2",
     "co": "^4.6.0",
     "got": "^6.3.0",
-    "heroku-client": "3.0.0-alpha3",
+    "heroku-client": "3.0.0-beta1",
     "lodash.ary": "4.0.1",
     "lodash.defaults": "4.0.1",
     "lodash.get": "4.3.0",
@@ -42,7 +42,7 @@
     "nyc": "6.4.4",
     "proxyquire": "1.7.9",
     "sinon": "1.17.4",
-    "unexpected": "10.13.2"
+    "unexpected": "10.13.3"
   },
   "homepage": "https://github.com/heroku/heroku-cli-util",
   "license": "ISC",
