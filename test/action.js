@@ -22,6 +22,6 @@ describe('action', function () {
   it('errors', function () {
     return expect(cli.action('working', Promise.reject(new Error('oh noes'))),
       'to be rejected with', {message: 'oh noes'})
-      .then(() => expect(cli.stderr, 'to equal', 'working... !!!\n'))
+      .then(() => expect(cli.stderr, 'to equal', 'working... !\n'))
   })
 })
