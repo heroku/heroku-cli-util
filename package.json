@@ -32,7 +32,6 @@
     "chai": "^3.0.0",
     "changelog": "1.0.7",
     "codeclimate-test-reporter": "0.3.1",
-    "coveralls": "2.11.9",
     "hook-std": "0.2.0",
     "jsdoc": "*",
     "mocha": "^2.2.4",
@@ -54,7 +53,6 @@
   "repository": "heroku/heroku-cli-util",
   "scripts": {
     "changelog": "changelog heroku-cli-util all -m > CHANGELOG.md",
-    "coverage": "nyc report --reporter=text-lcov | codeclimate-test-reporter && nyc report --reporter=text-lcov | coveralls",
     "doc": "jsdoc lib",
     "postversion": "npm publish && git push && git push --tags",
     "preversion": "npm test",
