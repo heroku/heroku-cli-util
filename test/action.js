@@ -15,7 +15,7 @@ describe('action', function () {
     return cli.action('working', Promise.resolve())
     .then(() => {
       unhook()
-      expect(out, 'to equal', 'working... done\n')
+      expect(cli.color.stripColor(out), 'to equal', 'working... done\n')
     })
   })
 
@@ -26,7 +26,7 @@ describe('action', function () {
     let p = cli.action('working', new Promise((resolve) => process.nextTick(() => resolve())))
       .then(() => {
         unhook()
-        expect(out, 'to equal', 'working... !\n ▸    warning!\nworking... done\n')
+        expect(cli.color.stripColor(out), 'to equal', 'working... !\n ▸    warning!\nworking... done\n')
       })
     cli.action.warn('warning!')
     return p
@@ -40,7 +40,7 @@ describe('action', function () {
       'to be rejected with', {message: 'oh noes'})
       .then(() => {
         unhook()
-        expect(out, 'to equal', 'working... !!!\n')
+        expect(cli.color.stripColor(out), 'to equal', 'working... !!!\n')
       })
   })
 })

@@ -1,5 +1,5 @@
 'use strict'
-/* globals describe it beforeEach */
+/* globals describe it beforeEach afterEach */
 
 const cli = require('..')
 const expect = require('chai').expect
@@ -9,6 +9,10 @@ describe('color', function () {
   beforeEach(function () {
     cli.mockConsole()
     cli.color.enabled = true
+  })
+
+  afterEach(() => {
+    cli.color.enabled = false
   })
 
   it('app is cyan', function () {
