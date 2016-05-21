@@ -24,7 +24,6 @@
     "lodash.repeat": "4.0.3",
     "lodash.result": "4.4.0",
     "opn": "^3.0.3",
-    "standard": "7.1.0",
     "supports-color": "^3.1.2",
     "tunnel-agent": "^0.4.3"
   },
@@ -40,27 +39,28 @@
     "nyc": "6.4.4",
     "proxyquire": "1.7.9",
     "sinon": "1.17.4",
+    "standard": "7.1.0",
     "unexpected": "10.13.3"
   },
   "homepage": "https://github.com/heroku/heroku-cli-util",
   "license": "ISC",
   "main": "index.js",
+  "nyc": {
+    "exclude": [
+      "lib/linewrap.js"
+    ]
+  },
   "repository": "heroku/heroku-cli-util",
   "scripts": {
+    "changelog": "changelog heroku-cli-util all -m > CHANGELOG.md",
     "coverage": "nyc report --reporter=text-lcov | codeclimate-test-reporter && nyc report --reporter=text-lcov | coveralls",
     "doc": "jsdoc lib",
     "postversion": "npm publish && git push && git push --tags",
-    "changelog": "changelog heroku-cli-util all -m > CHANGELOG.md",
     "preversion": "npm test",
     "test": "nyc mocha && standard"
   },
   "standard": {
     "ignore": [
-      "lib/linewrap.js"
-    ]
-  },
-  "nyc": {
-    "exclude": [
       "lib/linewrap.js"
     ]
   }
