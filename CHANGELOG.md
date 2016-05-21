@@ -1,3 +1,74 @@
+6.0.10 / 2016-05-20
+===================
+
+  * 6.0.10
+  * better method of detecting when to clear
+  * skip clearing if not enabled
+
+6.0.9 / 2016-05-20
+==================
+
+  * 6.0.9
+  * return promises for cli.command
+
+6.0.8 / 2016-05-20
+==================
+
+  * 6.0.8
+  * clean up prompt rendering
+  * do not require function to return a promise
+  * show error message when a promise is not returned
+
+6.0.7 / 2016-05-20
+==================
+
+  * 6.0.7
+  * build fix
+  * mock logging when not tty
+
+6.0.6 / 2016-05-20
+==================
+
+  * 6.0.6
+  * added ansi-escapes
+
+6.0.5 / 2016-05-20
+==================
+
+  * 6.0.5
+  * fixpack
+  * update node to 6.2.0
+
+6.0.4 / 2016-05-20
+==================
+
+  * 6.0.4
+  * minor bug fix with small screens
+  * clean up spinner output
+  * take out co
+  * use ansi escapes to render spinner more cleanly
+
+6.0.3 / 2016-05-20
+==================
+
+  * 6.0.3
+  * update heroku-client
+
+6.0.2 / 2016-05-20
+==================
+
+  * 6.0.2
+  * updated deps
+  * standardify
+
+6.0.1 / 2016-05-19
+==================
+
+  * 6.0.1
+  * optimize requires
+  * updated heroku-client
+  * changelog
+
 6.0.0 / 2016-05-19
 ==================
 
