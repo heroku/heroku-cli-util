@@ -1,11 +1,11 @@
 'use strict'
 /* globals describe it beforeEach afterEach */
 
-let Spinner = require('../lib/spinner')
-let hookStd = require('hook-std')
-let mockConsole = require('../lib/console')
-let chalk = require('chalk')
-const expect = require('chai').expect
+const Spinner = require('../lib/spinner')
+const hookStd = require('hook-std')
+const mockConsole = require('../lib/console')
+const chalk = require('chalk')
+const expect = require('unexpected')
 
 describe('spinner', () => {
   function readOutput (spinner, callback) {
@@ -39,7 +39,7 @@ describe('spinner', () => {
     spinner.enabled = true
 
     readOutput(spinner, (output) => {
-      expect(chalk.stripColor(output)).to.eq('foo  \b⣾foo')
+      expect(chalk.stripColor(output), 'to equal', 'foo ⣾ \nfoo \n')
     })
   })
 })
