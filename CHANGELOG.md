@@ -1,3 +1,20 @@
+6.0.12 / 2016-06-20
+===================
+
+  * 6.0.12
+  * added cli.action.start
+
+6.0.11 / 2016-06-01
+===================
+
+  * 6.0.11
+  * Replace rollbar https client with got client ([#67](https://github.com/heroku/heroku-cli-util/issues/67))
+  * changelog
+  * circle updates
+  * test fix
+  * clear line before displaying spinner
+  * subtler errors
+
 6.0.10 / 2016-05-20
 ===================
 
