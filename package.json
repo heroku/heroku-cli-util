@@ -12,7 +12,7 @@
     "chalk": "^1.1.3",
     "co": "4.6.0",
     "got": "^6.3.0",
-    "heroku-client": "3.0.0-beta2",
+    "heroku-client": "3.0.0-beta3",
     "lodash.ary": "4.1.0",
     "lodash.defaults": "4.1.0",
     "lodash.get": "4.4.0",
