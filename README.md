@@ -71,6 +71,8 @@ yield cli.confirmApp('appname', context.flags.confirm, 'foo');
 > appname
 ```
 
+Note that you will still need to define a `confirm` flag for your command.
+
 ## Errors
 
 ```js
