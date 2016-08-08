@@ -36,3 +36,4 @@ exports.Spinner = require('./lib/spinner')
 exports.exit = require('./lib/exit').exit
 exports.login = require('./lib/login')
 exports.auth = require('./lib/auth')
+exports.fatal = errors.fatal
