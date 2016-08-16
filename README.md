@@ -227,7 +227,7 @@ module.exports.commands = [
     needsApp: true,
     run: cli.command(function (context, heroku) {
       return co(function* () {
-        let app = yield heroku.apps(context.app).info();
+        let app = yield heroku.get(`/apps/${context.app}`);
         console.dir(app);
       });
     })
@@ -250,7 +250,7 @@ module.exports.commands = [
       {preauth: true},
       function (context, heroku) {
         return co(function* () {
-          let app = yield heroku.apps(context.app).info();
+          let app = yield heroku.get(`/apps/${context.app}`);
           console.dir(app);
         });
       }
