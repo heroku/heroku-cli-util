@@ -20,6 +20,7 @@ exports.command = require('./lib/command')
 exports.color = require('./lib/color')
 exports.debug = console.debug
 exports.mockConsole = console.mock
+exports.mockPrompt = prompt.mock
 exports.table = require('./lib/table')
 exports.stdout = ''
 exports.stderr = ''
