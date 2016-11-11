@@ -90,6 +90,6 @@ describe('got', function () {
 
   it('defines all properties of the got module', function () {
     expect(Object.getOwnPropertyNames(got).sort()).to.eql(Object.getOwnPropertyNames(cli.got).sort())
-    expect(Object.getOwnPropertyNames(got.stream).sort()).to.eql(Object.getOwnPropertyNames(cli.got.stream).sort())
+    expect(Object.getOwnPropertyNames(got.stream).concat(['prototype']).sort()).to.eql(Object.getOwnPropertyNames(cli.got.stream).sort())
   })
 })
