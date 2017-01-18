@@ -162,9 +162,9 @@ describe('login', function () {
 
     let api = nock('https://api.heroku.com', {reqheaders: headers})
       .get('/account')
-      .reply(403, {})
+      .reply(403, {message: 'api message'})
 
-    return expect(login({sso: true}), 'to be rejected with', 'Access token invalid.')
+    return expect(login({sso: true}), 'to be rejected with', {body: {message: 'api message'}})
       .then(() => {
         expect(orgStub.called, 'to equal', true)
         expect(urlStub.called, 'to equal', true)
