@@ -32,17 +32,17 @@
   "devDependencies": {
     "chai": "^3.0.0",
     "changelog": "1.0.7",
-    "codeclimate-test-reporter": "0.3.3",
+    "codeclimate-test-reporter": "0.4.0",
     "hook-std": "0.2.0",
     "jsdoc": "*",
-    "mocha": "^2.2.4",
-    "mocha-junit-reporter": "1.11.1",
-    "nock": "8.0.0",
-    "nyc": "7.1.0",
-    "proxyquire": "1.7.10",
-    "sinon": "1.17.5",
-    "standard": "7.1.2",
-    "unexpected": "10.15.0"
+    "mocha": "3.2.0",
+    "mocha-junit-reporter": "1.13.0",
+    "nock": "9.0.2",
+    "nyc": "10.1.2",
+    "proxyquire": "1.7.11",
+    "sinon": "1.17.7",
+    "standard": "8.6.0",
+    "unexpected": "10.25.0"
   },
   "engines": {
     "node": ">= 6.0.0"
