@@ -3,11 +3,7 @@
 let expect = require('chai').expect
 
 function stripIndents (str) {
-  str = str.trim().replace(/\s+$/mg, '')
-
-  let indent = (str.match(/^\s+[^$]/m) || [''])[0].length - 1
-  let regexp = new RegExp(`^s{${indent}}`, 'mg')
-  return str.replace(regexp, '')
+  return str.trim().replace(/\s+$/mg, '')
 }
 
 module.exports = {
