@@ -28,7 +28,6 @@ exports.styledObject = styled.styledObject
 exports.styledHash = styled.styledObject
 exports.styledNameValues = styled.styledNameValues
 exports.styledJSON = styled.styledJSON
-exports.rollbar = require('./lib/rollbar')
 exports.open = require('./lib/open')
 exports.got = require('./lib/got')
 exports.linewrap = require('./lib/linewrap')
