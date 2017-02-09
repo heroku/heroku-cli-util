@@ -31,7 +31,6 @@
   },
   "devDependencies": {
     "chai": "^3.0.0",
-    "changelog": "1.0.7",
     "codeclimate-test-reporter": "0.4.0",
     "hook-std": "0.2.0",
     "jsdoc": "*",
@@ -57,10 +56,7 @@
   },
   "repository": "heroku/heroku-cli-util",
   "scripts": {
-    "changelog": "changelog heroku-cli-util all -m > CHANGELOG.md",
     "doc": "jsdoc lib",
-    "postversion": "npm publish && git push && git push --tags",
-    "preversion": "npm test",
     "test": "nyc mocha && standard"
   },
   "standard": {
