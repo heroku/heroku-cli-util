@@ -1,2 +1,5 @@
-test
+.codeclimate.yml
+.npmignore
+.nyc_output
 circle.yml
+test
