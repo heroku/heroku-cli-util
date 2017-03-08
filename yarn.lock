@@ -1729,9 +1729,9 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
-netrc-parser@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/netrc-parser/-/netrc-parser-1.0.2.tgz#1f28472f165bba30a9f56c4621426e3df63c8fa7"
+netrc-parser@1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/netrc-parser/-/netrc-parser-1.0.4.tgz#64d7a610850513f3a201037fdf9e94a99be82d25"
   dependencies:
     babel-runtime "^6.23.0"
     lex "^1.7.9"

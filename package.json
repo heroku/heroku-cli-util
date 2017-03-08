@@ -25,7 +25,7 @@
     "lodash.property": "4.4.2",
     "lodash.repeat": "4.1.0",
     "lodash.result": "4.5.2",
-    "netrc-parser": "1.0.2",
+    "netrc-parser": "1.0.4",
     "opn": "^3.0.3",
     "supports-color": "^3.1.2",
     "tunnel-agent": "^0.4.3"
