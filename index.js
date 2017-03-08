@@ -34,4 +34,4 @@ exports.linewrap = require('./lib/linewrap')
 exports.Spinner = require('./lib/spinner')
 exports.exit = require('./lib/exit').exit
 exports.auth = require('./lib/auth')
-exports.login = require('./lib/auth').login
+exports.login = exports.auth.login
