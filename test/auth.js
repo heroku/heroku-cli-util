@@ -71,6 +71,8 @@ describe('auth', function () {
 
   it('logs in and saves', function () {
     stubNetrc.save = sinon.stub()
+    stubNetrc.machines['api.heroku.com'] = {}
+    stubNetrc.machines['git.heroku.com'] = {}
     stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
     stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
 
@@ -90,6 +92,7 @@ describe('auth', function () {
         expect(data, 'to equal', {token: response.access_token.token, email: response.user.email})
         expect(cli.stderr, 'to equal', '')
         expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
+        expect(stubNetrc.machines['api.heroku.com'], 'to equal', {login: 'foo@bar.com', password: 'token'})
         api.done()
       })
   })
