@@ -10,14 +10,25 @@ let sinon = require('sinon')
 let expect = require('unexpected')
 
 let stubPrompt
-let stubNetrc
 let stubOpen
 let auth
 
+let machines
+let stubNetrc = class {
+  constructor () {
+    this.machines = machines = {
+      'api.heroku.com': {},
+      'git.heroku.com': {}
+    }
+  }
+
+  save () {
+    this.saved = true
+  }
+}
+
 describe('auth', function () {
   beforeEach(() => {
-    stubNetrc = {machines: {}}
-
     stubPrompt = sinon.stub()
     stubPrompt.throws('not stubbed')
 
@@ -44,8 +55,6 @@ describe('auth', function () {
   })
 
   it('logs in via username and password', function () {
-    stubNetrc
-
     stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
     stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
 
@@ -70,9 +79,6 @@ describe('auth', function () {
   })
 
   it('logs in and saves', function () {
-    stubNetrc.save = sinon.stub()
-    stubNetrc.machines['api.heroku.com'] = {}
-    stubNetrc.machines['git.heroku.com'] = {}
     stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
     stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
 
@@ -92,7 +98,7 @@ describe('auth', function () {
         expect(data, 'to equal', {token: response.access_token.token, email: response.user.email})
         expect(cli.stderr, 'to equal', '')
         expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
-        expect(stubNetrc.machines['api.heroku.com'], 'to equal', {login: 'foo@bar.com', password: 'token'})
+        expect(machines['api.heroku.com'], 'to equal', {login: 'foo@bar.com', password: 'token'})
         api.done()
       })
   })
