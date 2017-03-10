@@ -11,16 +11,31 @@ let expect = require('unexpected')
 
 let stubPrompt
 let stubOpen
-let login
+let auth
 
-describe('login', function () {
+let machines
+let stubNetrc = class {
+  constructor () {
+    this.machines = machines = {
+      'api.heroku.com': {},
+      'git.heroku.com': {}
+    }
+  }
+
+  save () {
+    this.saved = true
+  }
+}
+
+describe('auth', function () {
   beforeEach(() => {
     stubPrompt = sinon.stub()
     stubPrompt.throws('not stubbed')
 
     stubOpen = sinon.stub()
     stubOpen.throws('not stubbed')
-    login = proxyquire('../lib/login', {
+    auth = proxyquire('../lib/auth', {
+      'netrc-parser': stubNetrc,
       './prompt': { prompt: stubPrompt },
       './open': stubOpen
     })
@@ -54,11 +69,36 @@ describe('login', function () {
     let api = nock('https://api.heroku.com', {reqheaders: headers})
       .post('/oauth/authorizations', body)
       .reply(200, response)
-    return login()
+    return auth.login()
       .then((data) => {
         expect(data, 'to equal', {token: response.access_token.token, email: response.user.email})
         expect(cli.stderr, 'to equal', '')
         expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
+        api.done()
+      })
+  })
+
+  it('logs in and saves', function () {
+    stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
+    stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
+
+    let body = {
+      'scope': ['global'],
+      'expires_in': 31536000
+    }
+
+    let headers = {Authorization: 'Basic ZW1haWw6cGFzc3dvcmQ='}
+
+    let response = {access_token: {token: 'token'}, user: {email: 'foo@bar.com'}}
+    let api = nock('https://api.heroku.com', {reqheaders: headers})
+      .post('/oauth/authorizations', body)
+      .reply(200, response)
+    return auth.login({save: true})
+      .then((data) => {
+        expect(data, 'to equal', {token: response.access_token.token, email: response.user.email})
+        expect(cli.stderr, 'to equal', '')
+        expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
+        expect(machines['api.heroku.com'], 'to equal', {login: 'foo@bar.com', password: 'token'})
         api.done()
       })
   })
@@ -77,7 +117,7 @@ describe('login', function () {
     let api = nock('https://api.heroku.com', {reqheaders: headers})
       .post('/oauth/authorizations', body)
       .reply(200, {})
-    return expect(login(), 'to be rejected with', "Cannot read property 'token' of undefined")
+    return expect(auth.login(), 'to be rejected with', "Cannot read property 'token' of undefined")
       .then(() => api.done())
   })
 
@@ -94,7 +134,7 @@ describe('login', function () {
       .get('/account')
       .reply(200, {email: 'foo@bar.com'})
 
-    return login({sso: true})
+    return auth.login({sso: true})
       .then((auth) => {
         expect(urlStub.called, 'to equal', true)
         expect(tokenStub.called, 'to equal', true)
@@ -117,7 +157,7 @@ describe('login', function () {
       .get('/account')
       .reply(200, {email: 'foo@bar.com'})
 
-    return login({sso: true})
+    return auth.login({sso: true})
       .then((auth) => {
         expect(urlStub.called, 'to equal', true)
         expect(tokenStub.called, 'to equal', true)
@@ -140,7 +180,7 @@ describe('login', function () {
       .get('/account')
       .reply(200, {email: 'foo@bar.com'})
 
-    return login({sso: true})
+    return auth.login({sso: true})
       .then((auth) => {
         expect(orgStub.called, 'to equal', true)
         expect(urlStub.called, 'to equal', true)
@@ -164,7 +204,7 @@ describe('login', function () {
       .get('/account')
       .reply(403, {message: 'api message'})
 
-    return expect(login({sso: true}), 'to be rejected with', {body: {message: 'api message'}})
+    return expect(auth.login({sso: true}), 'to be rejected with', {body: {message: 'api message'}})
       .then(() => {
         expect(orgStub.called, 'to equal', true)
         expect(urlStub.called, 'to equal', true)
@@ -187,7 +227,7 @@ describe('login', function () {
       .get('/account')
       .reply(200, {email: 'foo@bar.com'})
 
-    return login({sso: true})
+    return auth.login({sso: true})
       .then((auth) => {
         expect(orgStub.called, 'to equal', true)
         expect(urlStub.called, 'to equal', true)
