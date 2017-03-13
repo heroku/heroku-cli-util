@@ -237,4 +237,77 @@ describe('auth', function () {
         expect(auth, 'to equal', {token: 'token', email: 'foo@bar.com'})
       })
   })
+
+  it('logs in via sso and saves sso url', function () {
+    let apiHost = {}
+    let gitHost = {}
+    let stubNetrc = class {
+      constructor () {
+        this.machines = machines = {
+          'api.heroku.com': apiHost,
+          'git.heroku.com': gitHost
+        }
+      }
+      save () {}
+    }
+    auth = proxyquire('../lib/auth', {
+      'netrc-parser': stubNetrc,
+      './prompt': { prompt: stubPrompt },
+      './open': stubOpen
+    })
+
+    stubPrompt.withArgs('Enter your organization name').returns(Promise.resolve('myorg'))
+    let url = 'https://sso.heroku.com/saml/myorg/init?cli=true'
+    stubOpen.withArgs(url).returns(Promise.resolve(undefined))
+    stubPrompt.withArgs('Enter your access token (typing will be hidden)', {hide: true}).returns(Promise.resolve('token'))
+    let headers = {Authorization: 'Bearer token'}
+
+    let api = nock('https://api.heroku.com', {reqheaders: headers})
+      .get('/account')
+      .reply(200, {email: 'foo@bar.com'})
+
+    return auth.login({sso: true, save: true})
+      .then((auth) => {
+        api.done()
+        expect(auth, 'to equal', {token: 'token', email: 'foo@bar.com'})
+        expect(apiHost.sso, 'to equal', url)
+        expect(gitHost.sso, 'to equal', url)
+      })
+  })
+
+  it('re-logs in via sso when sso url saved', function () {
+    let url = 'https://sso.heroku.com/saml/myorg/init?cli=true'
+    let stubNetrc = class {
+      constructor () {
+        this.machines = machines = {
+          'api.heroku.com': {sso: url},
+          'git.heroku.com': {sso: url}
+        }
+      }
+    }
+    auth = proxyquire('../lib/auth', {
+      'netrc-parser': stubNetrc,
+      './prompt': { prompt: stubPrompt },
+      './open': stubOpen
+    })
+
+    let orgStub = stubPrompt.withArgs('Enter your organization name').returns(Promise.resolve('myorg'))
+    let urlStub = stubOpen.withArgs(url).returns(Promise.resolve(undefined))
+    let tokenStub = stubPrompt.withArgs('Enter your access token (typing will be hidden)', {hide: true}).returns(Promise.resolve('token'))
+    let headers = {Authorization: 'Bearer token'}
+
+    let api = nock('https://api.heroku.com', {reqheaders: headers})
+      .get('/account')
+      .reply(200, {email: 'foo@bar.com'})
+
+    return auth.login()
+      .then((auth) => {
+        expect(orgStub.called, 'to equal', true)
+        expect(urlStub.called, 'to equal', true)
+        expect(tokenStub.called, 'to equal', true)
+        expect(cli.stderr, 'to equal', 'Opening browser for login... done\n')
+        api.done()
+        expect(auth, 'to equal', {token: 'token', email: 'foo@bar.com'})
+      })
+  })
 })
