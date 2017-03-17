@@ -99,6 +99,7 @@ describe('auth', function () {
         expect(cli.stderr, 'to equal', '')
         expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
         expect(machines['api.heroku.com'], 'to equal', {login: 'foo@bar.com', password: 'token'})
+        expect(machines['git.heroku.com'], 'to equal', {login: 'foo@bar.com', password: 'token'})
         api.done()
       })
   })
