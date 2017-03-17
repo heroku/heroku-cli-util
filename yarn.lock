@@ -1729,7 +1729,7 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
-netrc-parser@^2.0.1:
+netrc-parser@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/netrc-parser/-/netrc-parser-2.0.1.tgz#bd1d8b1eaf9555d4cceb051b74da1ab0a018e440"
   dependencies:
