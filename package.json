@@ -1,7 +1,7 @@
 {
   "name": "heroku-cli-util",
   "description": "Set of helpful CLI utilities",
-  "version": "6.1.10",
+  "version": "6.1.11",
   "author": "Jeff Dickey (@dickeyxxx)",
   "bugs": {
     "url": "https://github.com/heroku/heroku-cli-util/issues"
