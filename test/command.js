@@ -7,6 +7,7 @@ let expect = require('unexpected')
 
 let cli = require('..')
 let command = require('../lib/command')
+let sinon = require('sinon')
 
 describe('command', function () {
   beforeEach(function () {
@@ -14,11 +15,7 @@ describe('command', function () {
     nock.cleanAll()
 
     cli.mockConsole()
-    cli.prompt = function () {
-      return new Promise(function (resolve, reject) {
-        resolve('2fa')
-      })
-    }
+    cli.prompt = sinon.stub().returns(Promise.resolve('2fa'))
   })
 
   it('2fa should retry just the failing request', function () {
@@ -138,6 +135,7 @@ describe('command', function () {
       api.done()
       api2FA.done()
       expect(cli.stdout, 'to equal', 'foobara\nfoobarb\n')
+      expect(cli.prompt.callCount, 'to equal', 1)
     })
   })
 
@@ -169,6 +167,69 @@ describe('command', function () {
     .then(() => {
       api.done()
       api2FA.done()
+      expect(cli.stdout, 'to equal', 'foobara\nfoobarb\n')
+    })
+  })
+
+  it('2fa should preauth for each app', function () {
+    let c = {count: 0}
+
+    let promises = [
+      function () {
+        return new Promise(function (resolve) {
+          setTimeout(function () {
+            resolve('2fa-1')
+          }, 300)
+        })
+      },
+      function () {
+        return new Promise(function (resolve) {
+          setTimeout(function () {
+            resolve('2fa-2')
+          }, 1)
+        })
+      }
+    ]
+
+    cli.prompt = function () {
+      let p = promises[c.count]
+      c.count = c.count + 1
+      return p()
+    }
+
+    let api = nock('https://api.heroku.com', {
+      badheaders: ['Heroku-Two-Factor-Code']
+    })
+
+    api.post('/foobar/a', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'biz'}})
+    api.post('/foobar/b', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'baz'}})
+
+    let api2FA1 = nock('https://api.heroku.com', {
+      reqheaders: {'Heroku-Two-Factor-Code': '2fa-1'}
+    })
+
+    let api2FA2 = nock('https://api.heroku.com', {
+      reqheaders: {'Heroku-Two-Factor-Code': '2fa-2'}
+    })
+
+    api2FA1.put('/apps/biz/pre-authorizations').reply(200, {})
+    api2FA2.put('/apps/baz/pre-authorizations').reply(200, {})
+
+    api.post('/foobar/a', {}).reply(200, {value: 'foobara'})
+    api.post('/foobar/b', {}).reply(200, {value: 'foobarb'})
+
+    return command({preauth: true}, co.wrap(function * (context, heroku) {
+      yield [
+        heroku.post('/foobar/a', {body: {}})
+        .then(l => cli.log(l.value)),
+        heroku.post('/foobar/b', {body: {}})
+        .then(l => cli.log(l.value))
+      ]
+    }))({app: 'fuzz'})
+    .then(() => {
+      api.done()
+      api2FA1.done()
+      api2FA2.done()
       expect(cli.stdout, 'to equal', 'foobara\nfoobarb\n')
     })
   })
@@ -208,7 +269,7 @@ describe('command', function () {
   it('2fa prompt error should propegate', function () {
     let api = nock('https://api.heroku.com')
 
-    api.post('/foobar', {}).reply(403, {'id': 'two_factor'})
+    api.post('/foobar', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'biz'}})
 
     cli.prompt = function () {
       return new Promise(function (resolve, reject) {
