@@ -45,6 +45,30 @@ describe('command', function () {
     })
   })
 
+  it('2fa should not preauth if apps is not undefined', function () {
+    let api = nock('https://api.heroku.com', {
+      badheaders: ['Heroku-Two-Factor-Code']
+    })
+
+    api.post('/foobar', {}).reply(403, {'id': 'two_factor'})
+
+    let api2FA = nock('https://api.heroku.com', {
+      reqheaders: {'Heroku-Two-Factor-Code': '2fa'}
+    })
+
+    api2FA.post('/foobar', {}).reply(200, {value: 'foobar'})
+
+    return command({}, co.wrap(function * (context, heroku) {
+      let foobar = yield heroku.post('/foobar', {body: {}})
+      cli.log(foobar.value)
+    }))({app: 'fuzz'})
+    .then(() => {
+      api.done()
+      api2FA.done()
+      expect(cli.stdout, 'to equal', 'foobar\n')
+    })
+  })
+
   it('2fa should preauth then run request again', function () {
     let api = nock('https://api.heroku.com', {
       badheaders: ['Heroku-Two-Factor-Code']
