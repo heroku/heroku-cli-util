@@ -4,6 +4,7 @@
 let nock = require('nock')
 let Heroku = require('heroku-client')
 let cli = require('..')
+let os = require('os')
 
 let proxyquire = require('proxyquire').noCallThru()
 let sinon = require('sinon')
@@ -237,5 +238,14 @@ describe('auth', function () {
         api.done()
         expect(auth, 'to equal', {token: 'token', email: 'foo@bar.com'})
       })
+  })
+
+  context('win shells that are not tty', () => {
+    it('recommends using cmd.exe on windows', () => {
+      stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
+      stubPrompt.withArgs('Password', {hide: true}).returns(Promise.reject('CLI needs to prompt for Login but stdin is not a tty.'))
+      os.platform = sinon.stub().returns('win32')
+      return expect(auth.login(), 'to be rejected with', 'CLI needs to prompt for Login but stdin is not a tty. On Windows plaftorms, we recommend using cmd.exe to execute initial authentication with Heroku')
+    })
   })
 })
