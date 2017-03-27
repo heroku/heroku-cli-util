@@ -9,6 +9,7 @@ let os = require('os')
 let proxyquire = require('proxyquire').noCallThru()
 let sinon = require('sinon')
 let expect = require('unexpected')
+let {PromptMaskError} = require('../lib/prompt.js')
 
 let stubPrompt
 let stubOpen
@@ -37,7 +38,10 @@ describe('auth', function () {
     stubOpen.throws('not stubbed')
     auth = proxyquire('../lib/auth', {
       'netrc-parser': stubNetrc,
-      './prompt': { prompt: stubPrompt },
+      './prompt': {
+        prompt: stubPrompt,
+        PromptMaskError: PromptMaskError
+      },
       './open': stubOpen
     })
 
@@ -243,9 +247,9 @@ describe('auth', function () {
   context('win shells that are not tty', () => {
     it('recommends using cmd.exe on windows', () => {
       stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
-      stubPrompt.withArgs('Password', {hide: true}).returns(Promise.reject('CLI needs to prompt for Login but stdin is not a tty.'))
+      stubPrompt.withArgs('Password', {hide: true}).returns(Promise.reject(new PromptMaskError('CLI needs to prompt for Login but stdin is not a tty.')))
       os.platform = sinon.stub().returns('win32')
-      return expect(auth.login(), 'to be rejected with', 'CLI needs to prompt for Login but stdin is not a tty. On Windows plaftorms, we recommend using cmd.exe to execute initial authentication with Heroku')
+      return expect(auth.login(), 'to be rejected with', 'Login is currently incompatible with git bash/Cygwin')
     })
   })
 })
