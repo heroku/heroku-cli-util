@@ -249,7 +249,7 @@ describe('auth', function () {
       stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
       stubPrompt.withArgs('Password', {hide: true}).returns(Promise.reject(new PromptMaskError('CLI needs to prompt for Login but stdin is not a tty.')))
       os.platform = sinon.stub().returns('win32')
-      return expect(auth.login(), 'to be rejected with', 'Login is currently incompatible with git bash/Cygwin')
+      return expect(auth.login(), 'to be rejected with', 'Login is currently incompatible with git bash/Cygwin/MinGW')
     })
   })
 })
