@@ -1,0 +1,53 @@
+#!/bin/bash
+
+set -ex
+
+CLI_UTIL_VERSION=`yarn info heroku-cli-util version --json | jq -r '.data'`
+
+rm -rf tmp/repos
+mkdir -p tmp/repos
+cd tmp/repos
+
+DIR=`pwd`
+NEEDS_UPDATE=()
+
+update () {
+  cd $DIR
+  git clone git@github.com:heroku/$1
+  cd $1
+  if [ `git name-rev --name-only --tags HEAD` == "undefined" ]; then
+    NEEDS_UPDATE+=($1)
+    return
+  fi
+  CURRENT_VERSION=`cat package.json | jq -r '.dependencies["heroku-cli-util"]'`
+  if [ $CURRENT_VERSION = $CLI_UTIL_VERSION ]; then
+    echo "$1 already on $CURRENT_VERSION"
+    return
+  fi
+  yarn
+  yarn upgrade heroku-cli-util@$CLI_UTIL_VERSION
+  yarn test
+  git add package.json yarn.lock
+  git commit -m "heroku-cli-util@$CLI_UTIL_VERSION"
+  git push origin master
+  np patch
+}
+
+update "heroku-apps"
+update "heroku-certs"
+update "heroku-cli-addons"
+update "heroku-cli-oauth"
+update "heroku-fork"
+update "heroku-git"
+update "heroku-local"
+update "heroku-orgs"
+update "heroku-pg"
+update "heroku-pipelines"
+update "heroku-redis-jsplugin"
+update "heroku-run"
+update "heroku-spaces"
+update "heroku-status"
+
+for i in "${NEEDS_UPDATE[@]}"; do
+  echo "$i has unpublished commits"
+done
