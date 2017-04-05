@@ -47,6 +47,10 @@
   "engines": {
     "node": ">= 6.0.0"
   },
+  "files": [
+    "lib",
+    "index.js"
+  ],
   "homepage": "https://github.com/heroku/heroku-cli-util",
   "license": "ISC",
   "main": "index.js",
