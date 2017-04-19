@@ -21,6 +21,7 @@ exports.color = require('./lib/color')
 exports.debug = console.debug
 exports.mockConsole = console.mock
 exports.table = require('./lib/table')
+exports.streams = console.streams
 exports.stdout = ''
 exports.stderr = ''
 exports.styledHeader = styled.styledHeader
