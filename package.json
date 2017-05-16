@@ -42,6 +42,7 @@
     "proxyquire": "1.7.11",
     "sinon": "1.17.7",
     "standard": "8.6.0",
+    "tmp": "0.0.31",
     "unexpected": "10.25.0"
   },
   "engines": {
