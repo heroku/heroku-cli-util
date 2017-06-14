@@ -89,7 +89,7 @@ describe('auth', function () {
 
     let body = {
       'scope': ['global'],
-      'expires_in': 60 //seconds
+      'expires_in': 60 // seconds
     }
 
     let headers = {Authorization: 'Basic ZW1haWw6cGFzc3dvcmQ='}
