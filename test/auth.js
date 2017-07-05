@@ -131,6 +131,30 @@ describe('auth', function () {
       })
   })
 
+  it('logs in with oauth token expires_in set', function () {
+    stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
+    stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
+
+    let body = {
+      'scope': ['global'],
+      'expires_in': 60 // seconds
+    }
+
+    let headers = {Authorization: 'Basic ZW1haWw6cGFzc3dvcmQ='}
+
+    let response = {access_token: {token: 'token', expires_in: 60}, user: {email: 'foo@bar.com'}}
+    let api = nock('https://api.heroku.com', {reqheaders: headers})
+      .post('/oauth/authorizations', body)
+      .reply(200, response)
+    return auth.login({expires_in: 60})
+      .then((data) => {
+        expect(data, 'to equal', {token: response.access_token.token, email: response.user.email, expires_in: response.access_token.expires_in})
+        expect(cli.stderr, 'to equal', '')
+        expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
+        api.done()
+      })
+  })
+
   it('logs in and saves', function () {
     stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
     stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
