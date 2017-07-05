@@ -15,18 +15,58 @@ let stubPrompt
 let stubOpen
 let auth
 
-let machines
-let stubNetrc = class {
-  constructor () {
-    this.machines = machines = {
-      'api.heroku.com': {},
-      'git.heroku.com': {}
-    }
-  }
+let StubNetrc
 
-  save () {
-    this.saved = true
-  }
+let fs = require('fs')
+let tmpNetrc
+let Netrc = require('netrc-parser')
+
+let mockLogout = function (heroku) {
+  let api = nock('https://api.heroku.com')
+  let password = heroku.options.token
+  let base64 = `Basic ${new Buffer(':' + password).toString('base64')}`
+
+  let sessionDelete = api
+    .delete('/oauth/sessions/~')
+    .reply(function (uri, requestBody) {
+      expect(this.req.headers['authorization'], 'to equal', base64)
+      return {}
+    })
+
+  let authorizationsGet = api
+    .get('/oauth/authorizations')
+    .reply(function (uri, requestBody) {
+      expect(this.req.headers['authorization'], 'to equal', base64)
+      return [{id: '1234', access_token: {token: password}}]
+    })
+
+  let authorizationsDefaultGet = api
+    .get('/oauth/authorizations/~')
+    .reply(function (uri, requestBody) {
+      expect(this.req.headers['authorization'], 'to equal', base64)
+      return {id: '5678', access_token: {token: 'XXXX-YYYY'}}
+    })
+
+  let authorizationsDelete = api
+    .delete('/oauth/authorizations/1234')
+    .reply(function (uri, requestBody) {
+      expect(this.req.headers['authorization'], 'to equal', base64)
+      return {}
+    })
+
+  return {sessionDelete, authorizationsGet, authorizationsDefaultGet, authorizationsDelete}
+}
+
+let mockAuth = function () {
+  let password = '3c739c03-c94a-43ef-9473-4e59c1fc851a'
+
+  let netrc = new StubNetrc()
+  netrc['api.heroku.com'] = {password}
+  netrc['git.heroku.com'] = {password}
+  netrc.save()
+
+  cli.heroku = new Heroku({token: password})
+  return password
 }
 
 describe('auth', function () {
@@ -36,8 +76,14 @@ describe('auth', function () {
 
     stubOpen = sinon.stub()
     stubOpen.throws('not stubbed')
+
+    tmpNetrc = require('tmp').fileSync().name
+    StubNetrc = function () {
+      return new Netrc(tmpNetrc)
+    }
+
     auth = proxyquire('../lib/auth', {
-      'netrc-parser': stubNetrc,
+      'netrc-parser': StubNetrc,
       './prompt': {
         prompt: stubPrompt,
         PromptMaskError: PromptMaskError
@@ -46,9 +92,10 @@ describe('auth', function () {
     })
 
     cli.mockConsole()
-    cli.heroku = new Heroku()
+    cli.heroku = new Heroku({token: null})
 
     nock.disableNetConnect()
+    nock.cleanAll()
 
     delete process.env['HEROKU_ORGANIZATION']
     delete process.env['SSO_URL']
@@ -57,6 +104,7 @@ describe('auth', function () {
   afterEach(() => {
     delete process.env['HEROKU_ORGANIZATION']
     delete process.env['SSO_URL']
+    fs.unlinkSync(tmpNetrc)
   })
 
   it('logs in via username and password', function () {
@@ -127,9 +175,160 @@ describe('auth', function () {
         expect(data, 'to equal', {token: response.access_token.token, email: response.user.email})
         expect(cli.stderr, 'to equal', '')
         expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
-        expect(machines['api.heroku.com'], 'to equal', {login: 'foo@bar.com', password: 'token'})
-        expect(machines['git.heroku.com'], 'to equal', {login: 'foo@bar.com', password: 'token'})
+
+        let netrc = new StubNetrc()
+        expect(netrc.machines['api.heroku.com'].login, 'to equal', 'foo@bar.com')
+        expect(netrc.machines['api.heroku.com'].password, 'to equal', 'token')
+        expect(netrc.machines['git.heroku.com'].login, 'to equal', 'foo@bar.com')
+        expect(netrc.machines['git.heroku.com'].password, 'to equal', 'token')
         api.done()
+      })
+  })
+
+  it('logs in and removes old session / token', function () {
+    stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
+    stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
+
+    let body = {
+      'scope': ['global'],
+      'expires_in': 31536000
+    }
+
+    mockAuth()
+
+    let response = {access_token: {token: 'token'}, user: {email: 'foo@bar.com'}}
+    let api = nock('https://api.heroku.com')
+
+    let authorize = api
+      .post('/oauth/authorizations', body)
+      .reply(function (uri, requestBody) {
+        expect(this.req.headers['authorization'], 'to equal', 'Basic ZW1haWw6cGFzc3dvcmQ=')
+        return response
+      })
+
+    let {sessionDelete, authorizationsGet, authorizationsDefaultGet, authorizationsDelete} = mockLogout(cli.heroku)
+
+    return auth.login({save: true})
+      .then((data) => {
+        expect(data, 'to equal', {token: response.access_token.token, email: response.user.email})
+        expect(cli.stderr, 'to equal', '')
+        expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
+
+        let netrc = new StubNetrc()
+        expect(netrc.machines['api.heroku.com'].login, 'to equal', 'foo@bar.com')
+        expect(netrc.machines['api.heroku.com'].password, 'to equal', 'token')
+        expect(netrc.machines['git.heroku.com'].login, 'to equal', 'foo@bar.com')
+        expect(netrc.machines['git.heroku.com'].password, 'to equal', 'token')
+
+        authorize.done()
+        sessionDelete.done()
+        authorizationsGet.done()
+        authorizationsDefaultGet.done()
+        authorizationsDelete.done()
+      })
+  })
+
+  it('logout does nothing if no creds', function () {
+    return auth.logout({})
+  })
+
+  it('logout deletes the session & authorization', function () {
+    mockAuth()
+
+    let {sessionDelete, authorizationsGet, authorizationsDefaultGet, authorizationsDelete} = mockLogout(cli.heroku)
+
+    return auth.logout()
+      .then(() => {
+        let netrcSaved = new StubNetrc()
+        expect(netrcSaved.machines.hasOwnProperty('api.heroku.com'), 'to equal', false)
+        expect(netrcSaved.machines.hasOwnProperty('git.heroku.com'), 'to equal', false)
+        sessionDelete.done()
+        authorizationsGet.done()
+        authorizationsDefaultGet.done()
+        authorizationsDelete.done()
+      })
+  })
+
+  it('logout does not delete the default token', function () {
+    let password = mockAuth()
+
+    let sessionDelete = nock('https://api.heroku.com')
+      .delete('/oauth/sessions/~')
+      .reply(200, {})
+
+    let authorizationsDefaultGet = nock('https://api.heroku.com')
+      .get('/oauth/authorizations/~')
+      .reply(200, {id: '1234', access_token: {token: password}})
+
+    let authorizationsGet = nock('https://api.heroku.com')
+      .get('/oauth/authorizations')
+      .reply(200, [{id: '1234', access_token: {token: password}}])
+
+    return auth.logout()
+      .then(() => {
+        let netrcSaved = new StubNetrc()
+        expect(netrcSaved.machines.hasOwnProperty('api.heroku.com'), 'to equal', false)
+        expect(netrcSaved.machines.hasOwnProperty('git.heroku.com'), 'to equal', false)
+        sessionDelete.done()
+        authorizationsDefaultGet.done()
+        authorizationsGet.done()
+      })
+  })
+
+  it('logout traps session & default authorization not found', function () {
+    let password = mockAuth()
+
+    let sessionDelete = nock('https://api.heroku.com')
+      .delete('/oauth/sessions/~')
+      .reply(404, {'resource': 'session', 'id': 'not_found'})
+
+    let authorizationsGet = nock('https://api.heroku.com')
+      .get('/oauth/authorizations')
+      .reply(200, [{id: '1234', access_token: {token: password}}])
+
+    let authorizationsDefaultGet = nock('https://api.heroku.com')
+      .get('/oauth/authorizations/~')
+      .reply(404, {'resource': 'authorization', 'id': 'not_found'})
+
+    let authorizationsDelete = nock('https://api.heroku.com')
+      .delete('/oauth/authorizations/1234')
+      .reply(200, {})
+
+    return auth.logout()
+      .then(() => {
+        let netrcSaved = new StubNetrc()
+        expect(netrcSaved.machines.hasOwnProperty('api.heroku.com'), 'to equal', false)
+        expect(netrcSaved.machines.hasOwnProperty('git.heroku.com'), 'to equal', false)
+        sessionDelete.done()
+        authorizationsDefaultGet.done()
+        authorizationsGet.done()
+        authorizationsDelete.done()
+      })
+  })
+
+  it('logout traps unauthorized', function () {
+    mockAuth()
+
+    let sessionDelete = nock('https://api.heroku.com')
+      .delete('/oauth/sessions/~')
+      .reply(401, {'id': 'unauthorized'})
+
+    let authorizationsDefaultGet = nock('https://api.heroku.com')
+      .get('/oauth/authorizations/~')
+      .reply(401, {'id': 'unauthorized'})
+
+    let authorizationsGet = nock('https://api.heroku.com')
+      .get('/oauth/authorizations')
+      .reply(401, {'id': 'unauthorized'})
+
+    return auth.logout()
+      .then(() => {
+        let netrcSaved = new StubNetrc()
+        expect(netrcSaved.machines.hasOwnProperty('api.heroku.com'), 'to equal', false)
+        expect(netrcSaved.machines.hasOwnProperty('git.heroku.com'), 'to equal', false)
+        sessionDelete.done()
+        authorizationsDefaultGet.done()
+        authorizationsGet.done()
       })
   })
 

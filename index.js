@@ -35,3 +35,4 @@ exports.Spinner = require('./lib/spinner')
 exports.exit = require('./lib/exit').exit
 exports.auth = require('./lib/auth')
 exports.login = exports.auth.login
+exports.logout = exports.auth.logout
