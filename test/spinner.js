@@ -4,7 +4,7 @@
 const Spinner = require('../lib/spinner')
 const hookStd = require('hook-std')
 const mockConsole = require('../lib/console')
-const chalk = require('chalk')
+const stripColor = require('strip-ansi')
 const expect = require('unexpected')
 
 describe('spinner', () => {
@@ -39,7 +39,7 @@ describe('spinner', () => {
     spinner.enabled = true
 
     readOutput(spinner, (output) => {
-      expect(chalk.stripColor(output), 'to equal', 'foo ⣾ \nfoo \n')
+      expect(stripColor(output), 'to equal', 'foo ⣾ \nfoo \n')
     })
   })
 })
