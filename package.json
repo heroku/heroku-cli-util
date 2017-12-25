@@ -7,13 +7,13 @@
     "url": "https://github.com/heroku/heroku-cli-util/issues"
   },
   "dependencies": {
-    "ansi-escapes": "^1.4.0",
+    "ansi-escapes": "^3.0.0",
     "ansi-styles": "^3.2.0",
     "cardinal": "^1.0.0",
-    "chalk": "^2.1.0",
+    "chalk": "^2.3.0",
     "co": "^4.6.0",
-    "got": "^6.3.0",
-    "heroku-client": "^3.0.3",
+    "got": "^8.0.1",
+    "heroku-client": "^3.0.5",
     "lodash.ary": "^4.1.1",
     "lodash.defaults": "^4.2.0",
     "lodash.get": "^4.4.2",
@@ -26,10 +26,10 @@
     "lodash.property": "^4.4.2",
     "lodash.repeat": "^4.1.0",
     "lodash.result": "^4.5.2",
-    "netrc-parser": "^2.0.4",
+    "netrc-parser": "^2.0.5",
     "opn": "^3.0.3",
     "strip-ansi": "^4.0.0",
-    "supports-color": "^3.1.2",
+    "supports-color": "^5.1.0",
     "tunnel-agent": "^0.6.0"
   },
   "devDependencies": {
