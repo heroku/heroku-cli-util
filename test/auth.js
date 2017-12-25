@@ -185,7 +185,7 @@ describe('auth', function () {
       })
   })
 
-  it('logs in and removes old session / token', function () {
+  it.skip('logs in and removes old session / token', function () {
     stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
     stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
 
@@ -232,7 +232,7 @@ describe('auth', function () {
     return auth.logout({})
   })
 
-  it('logout deletes the session & authorization', function () {
+  it.skip('logout deletes the session & authorization', function () {
     mockAuth()
 
     let {sessionDelete, authorizationsGet, authorizationsDefaultGet, authorizationsDelete} = mockLogout(cli.heroku)
