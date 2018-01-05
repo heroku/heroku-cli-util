@@ -13,7 +13,7 @@
     "cardinal": "^1.0.0",
     "chalk": "^2.3.0",
     "co": "^4.6.0",
-    "got": "^8.0.1",
+    "got": "^6.3.0",
     "heroku-client": "^3.0.5",
     "lodash.ary": "^4.1.1",
     "lodash.defaults": "^4.2.0",
