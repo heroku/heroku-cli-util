@@ -3,11 +3,12 @@
 
 
 "@heroku-cli/color@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@heroku-cli/color/-/color-1.0.4.tgz#8d55cd9fd74c9f5b0b22ecb621ef52121206cd77"
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@heroku-cli/color/-/color-1.0.5.tgz#18eb7b9e6b6b2917e1f234648c37b11fcf971bfa"
   dependencies:
     ansi-styles "^3.2.0"
     chalk "^2.3.0"
+    strip-ansi "^4.0.0"
     supports-color "^5.1.0"
 
 "@sindresorhus/is@^0.6.0":
