@@ -1,6 +1,7 @@
 'use strict'
 /* globals describe it beforeEach */
 
+const stripAnsi = require('strip-ansi')
 const cli = require('..')
 let expect = require('chai').expect
 
@@ -9,11 +10,11 @@ describe('errors', function () {
 
   it('prints out errors', function () {
     cli.error('foobar')
-    expect(cli.color.stripColor(cli.stderr)).to.equal(' ▸    foobar\n')
+    expect(stripAnsi(cli.stderr)).to.equal(' ▸    foobar\n')
   })
 
   it('prints out warnings', function () {
     cli.warn('foobar')
-    expect(cli.color.stripColor(cli.stderr)).to.equal(' ▸    foobar\n')
+    expect(stripAnsi(cli.stderr)).to.equal(' ▸    foobar\n')
   })
 })

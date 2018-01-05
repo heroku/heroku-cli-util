@@ -2,6 +2,7 @@
 /* globals describe it beforeEach */
 
 const cli = require('..')
+const stripAnsi = require('strip-ansi')
 let expect = require('chai').expect
 
 describe('errors', function () {
@@ -12,6 +13,6 @@ describe('errors', function () {
 
   it('prints out errors', function () {
     expect(function () { cli.exit(1, 'foobar') }).to.throw(/foobar/)
-    expect(cli.color.stripColor(cli.stderr)).to.equal(' ▸    foobar\n')
+    expect(stripAnsi(cli.stderr)).to.equal(' ▸    foobar\n')
   })
 })
