@@ -1,4 +1,7 @@
 'use strict'
+
+exports.color = require('@heroku-cli/color').default
+
 var console = require('./lib/console')
 var errors = require('./lib/errors')
 var prompt = require('./lib/prompt')
@@ -17,7 +20,6 @@ exports.prompt = prompt.prompt
 exports.confirmApp = prompt.confirmApp
 exports.preauth = require('./lib/preauth')
 exports.command = require('./lib/command')
-exports.color = require('@heroku-cli/color').color
 exports.debug = console.debug
 exports.mockConsole = console.mock
 exports.table = require('./lib/table')

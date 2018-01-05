@@ -29,7 +29,7 @@ describe('color', function () {
 
   it('special colors respect supportsColor', function () {
     cli.color.enabled = false
-    expect(cli.color.app('myapp')).to.equal('myapp')
+    expect(cli.color.app('myapp')).to.equal('⬢ myapp')
   })
 
   it('custom colors respect supportsColor', function () {
