@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@heroku-cli/color@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@heroku-cli/color/-/color-1.1.1.tgz#a2c25239ff1196733a79cabc7a750cd46b96dc30"
+"@heroku-cli/color@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@heroku-cli/color/-/color-1.1.2.tgz#d76266d88d0411f2f259e6bf713e02895188e10a"
   dependencies:
     ansi-styles "^3.2.0"
     chalk "^2.3.0"
