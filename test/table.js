@@ -111,8 +111,8 @@ Bob Smith  B. S.     [[USA]]`)
 
     let out = table([{name: {given: 'Jane', family: 'Doe'},
       country: {name: 'Australia', code: 'AUS'}},
-      {name: {given: 'Bob', family: 'Smith'},
-        country: {name: 'United States of America', code: 'USA'}}],
+    {name: {given: 'Bob', family: 'Smith'},
+      country: {name: 'United States of America', code: 'USA'}}],
 
       {columns: [{key: 'name.given', label: 'Given name'},
           {key: 'name.family', label: 'Family name'},

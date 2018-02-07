@@ -297,7 +297,7 @@ describe('command', function () {
 
     cli.prompt = function () {
       return new Promise(function (resolve, reject) {
-        reject('error reading prompt')
+        reject(new Error('error reading prompt'))
       })
     }
 

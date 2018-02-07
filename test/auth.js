@@ -15,16 +15,14 @@ let stubPrompt
 let stubOpen
 let auth
 
-let StubNetrc
-
 let fs = require('fs')
 let tmpNetrc
-let Netrc = require('netrc-parser')
+let netrc = require('netrc-parser').default
 
 let mockLogout = function (heroku) {
   let api = nock('https://api.heroku.com')
   let password = heroku.options.token
-  let base64 = `Basic ${new Buffer(':' + password).toString('base64')}`
+  let base64 = `Basic ${Buffer.from(':' + password).toString('base64')}`
 
   let sessionDelete = api
     .delete('/oauth/sessions/~')
@@ -57,13 +55,17 @@ let mockLogout = function (heroku) {
   return {sessionDelete, authorizationsGet, authorizationsDefaultGet, authorizationsDelete}
 }
 
-let mockAuth = function () {
-  let password = '3c739c03-c94a-43ef-9473-4e59c1fc851a'
+let password = '3c739c03-c94a-43ef-9473-4e59c1fc851a'
+let mockMachines = {
+  'api.heroku.com': {password},
+  'git.heroku.com': {password}
+}
 
-  let netrc = new StubNetrc()
-  netrc['api.heroku.com'] = {password}
-  netrc['git.heroku.com'] = {password}
-  netrc.save()
+let mockAuth = function () {
+  Object.defineProperty(netrc, 'machines', {
+    configurable: true,
+    get: () => mockMachines
+  })
 
   cli.heroku = new Heroku({token: password})
   return password
@@ -78,12 +80,10 @@ describe('auth', function () {
     stubOpen.throws('not stubbed')
 
     tmpNetrc = require('tmp').fileSync().name
-    StubNetrc = function () {
-      return new Netrc(tmpNetrc)
-    }
+    netrc.save = () => {}
+    netrc.saveSync = () => {}
 
     auth = proxyquire('../lib/auth', {
-      'netrc-parser': StubNetrc,
       './prompt': {
         prompt: stubPrompt,
         PromptMaskError: PromptMaskError
@@ -176,7 +176,6 @@ describe('auth', function () {
         expect(cli.stderr, 'to equal', '')
         expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
 
-        let netrc = new StubNetrc()
         expect(netrc.machines['api.heroku.com'].login, 'to equal', 'foo@bar.com')
         expect(netrc.machines['api.heroku.com'].password, 'to equal', 'token')
         expect(netrc.machines['git.heroku.com'].login, 'to equal', 'foo@bar.com')
@@ -214,7 +213,6 @@ describe('auth', function () {
         expect(cli.stderr, 'to equal', '')
         expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
 
-        let netrc = new StubNetrc()
         expect(netrc.machines['api.heroku.com'].login, 'to equal', 'foo@bar.com')
         expect(netrc.machines['api.heroku.com'].password, 'to equal', 'token')
         expect(netrc.machines['git.heroku.com'].login, 'to equal', 'foo@bar.com')
@@ -239,9 +237,8 @@ describe('auth', function () {
 
     return auth.logout()
       .then(() => {
-        let netrcSaved = new StubNetrc()
-        expect(netrcSaved.machines.hasOwnProperty('api.heroku.com'), 'to equal', false)
-        expect(netrcSaved.machines.hasOwnProperty('git.heroku.com'), 'to equal', false)
+        expect(netrc.machines['api.heroku.com'], 'to equal', undefined)
+        expect(netrc.machines['git.heroku.com'], 'to equal', undefined)
         sessionDelete.done()
         authorizationsGet.done()
         authorizationsDefaultGet.done()
@@ -266,9 +263,8 @@ describe('auth', function () {
 
     return auth.logout()
       .then(() => {
-        let netrcSaved = new StubNetrc()
-        expect(netrcSaved.machines.hasOwnProperty('api.heroku.com'), 'to equal', false)
-        expect(netrcSaved.machines.hasOwnProperty('git.heroku.com'), 'to equal', false)
+        expect(netrc.machines['api.heroku.com'], 'to equal', undefined)
+        expect(netrc.machines['git.heroku.com'], 'to equal', undefined)
         sessionDelete.done()
         authorizationsDefaultGet.done()
         authorizationsGet.done()
@@ -296,9 +292,8 @@ describe('auth', function () {
 
     return auth.logout()
       .then(() => {
-        let netrcSaved = new StubNetrc()
-        expect(netrcSaved.machines.hasOwnProperty('api.heroku.com'), 'to equal', false)
-        expect(netrcSaved.machines.hasOwnProperty('git.heroku.com'), 'to equal', false)
+        expect(netrc.machines['api.heroku.com'], 'to equal', undefined)
+        expect(netrc.machines['git.heroku.com'], 'to equal', undefined)
         sessionDelete.done()
         authorizationsDefaultGet.done()
         authorizationsGet.done()
@@ -323,9 +318,8 @@ describe('auth', function () {
 
     return auth.logout()
       .then(() => {
-        let netrcSaved = new StubNetrc()
-        expect(netrcSaved.machines.hasOwnProperty('api.heroku.com'), 'to equal', false)
-        expect(netrcSaved.machines.hasOwnProperty('git.heroku.com'), 'to equal', false)
+        expect(netrc.machines['api.heroku.com'], 'to equal', undefined)
+        expect(netrc.machines['git.heroku.com'], 'to equal', undefined)
         sessionDelete.done()
         authorizationsDefaultGet.done()
         authorizationsGet.done()

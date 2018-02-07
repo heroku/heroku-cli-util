@@ -28,4 +28,3 @@ describe('vars', () => {
     expect(vars.apiUrl, 'to equal', 'https://customhost')
   })
 })
-
