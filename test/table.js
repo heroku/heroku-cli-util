@@ -104,6 +104,33 @@ Jane Doe   J. D.     [[AUSTRALIA]]
 Bob Smith  B. S.     [[USA]]`)
   })
 
+  it('takes custom column formatter with optimize key', function () {
+    function truncate (value, row, lengthOfOtherColumns) {
+      let str = row.Name + ' is from ' + value
+      return str.substring(0, 31 - lengthOfOtherColumns) + '…'
+    }
+
+    let out = table(
+      [
+        {Name: 'Jane Doe', Country: 'Australia'},
+        {Name: 'Bob Smith', Country: 'USA'}
+      ],
+      {
+        columns: [
+          {key: 'Name'},
+          {key: 'Country', format: truncate}
+        ],
+        optimizeKey: 'Country'
+      }
+    )
+
+    expectOutput(out, `
+Name       Country
+─────────  ─────────────────────
+Jane Doe   Jane Doe is from Aus…
+Bob Smith  Bob Smith is from US…`)
+  })
+
   it('takes nested keys', function () {
     function fmtCountry (country) {
       return `${country.name} (${country.code})`
