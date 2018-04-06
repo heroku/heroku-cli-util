@@ -56,9 +56,9 @@ ansi-escapes@^1.1.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-1.4.0.tgz#d3a8a83b319aa67793662b13e761c7911422306e"
 
-ansi-escapes@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-3.0.0.tgz#ec3e8b4e9f8064fc02c3ac9b65f1c275bda8ef92"
+ansi-escapes@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-3.1.0.tgz#f73207bb81207d75fd6c83f125af26eea378ca30"
 
 ansi-regex@^2.0.0:
   version "2.1.1"
@@ -2081,10 +2081,6 @@ levn@^0.3.0, levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-lex@^1.7.9:
-  version "1.7.9"
-  resolved "https://registry.yarnpkg.com/lex/-/lex-1.7.9.tgz#5d5636ccef574348362938b79a47f0eed8ed0d43"
-
 load-json-file@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-1.1.0.tgz#956905708d58b4bab4c2261b04f59f31c99374c0"
@@ -2349,9 +2345,9 @@ mocha-junit-reporter@^1.17.0:
     strip-ansi "^4.0.0"
     xml "^1.0.0"
 
-mocha@^5.0.4:
-  version "5.0.4"
-  resolved "https://registry.yarnpkg.com/mocha/-/mocha-5.0.4.tgz#6b7aa328472da1088e69d47e75925fd3a3bb63c6"
+mocha@^5.0.5:
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/mocha/-/mocha-5.0.5.tgz#e228e3386b9387a4710007a641f127b00be44b52"
   dependencies:
     browser-stdout "1.3.1"
     commander "2.11.0"
@@ -2397,12 +2393,12 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
-netrc-parser@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/netrc-parser/-/netrc-parser-3.1.1.tgz#1e23228689c12d5e91ae4ec053389124fd1ef84b"
+netrc-parser@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/netrc-parser/-/netrc-parser-3.1.2.tgz#4d857feb74500e0348b3cd557c23bd798f1a7776"
   dependencies:
+    debug "^3.1.0"
     execa "^0.10.0"
-    lex "^1.7.9"
 
 nice-try@^1.0.4:
   version "1.0.4"

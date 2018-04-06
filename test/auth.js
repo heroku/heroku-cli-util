@@ -62,11 +62,7 @@ let mockMachines = {
 }
 
 let mockAuth = function () {
-  Object.defineProperty(netrc, 'machines', {
-    configurable: true,
-    get: () => mockMachines
-  })
-
+  netrc.machines = mockMachines
   cli.heroku = new Heroku({token: password})
   return password
 }
