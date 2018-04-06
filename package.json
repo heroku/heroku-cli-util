@@ -38,7 +38,6 @@
     "chai": "^4.1.2",
     "codeclimate-test-reporter": "^0.5.0",
     "hook-std": "^0.4.0",
-    "jsdoc": "3.5.5",
     "mocha": "^5.0.5",
     "mocha-junit-reporter": "^1.17.0",
     "nock": "^9.0.4",
@@ -66,8 +65,8 @@
   },
   "repository": "heroku/heroku-cli-util",
   "scripts": {
-    "doc": "jsdoc lib",
-    "test": "nyc mocha && standard"
+    "test": "mocha",
+    "posttest": "standard"
   },
   "standard": {
     "env": "mocha",
