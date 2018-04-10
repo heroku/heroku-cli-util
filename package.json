@@ -27,7 +27,7 @@
     "lodash.property": "^4.4.2",
     "lodash.repeat": "^4.1.0",
     "lodash.result": "^4.5.2",
-    "netrc-parser": "^3.1.2",
+    "netrc-parser": "^3.1.4",
     "opn": "^3.0.3",
     "strip-ansi": "^4.0.0",
     "supports-color": "^5.3.0",
