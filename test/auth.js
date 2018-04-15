@@ -174,8 +174,10 @@ describe('auth', function () {
 
         expect(netrc.machines['api.heroku.com'].login, 'to equal', 'foo@bar.com')
         expect(netrc.machines['api.heroku.com'].password, 'to equal', 'token')
+        expect(netrc.machines['api.heroku.com'].internalWhitespace, 'to equal', "\n  ")
         expect(netrc.machines['git.heroku.com'].login, 'to equal', 'foo@bar.com')
         expect(netrc.machines['git.heroku.com'].password, 'to equal', 'token')
+        expect(netrc.machines['git.heroku.com'].internalWhitespace, 'to equal', "\n  ")
         api.done()
       })
   })
