@@ -38,11 +38,11 @@ describe('command', function () {
       let foobar = yield heroku.post('/foobar', {body: {}})
       cli.log(foobar.value)
     }))({})
-    .then(() => {
-      api.done()
-      api2FA.done()
-      expect(cli.stdout, 'to equal', 'bizbaz\nfoobar\n')
-    })
+      .then(() => {
+        api.done()
+        api2FA.done()
+        expect(cli.stdout, 'to equal', 'bizbaz\nfoobar\n')
+      })
   })
 
   it('2fa should not preauth if apps is not undefined', function () {
@@ -62,11 +62,11 @@ describe('command', function () {
       let foobar = yield heroku.post('/foobar', {body: {}})
       cli.log(foobar.value)
     }))({app: 'fuzz'})
-    .then(() => {
-      api.done()
-      api2FA.done()
-      expect(cli.stdout, 'to equal', 'foobar\n')
-    })
+      .then(() => {
+        api.done()
+        api2FA.done()
+        expect(cli.stdout, 'to equal', 'foobar\n')
+      })
   })
 
   it('2fa should preauth then run request again', function () {
@@ -93,11 +93,11 @@ describe('command', function () {
       let foobar = yield heroku.post('/foobar', {body: {}})
       cli.log(foobar.value)
     }))({app: 'fuzz'})
-    .then(() => {
-      api.done()
-      api2FA.done()
-      expect(cli.stdout, 'to equal', 'bizbaz\nfoobar\n')
-    })
+      .then(() => {
+        api.done()
+        api2FA.done()
+        expect(cli.stdout, 'to equal', 'bizbaz\nfoobar\n')
+      })
   })
 
   it('2fa should preauth if options.preauth is undefined', function () {
@@ -124,11 +124,11 @@ describe('command', function () {
       let foobar = yield heroku.post('/foobar', {body: {}})
       cli.log(foobar.value)
     }))({app: 'fuzz'})
-    .then(() => {
-      api.done()
-      api2FA.done()
-      expect(cli.stdout, 'to equal', 'bizbaz\nfoobar\n')
-    })
+      .then(() => {
+        api.done()
+        api2FA.done()
+        expect(cli.stdout, 'to equal', 'bizbaz\nfoobar\n')
+      })
   })
 
   it('2fa should preauth just one time per app', function () {
@@ -155,12 +155,12 @@ describe('command', function () {
       ]
       bizbaz.forEach((l) => cli.log(l.value))
     }))({app: 'fuzz'})
-    .then(() => {
-      api.done()
-      api2FA.done()
-      expect(cli.stdout, 'to equal', 'foobara\nfoobarb\n')
-      expect(cli.prompt.callCount, 'to equal', 1)
-    })
+      .then(() => {
+        api.done()
+        api2FA.done()
+        expect(cli.stdout, 'to equal', 'foobara\nfoobarb\n')
+        expect(cli.prompt.callCount, 'to equal', 1)
+      })
   })
 
   it('2fa should preauth for each app', function () {
@@ -188,11 +188,11 @@ describe('command', function () {
       ]
       bizbaz.forEach((l) => cli.log(l.value))
     }))({app: 'fuzz'})
-    .then(() => {
-      api.done()
-      api2FA.done()
-      expect(cli.stdout, 'to equal', 'foobara\nfoobarb\n')
-    })
+      .then(() => {
+        api.done()
+        api2FA.done()
+        expect(cli.stdout, 'to equal', 'foobara\nfoobarb\n')
+      })
   })
 
   it('2fa should preauth for each app', function () {
@@ -245,17 +245,17 @@ describe('command', function () {
     return command({preauth: true}, co.wrap(function * (context, heroku) {
       yield [
         heroku.post('/foobar/a', {body: {}})
-        .then(l => cli.log(l.value)),
+          .then(l => cli.log(l.value)),
         heroku.post('/foobar/b', {body: {}})
-        .then(l => cli.log(l.value))
+          .then(l => cli.log(l.value))
       ]
     }))({app: 'fuzz'})
-    .then(() => {
-      api.done()
-      api2FA1.done()
-      api2FA2.done()
-      expect(cli.stdout, 'to equal', 'foobara\nfoobarb\n')
-    })
+      .then(() => {
+        api.done()
+        api2FA1.done()
+        api2FA2.done()
+        expect(cli.stdout, 'to equal', 'foobara\nfoobarb\n')
+      })
   })
 
   it('preauth should fail if we keep getting two factored for each app', function () {
@@ -282,12 +282,12 @@ describe('command', function () {
       ]
       bizbaz.forEach((l) => cli.log(l.value))
     }))({app: 'fuzz'})
-    .then(() => {
-      expect(true, 'to equal', false)
-    })
-    .catch((err) => {
-      expect(err.body.id, 'to equal', 'two_factor')
-    })
+      .then(() => {
+        expect(true, 'to equal', false)
+      })
+      .catch((err) => {
+        expect(err.body.id, 'to equal', 'two_factor')
+      })
   })
 
   it('2fa prompt error should propegate', function () {

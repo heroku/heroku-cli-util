@@ -32,7 +32,7 @@ Bob Smith  USA`)
     let out = table([{Name: 'Jane Doe', Country: 'Australia'},
       {Name: 'Bob Smith', Country: 'USA'}],
 
-      {columns: ['Name']})
+    {columns: ['Name']})
     expectOutput(out, `
 Name
 ─────────
@@ -44,8 +44,8 @@ Bob Smith`)
     let out = table([{n: 'Jane Doe', c: 'Australia'},
       {n: 'Bob Smith', c: 'USA'}],
 
-      {columns: [{key: 'n'},
-        {key: 'c'}]})
+    {columns: [{key: 'n'},
+      {key: 'c'}]})
 
     expectOutput(out, `
 n          c
@@ -58,8 +58,8 @@ Bob Smith  USA`)
     let out = table([{n: 'Jane Doe', c: 'Australia'},
       {n: 'Bob Smith', c: 'USA'}],
 
-      {columns: [{key: 'n', label: 'Name'},
-        {key: 'c', label: 'Country'}]})
+    {columns: [{key: 'n', label: 'Name'},
+      {key: 'c', label: 'Country'}]})
 
     expectOutput(out, `
 Name       Country
@@ -72,7 +72,7 @@ Bob Smith  USA`)
     let out = table([{Name: 'Jane Doe', Country: 'Australia'},
       {Name: 'Bob Smith', Country: 'USA'}],
 
-      {colSep: ' | '})
+    {colSep: ' | '})
 
     expectOutput(out, `
 Name      | Country
@@ -93,9 +93,9 @@ Bob Smith | USA`)
     let out = table([{Name: 'Jane Doe', Country: 'Australia'},
       {Name: 'Bob Smith', Country: 'USA'}],
 
-      {columns: [{key: 'Name'},
-          {key: 'Name', label: 'Initials', format: initials},
-        {key: 'Country', format: highlight}]})
+    {columns: [{key: 'Name'},
+      {key: 'Name', label: 'Initials', format: initials},
+      {key: 'Country', format: highlight}]})
 
     expectOutput(out, `
 Name       Initials  Country
@@ -114,9 +114,9 @@ Bob Smith  B. S.     [[USA]]`)
     {name: {given: 'Bob', family: 'Smith'},
       country: {name: 'United States of America', code: 'USA'}}],
 
-      {columns: [{key: 'name.given', label: 'Given name'},
-          {key: 'name.family', label: 'Family name'},
-        {key: 'country', label: 'Country', format: fmtCountry}]})
+    {columns: [{key: 'name.given', label: 'Given name'},
+      {key: 'name.family', label: 'Family name'},
+      {key: 'country', label: 'Country', format: fmtCountry}]})
 
     expectOutput(out, `
 Given name  Family name  Country
@@ -128,12 +128,12 @@ Bob         Smith        United States of America (USA)`)
   it('calls callback after each row', function () {
     let out = table([{Name: 'Jane Doe', Country: 'Australia', pets: ['Spot', 'Scruffy']},
       {Name: 'Bob Smith', Country: 'USA', pets: []}],
-      {columns: ['Name'],
-        after: function (row, opts) {
-          row.pets.forEach(function (pet) {
-            opts.printLine(`-> ${pet}`)
-          })
-        }})
+    {columns: ['Name'],
+      after: function (row, opts) {
+        row.pets.forEach(function (pet) {
+          opts.printLine(`-> ${pet}`)
+        })
+      }})
 
     expectOutput(out, `
 Name

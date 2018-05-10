@@ -9,7 +9,7 @@ describe('action', function () {
 
   it('shows message', function () {
     return cli.action('working', Promise.resolve())
-    .then(() => expect(cli.stderr, 'to equal', 'working... done\n'))
+      .then(() => expect(cli.stderr, 'to equal', 'working... done\n'))
   })
 
   it('warns', function () {
