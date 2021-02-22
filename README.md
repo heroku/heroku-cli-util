@@ -17,10 +17,10 @@ npm install heroku-cli-util --save
 
 ```js
 let cli = require('heroku-cli-util');
-yield cli.action('restarting dynos', co(function* () {
-  let app = yield heroku.get(`/apps/${context.app}`);
-  yield heroku.request({method: 'DELETE', path: `/apps/${app.name}/dynos`});
-}));
+await cli.action('restarting dynos', async function() {
+  let app = await heroku.get(`/apps/${context.app}`);
+  await heroku.request({method: 'DELETE', path: `/apps/${app.name}/dynos`});
+});
 
 // restarting dynos... done
 ```
@@ -29,7 +29,7 @@ yield cli.action('restarting dynos', co(function* () {
 
 ```js
 let cli   = require('heroku-cli-util');
-let email = yield cli.prompt('email', {});
+let email = await cli.prompt('email', {});
 console.log(`your email is: ${email}`);
 ```
 
@@ -50,7 +50,7 @@ Basic
 
 ```js
 let cli = require('heroku-cli-util');
-yield cli.confirmApp('appname', context.flags.confirm);
+await cli.confirmApp('appname', context.flags.confirm);
 
 // !     WARNING: Destructive Action
 // !     This command will affect the app appname
@@ -63,7 +63,7 @@ Custom message
 
 ```js
 let cli = require('heroku-cli-util');
-yield cli.confirmApp('appname', context.flags.confirm, 'foo');
+await cli.confirmApp('appname', context.flags.confirm, 'foo');
 
 // !     foo
 // !     To proceed, type appname or re-run this command with --confirm appname
@@ -185,7 +185,7 @@ Useful with `process.stdout.columns || 80`.
 ## Open Web Browser
 
 ```js
-yield cli.open('https://github.com');
+await cli.open('https://github.com');
 ```
 
 ## HTTP calls
@@ -194,7 +194,7 @@ yield cli.open('https://github.com');
 
 ```js
 let cli = require('heroku-cli-util');
-let rsp = yield cli.got('https://google.com');
+let rsp = await cli.got('https://google.com');
 ```
 
 ## Mocking
@@ -225,11 +225,9 @@ module.exports.commands = [
     command: 'info',
     needsAuth: true,
     needsApp: true,
-    run: cli.command(function (context, heroku) {
-      return co(function* () {
-        let app = yield heroku.get(`/apps/${context.app}`);
-        console.dir(app);
-      });
+    run: cli.command(async function (context, heroku) {
+      let app = await heroku.get(`/apps/${context.app}`);
+      console.dir(app);
     })
   }
 ];
@@ -248,11 +246,9 @@ module.exports.commands = [
     needsApp: true,
     run: cli.command(
       {preauth: true},
-      function (context, heroku) {
-        return co(function* () {
-          let app = yield heroku.get(`/apps/${context.app}`);
-          console.dir(app);
-        });
+      async function (context, heroku) {
+        let app = await heroku.get(`/apps/${context.app}`);
+        console.dir(app);
       }
     )
   }
