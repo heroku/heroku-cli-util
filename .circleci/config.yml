@@ -20,7 +20,6 @@ jobs:
           mkdir -p reports
           $NYC yarn test --reporter mocha-junit-reporter
           $NYC report --reporter text-lcov > coverage.lcov
-          curl -s https://codecov.io/bash | bash
       - store_test_results: &store_test_results
           path: ~/cli/reports
   node-12:
