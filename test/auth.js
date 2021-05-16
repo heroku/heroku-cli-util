@@ -109,6 +109,7 @@ describe('auth', function () {
 
     let body = {
       'scope': ['global'],
+      'description': `Heroku CLI login from ${os.hostname()} at ${new Date()}`,
       'expires_in': 31536000
     }
 
@@ -133,6 +134,7 @@ describe('auth', function () {
 
     let body = {
       'scope': ['global'],
+      'description': `Heroku CLI login from ${os.hostname()} at ${new Date()}`,
       'expires_in': 60 // seconds
     }
 
@@ -157,6 +159,7 @@ describe('auth', function () {
 
     let body = {
       'scope': ['global'],
+      'description': `Heroku CLI login from ${os.hostname()} at ${new Date()}`,
       'expires_in': 31536000
     }
 
@@ -186,6 +189,7 @@ describe('auth', function () {
 
     let body = {
       'scope': ['global'],
+      'description': `Heroku CLI login from ${os.hostname()} at ${new Date()}`,
       'expires_in': 31536000
     }
 
@@ -328,6 +332,7 @@ describe('auth', function () {
 
     let body = {
       'scope': ['global'],
+      'description': `Heroku CLI login from ${os.hostname()} at ${new Date()}`,
       'expires_in': 31536000
     }
 
