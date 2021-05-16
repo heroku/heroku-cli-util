@@ -1,8 +1,8 @@
-# heroku-cli-util [![Circle CI](https://circleci.com/gh/heroku/heroku-cli-util/tree/master.svg?style=svg)](https://circleci.com/gh/heroku/heroku-cli-util/tree/master)
+# @heroku-cli/util [![Circle CI](https://circleci.com/gh/heroku/heroku-cli-util/tree/master.svg?style=svg)](https://circleci.com/gh/heroku/heroku-cli-util/tree/master)
 
 [![Code Climate](https://codeclimate.com/github/heroku/heroku-cli-util/badges/gpa.svg)](https://codeclimate.com/github/heroku/heroku-cli-util)
 [![Test Coverage](https://codeclimate.com/github/heroku/heroku-cli-util/badges/coverage.svg)](https://codeclimate.com/github/heroku/heroku-cli-util/coverage)
-[![npm version](https://badge.fury.io/js/heroku-cli-util.svg)](http://badge.fury.io/js/heroku-cli-util)
+[![npm version](https://badge.fury.io/js/@heroku-cli/util.svg)](http://badge.fury.io/js/@heroku-cli/util)
 [![License](https://img.shields.io/github/license/heroku/heroku-cli-util.svg)](https://github.com/heroku/heroku-cli-util/blob/master/LICENSE)
 
 Set of helpful CLI utilities
@@ -10,13 +10,13 @@ Set of helpful CLI utilities
 ## Installation
 
 ```sh
-npm install heroku-cli-util --save
+npm install @heroku-cli/util --save
 ```
 
 ## Action
 
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 await cli.action('restarting dynos', async function() {
   let app = await heroku.get(`/apps/${context.app}`);
   await heroku.request({method: 'DELETE', path: `/apps/${app.name}/dynos`});
@@ -28,7 +28,7 @@ await cli.action('restarting dynos', async function() {
 ## Prompt
 
 ```js
-let cli   = require('heroku-cli-util');
+let cli   = require('@heroku-cli/util');
 let email = await cli.prompt('email', {});
 console.log(`your email is: ${email}`);
 ```
@@ -49,7 +49,7 @@ Supports the same async styles as `prompt()`. Errors if not confirmed.
 Basic
 
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 await cli.confirmApp('appname', context.flags.confirm);
 
 // !     WARNING: Destructive Action
@@ -62,7 +62,7 @@ await cli.confirmApp('appname', context.flags.confirm);
 Custom message
 
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 await cli.confirmApp('appname', context.flags.confirm, 'foo');
 
 // !     foo
@@ -76,7 +76,7 @@ Note that you will still need to define a `confirm` flag for your command.
 ## Errors
 
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 cli.error("App not found");
 // !    App not found
 ```
@@ -84,7 +84,7 @@ cli.error("App not found");
 ## Warnings
 
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 cli.warn("App not found");
 // !    App not found
 ```
@@ -92,7 +92,7 @@ cli.warn("App not found");
 ## Dates
 
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 let d   = new Date();
 console.log(cli.formatDate(d));
 // 2001-01-01T08:00:00.000Z
@@ -103,7 +103,7 @@ console.log(cli.formatDate(d));
 Use hush for verbose logging when `HEROKU_DEBUG=1`.
 
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 cli.hush('foo');
 // only prints if HEROKU_DEBUG is set
 ```
@@ -113,7 +113,7 @@ cli.hush('foo');
 Pretty print an object.
 
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 cli.debug({foo: [1,2,3]});
 // { foo: [ 1, 2, 3 ] }
 ```
@@ -122,7 +122,7 @@ cli.debug({foo: [1,2,3]});
 
 Pretty print a header, hash, and JSON
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 cli.styledHeader("MyApp");
 cli.styledHash({name: "myapp", collaborators: ["user1@example.com", "user2@example.com"]});
 cli.styledJSON({name: "myapp"});
@@ -190,10 +190,10 @@ await cli.open('https://github.com');
 
 ## HTTP calls
 
-`heroku-cli-util` includes an instance of [got](https://www.npmjs.com/package/got) that will correctly use HTTP proxies.
+`@heroku-cli/util` includes an instance of [got](https://www.npmjs.com/package/got) that will correctly use HTTP proxies.
 
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 let rsp = await cli.got('https://google.com');
 ```
 
@@ -202,7 +202,7 @@ let rsp = await cli.got('https://google.com');
 Mock stdout and stderr by using `cli.log()` and `cli.error()`.
 
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 cli.log('message 1'); // prints 'message 1'
 cli.mockConsole();
 cli.log('message 2'); // prints nothing
@@ -217,7 +217,7 @@ give you an auth'ed instance of `heroku-client` and cleanly handle API exception
 It expects you to return a promise chain. This is usually done with [co](https://github.com/tj/co).
 
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 let co  = require('co');
 module.exports.commands = [
   {
@@ -236,7 +236,7 @@ module.exports.commands = [
 With options:
 
 ```js
-let cli = require('heroku-cli-util');
+let cli = require('@heroku-cli/util');
 let co  = require('co');
 module.exports.commands = [
   {

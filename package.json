@@ -1,5 +1,5 @@
 {
-  "name": "heroku-cli-util",
+  "name": "@heroku-cli/util",
   "description": "Set of helpful CLI utilities",
   "version": "8.0.12",
   "author": "Jeff Dickey (@dickeyxxx)",
