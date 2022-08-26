@@ -336,7 +336,7 @@ describe('auth', function () {
     let api = nock('https://api.heroku.com', {reqheaders: headers})
       .post('/oauth/authorizations', body)
       .reply(200, {})
-    return expect(auth.login(), 'to be rejected with', "Cannot read properties of undefined (reading 'token')")
+    return expect(auth.login(), 'to be rejected with', "Cannot read property 'token' of undefined")
       .then(() => api.done())
   })
 
