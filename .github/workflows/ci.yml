@@ -5,6 +5,7 @@ on:
 
 jobs:
   test:
+    name: test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
