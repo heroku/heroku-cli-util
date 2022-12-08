@@ -95,11 +95,12 @@ Bob Smith | USA`)
 
     {columns: [{key: 'Name'},
       {key: 'Name', label: 'Initials', format: initials},
-      {key: 'Country', format: highlight}]})
+      {key: 'Country', format: highlight},
+      {key: 'null column', format: () => null}]})
 
     expectOutput(out, `
-Name       Initials  Country
-─────────  ────────  ─────────────
+Name       Initials  Country        null column
+─────────  ────────  ─────────────  ───────────
 Jane Doe   J. D.     [[AUSTRALIA]]
 Bob Smith  B. S.     [[USA]]`)
   })
