@@ -12,7 +12,7 @@
     "ansi-styles": "^3.2.1",
     "cardinal": "^2.0.1",
     "chalk": "^2.4.1",
-    "got": "^8.3.1",
+    "got": "8.3.1",
     "heroku-client": "^3.1.0",
     "lodash": "^4.17.10",
     "netrc-parser": "^3.1.4",
