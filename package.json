@@ -37,7 +37,7 @@
     "unexpected": "^11.15.1"
   },
   "engines": {
-    "node": "14"
+    "node": ">= 14"
   },
   "files": [
     "lib",
