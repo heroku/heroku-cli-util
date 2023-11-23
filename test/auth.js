@@ -19,6 +19,8 @@ let fs = require('fs')
 let tmpNetrc
 let netrc = require('netrc-parser').default
 
+const _ = require("lodash");
+
 let mockLogout = function (heroku) {
   let api = nock('https://api.heroku.com')
   let password = heroku.options.token
@@ -116,7 +118,7 @@ describe('auth', function () {
 
     let response = {access_token: {token: 'token'}, user: {email: 'foo@bar.com'}}
     let api = nock('https://api.heroku.com', {reqheaders: headers})
-      .post('/oauth/authorizations', body)
+      .post('/oauth/authorizations', _.matches(body))
       .reply(200, response)
     return auth.login()
       .then((data) => {
@@ -140,7 +142,7 @@ describe('auth', function () {
 
     let response = {access_token: {token: 'token', expires_in: 60}, user: {email: 'foo@bar.com'}}
     let api = nock('https://api.heroku.com', {reqheaders: headers})
-      .post('/oauth/authorizations', body)
+      .post('/oauth/authorizations', _.matches(body))
       .reply(200, response)
     return auth.login({expires_in: 60})
       .then((data) => {
@@ -164,7 +166,7 @@ describe('auth', function () {
 
     let response = {access_token: {token: 'token'}, user: {email: 'foo@bar.com'}}
     let api = nock('https://api.heroku.com', {reqheaders: headers})
-      .post('/oauth/authorizations', body)
+      .post('/oauth/authorizations', _.matches(body))
       .reply(200, response)
     return auth.login({save: true})
       .then((data) => {
@@ -334,7 +336,7 @@ describe('auth', function () {
     let headers = {Authorization: 'Basic ZW1haWw6cGFzc3dvcmQ='}
 
     let api = nock('https://api.heroku.com', {reqheaders: headers})
-      .post('/oauth/authorizations', body)
+      .post('/oauth/authorizations', _.matches(body))
       .reply(200, {})
     return expect(auth.login(), 'to be rejected with', "Cannot read property 'token' of undefined")
       .then(() => api.done())
