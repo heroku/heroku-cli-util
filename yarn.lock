@@ -1746,6 +1746,7 @@ heroku-client@^3.1.0:
 hook-std@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/hook-std/-/hook-std-0.4.0.tgz#fa8b2f84d358763137cb7d17e3308b28714bd174"
+  integrity sha512-U/i0tX1pL/6ce0JXkLJUEjK1UMPaHIXORKteE3AJYZ8VPB0jetLDj6TAX8Ign9CnF4FWiKohHGbgzZPo/OU5rQ==
 
 hosted-git-info@^2.1.4:
   version "2.8.9"
