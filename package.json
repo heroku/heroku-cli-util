@@ -34,7 +34,7 @@
     "sinon": "^1.17.7",
     "standard": "^11.0.1",
     "tmp": "^0.0.33",
-    "unexpected": "^10.37.7"
+    "unexpected": "^11.15.1"
   },
   "engines": {
     "node": "14"
