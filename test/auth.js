@@ -19,7 +19,7 @@ let fs = require('fs')
 let tmpNetrc
 let netrc = require('netrc-parser').default
 
-const _ = require("lodash");
+const _ = require('lodash')
 
 let mockLogout = function (heroku) {
   let api = nock('https://api.heroku.com')
