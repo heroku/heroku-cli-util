@@ -80,7 +80,7 @@ describe('got', function () {
       let mock = nock('https://example.com', {reqheaders: {foo: 'bar'}})[helper]('/hello')
         .reply(200, 'hello')
 
-      let gotStream = cli.got.stream[helper]('https://example.com/hello', {headers: {foo: 'bar'}})
+      let gotStream = cli.got.stream[helper]('https://example.com/hello', {headers: {foo: 'bar'}, body: 'hello'})
       concat(gotStream, function (data) {
         expect(data).to.equal('hello')
         mock.done()

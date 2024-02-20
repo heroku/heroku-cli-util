@@ -12,7 +12,7 @@
     "ansi-styles": "^3.2.1",
     "cardinal": "^2.0.1",
     "chalk": "^2.4.1",
-    "got": "^8.3.1",
+    "got": "^8.3.2",
     "heroku-client": "^3.1.0",
     "lodash": "^4.17.10",
     "netrc-parser": "^3.1.4",
@@ -26,18 +26,18 @@
     "chai": "^4.1.2",
     "codeclimate-test-reporter": "^0.5.0",
     "hook-std": "^0.4.0",
-    "mocha": "^5.1.1",
+    "mocha": "^10.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "nock": "^9.0.4",
-    "nyc": "^11.7.3",
+    "nyc": "^15.1.0",
     "proxyquire": "^1.7.11",
     "sinon": "^1.17.7",
     "standard": "^11.0.1",
     "tmp": "^0.0.33",
-    "unexpected": "^10.37.7"
+    "unexpected": "^11.15.1"
   },
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 14"
   },
   "files": [
     "lib",
