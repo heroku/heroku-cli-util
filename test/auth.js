@@ -338,8 +338,14 @@ describe('auth', function () {
     let api = nock('https://api.heroku.com', {reqheaders: headers})
       .post('/oauth/authorizations', _.matches(body))
       .reply(200, {})
-    return expect(auth.login(), 'to be rejected with', "Cannot read property 'token' of undefined")
-      .then(() => api.done())
+
+    if (Number(process.version.split('.')[0].slice(1)) < 16) {
+      return expect(auth.login(), 'to be rejected with', "Cannot read property 'token' of undefined")
+        .then(() => api.done())
+    } else {
+      return expect(auth.login(), 'to be rejected with', "Cannot read properties of undefined (reading 'token')")
+        .then(() => api.done())
+    }
   })
 
   it('logs in via sso env var', function () {

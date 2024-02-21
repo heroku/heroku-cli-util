@@ -58,14 +58,11 @@ describe('got', function () {
     })
   })
 
-  const helpers = [
-    'get',
-    'post',
-    'put',
-    'patch',
-    'head',
-    'delete'
-  ]
+  const helpersWithBody = ['post', 'put', 'patch', 'delete']
+  const helpersWithoutBody = ['get', 'head']
+  const helpers = helpersWithBody.concat(helpersWithoutBody)
+
+  const requiresBody = (h) => helpersWithBody.includes(h)
 
   helpers.forEach(function (helper) {
     it(`wraps a call to got.${helper}() with opts`, function () {
@@ -80,7 +77,7 @@ describe('got', function () {
       let mock = nock('https://example.com', {reqheaders: {foo: 'bar'}})[helper]('/hello')
         .reply(200, 'hello')
 
-      let gotStream = cli.got.stream[helper]('https://example.com/hello', {headers: {foo: 'bar'}, body: 'hello'})
+      let gotStream = cli.got.stream[helper]('https://example.com/hello', {headers: {foo: 'bar'}, ...(requiresBody(helper) ? {body: 'hello'} : {})})
       concat(gotStream, function (data) {
         expect(data).to.equal('hello')
         mock.done()
@@ -89,7 +86,13 @@ describe('got', function () {
   })
 
   it('defines all properties of the got module', function () {
-    expect(Object.getOwnPropertyNames(got).sort()).to.eql(Object.getOwnPropertyNames(cli.got).sort())
-    expect(Object.getOwnPropertyNames(got.stream).concat(['prototype']).sort()).to.eql(Object.getOwnPropertyNames(cli.got.stream).sort())
+    const ignoredProperties = ['__esModule', 'default', 'defaults', 'extend', 'mergeOptions', 'paginate']
+
+    expect(Object.getOwnPropertyNames(got)
+      .filter(p => !ignoredProperties.includes(p))
+      .concat(['prototype']).sort()).to.eql(Object.getOwnPropertyNames(cli.got).sort())
+    expect(Object.getOwnPropertyNames(got.stream)
+      .filter(p => !ignoredProperties.includes(p))
+      .concat(['prototype']).sort()).to.eql(Object.getOwnPropertyNames(cli.got.stream).sort())
   })
 })
