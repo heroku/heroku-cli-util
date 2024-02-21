@@ -34,12 +34,12 @@ ssssss`)
   })
 
   it('wraps html', function () {
-    let output = cli.linewrap(10, {preset: 'html'})('<a href="ff">this is a link</a>this is text<b>this is a bold thing</b>')
+    let output = cli.linewrap(10, { preset: 'html' })('<a href="ff">this is a link</a>this is text<b>this is a bold thing</b>')
     expect(output, 'to equal', '<a href="ff">this is a<br>link</a>this<br>is text<b><br>this is a<br>bold thing</b>')
   })
 
   it('skips ansi characters', function () {
-    let output = cli.linewrap({start: 2, stop: 15, skipScheme: 'ansi-color'})(`${chalk.red('colored')} text here`)
+    let output = cli.linewrap({ start: 2, stop: 15, skipScheme: 'ansi-color' })(`${chalk.red('colored')} text here`)
     expect(output, 'to equal', `  ${chalk.red('colored')} text
   here`)
   })

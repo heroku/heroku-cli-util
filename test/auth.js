@@ -9,7 +9,7 @@ let os = require('os')
 let proxyquire = require('proxyquire').noCallThru()
 let sinon = require('sinon')
 let expect = require('unexpected')
-let {PromptMaskError} = require('../lib/prompt.js')
+let { PromptMaskError } = require('../lib/prompt.js')
 
 let stubPrompt
 let stubOpen
@@ -37,14 +37,14 @@ let mockLogout = function (heroku) {
     .get('/oauth/authorizations')
     .reply(function (uri, requestBody) {
       expect(this.req.headers['authorization'], 'to equal', base64)
-      return [{id: '1234', access_token: {token: password}}]
+      return [{ id: '1234', access_token: { token: password } }]
     })
 
   let authorizationsDefaultGet = api
     .get('/oauth/authorizations/~')
     .reply(function (uri, requestBody) {
       expect(this.req.headers['authorization'], 'to equal', base64)
-      return {id: '5678', access_token: {token: 'XXXX-YYYY'}}
+      return { id: '5678', access_token: { token: 'XXXX-YYYY' } }
     })
 
   let authorizationsDelete = api
@@ -54,18 +54,18 @@ let mockLogout = function (heroku) {
       return {}
     })
 
-  return {sessionDelete, authorizationsGet, authorizationsDefaultGet, authorizationsDelete}
+  return { sessionDelete, authorizationsGet, authorizationsDefaultGet, authorizationsDelete }
 }
 
 let password = '3c739c03-c94a-43ef-9473-4e59c1fc851a'
 let mockMachines = {
-  'api.heroku.com': {password},
-  'git.heroku.com': {password}
+  'api.heroku.com': { password },
+  'git.heroku.com': { password }
 }
 
 let mockAuth = function () {
   netrc.machines = mockMachines
-  cli.heroku = new Heroku({token: password})
+  cli.heroku = new Heroku({ token: password })
   return password
 }
 
@@ -90,7 +90,7 @@ describe('auth', function () {
     })
 
     cli.mockConsole()
-    cli.heroku = new Heroku({token: null})
+    cli.heroku = new Heroku({ token: null })
 
     nock.disableNetConnect()
     nock.cleanAll()
@@ -107,22 +107,22 @@ describe('auth', function () {
 
   it('logs in via username and password', function () {
     stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
-    stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
+    stubPrompt.withArgs('Password', { hide: true }).returns(Promise.resolve('password'))
 
     let body = {
       'scope': ['global'],
       'expires_in': 31536000
     }
 
-    let headers = {Authorization: 'Basic ZW1haWw6cGFzc3dvcmQ='}
+    let headers = { Authorization: 'Basic ZW1haWw6cGFzc3dvcmQ=' }
 
-    let response = {access_token: {token: 'token'}, user: {email: 'foo@bar.com'}}
-    let api = nock('https://api.heroku.com', {reqheaders: headers})
+    let response = { access_token: { token: 'token' }, user: { email: 'foo@bar.com' } }
+    let api = nock('https://api.heroku.com', { reqheaders: headers })
       .post('/oauth/authorizations', _.matches(body))
       .reply(200, response)
     return auth.login()
       .then((data) => {
-        expect(data, 'to equal', {token: response.access_token.token, email: response.user.email})
+        expect(data, 'to equal', { token: response.access_token.token, email: response.user.email })
         expect(cli.stderr, 'to equal', '')
         expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
         api.done()
@@ -131,22 +131,22 @@ describe('auth', function () {
 
   it('logs in with oauth token expires_in set', function () {
     stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
-    stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
+    stubPrompt.withArgs('Password', { hide: true }).returns(Promise.resolve('password'))
 
     let body = {
       'scope': ['global'],
       'expires_in': 60 // seconds
     }
 
-    let headers = {Authorization: 'Basic ZW1haWw6cGFzc3dvcmQ='}
+    let headers = { Authorization: 'Basic ZW1haWw6cGFzc3dvcmQ=' }
 
-    let response = {access_token: {token: 'token', expires_in: 60}, user: {email: 'foo@bar.com'}}
-    let api = nock('https://api.heroku.com', {reqheaders: headers})
+    let response = { access_token: { token: 'token', expires_in: 60 }, user: { email: 'foo@bar.com' } }
+    let api = nock('https://api.heroku.com', { reqheaders: headers })
       .post('/oauth/authorizations', _.matches(body))
       .reply(200, response)
-    return auth.login({expires_in: 60})
+    return auth.login({ expires_in: 60 })
       .then((data) => {
-        expect(data, 'to equal', {token: response.access_token.token, email: response.user.email, expires_in: response.access_token.expires_in})
+        expect(data, 'to equal', { token: response.access_token.token, email: response.user.email, expires_in: response.access_token.expires_in })
         expect(cli.stderr, 'to equal', '')
         expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
         api.done()
@@ -155,22 +155,22 @@ describe('auth', function () {
 
   it('logs in and saves', function () {
     stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
-    stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
+    stubPrompt.withArgs('Password', { hide: true }).returns(Promise.resolve('password'))
 
     let body = {
       'scope': ['global'],
       'expires_in': 31536000
     }
 
-    let headers = {Authorization: 'Basic ZW1haWw6cGFzc3dvcmQ='}
+    let headers = { Authorization: 'Basic ZW1haWw6cGFzc3dvcmQ=' }
 
-    let response = {access_token: {token: 'token'}, user: {email: 'foo@bar.com'}}
-    let api = nock('https://api.heroku.com', {reqheaders: headers})
+    let response = { access_token: { token: 'token' }, user: { email: 'foo@bar.com' } }
+    let api = nock('https://api.heroku.com', { reqheaders: headers })
       .post('/oauth/authorizations', _.matches(body))
       .reply(200, response)
-    return auth.login({save: true})
+    return auth.login({ save: true })
       .then((data) => {
-        expect(data, 'to equal', {token: response.access_token.token, email: response.user.email})
+        expect(data, 'to equal', { token: response.access_token.token, email: response.user.email })
         expect(cli.stderr, 'to equal', '')
         expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
 
@@ -184,7 +184,7 @@ describe('auth', function () {
 
   it.skip('logs in and removes old session / token', function () {
     stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
-    stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
+    stubPrompt.withArgs('Password', { hide: true }).returns(Promise.resolve('password'))
 
     let body = {
       'scope': ['global'],
@@ -193,7 +193,7 @@ describe('auth', function () {
 
     mockAuth()
 
-    let response = {access_token: {token: 'token'}, user: {email: 'foo@bar.com'}}
+    let response = { access_token: { token: 'token' }, user: { email: 'foo@bar.com' } }
     let api = nock('https://api.heroku.com')
 
     let authorize = api
@@ -203,11 +203,11 @@ describe('auth', function () {
         return response
       })
 
-    let {sessionDelete, authorizationsGet, authorizationsDefaultGet, authorizationsDelete} = mockLogout(cli.heroku)
+    let { sessionDelete, authorizationsGet, authorizationsDefaultGet, authorizationsDelete } = mockLogout(cli.heroku)
 
-    return auth.login({save: true})
+    return auth.login({ save: true })
       .then((data) => {
-        expect(data, 'to equal', {token: response.access_token.token, email: response.user.email})
+        expect(data, 'to equal', { token: response.access_token.token, email: response.user.email })
         expect(cli.stderr, 'to equal', '')
         expect(cli.stdout, 'to equal', 'Enter your Heroku credentials:\n')
 
@@ -231,7 +231,7 @@ describe('auth', function () {
   it.skip('logout deletes the session & authorization', function () {
     mockAuth()
 
-    let {sessionDelete, authorizationsGet, authorizationsDefaultGet, authorizationsDelete} = mockLogout(cli.heroku)
+    let { sessionDelete, authorizationsGet, authorizationsDefaultGet, authorizationsDelete } = mockLogout(cli.heroku)
 
     return auth.logout()
       .then(() => {
@@ -253,11 +253,11 @@ describe('auth', function () {
 
     let authorizationsDefaultGet = nock('https://api.heroku.com')
       .get('/oauth/authorizations/~')
-      .reply(200, {id: '1234', access_token: {token: password}})
+      .reply(200, { id: '1234', access_token: { token: password } })
 
     let authorizationsGet = nock('https://api.heroku.com')
       .get('/oauth/authorizations')
-      .reply(200, [{id: '1234', access_token: {token: password}}])
+      .reply(200, [{ id: '1234', access_token: { token: password } }])
 
     return auth.logout()
       .then(() => {
@@ -274,15 +274,15 @@ describe('auth', function () {
 
     let sessionDelete = nock('https://api.heroku.com')
       .delete('/oauth/sessions/~')
-      .reply(404, {'resource': 'session', 'id': 'not_found'})
+      .reply(404, { 'resource': 'session', 'id': 'not_found' })
 
     let authorizationsGet = nock('https://api.heroku.com')
       .get('/oauth/authorizations')
-      .reply(200, [{id: '1234', access_token: {token: password}}])
+      .reply(200, [{ id: '1234', access_token: { token: password } }])
 
     let authorizationsDefaultGet = nock('https://api.heroku.com')
       .get('/oauth/authorizations/~')
-      .reply(404, {'resource': 'authorization', 'id': 'not_found'})
+      .reply(404, { 'resource': 'authorization', 'id': 'not_found' })
 
     let authorizationsDelete = nock('https://api.heroku.com')
       .delete('/oauth/authorizations/1234')
@@ -304,15 +304,15 @@ describe('auth', function () {
 
     let sessionDelete = nock('https://api.heroku.com')
       .delete('/oauth/sessions/~')
-      .reply(401, {'id': 'unauthorized'})
+      .reply(401, { 'id': 'unauthorized' })
 
     let authorizationsDefaultGet = nock('https://api.heroku.com')
       .get('/oauth/authorizations/~')
-      .reply(401, {'id': 'unauthorized'})
+      .reply(401, { 'id': 'unauthorized' })
 
     let authorizationsGet = nock('https://api.heroku.com')
       .get('/oauth/authorizations')
-      .reply(401, {'id': 'unauthorized'})
+      .reply(401, { 'id': 'unauthorized' })
 
     return auth.logout()
       .then(() => {
@@ -326,16 +326,16 @@ describe('auth', function () {
 
   it('throws error when not http error body', function () {
     stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
-    stubPrompt.withArgs('Password', {hide: true}).returns(Promise.resolve('password'))
+    stubPrompt.withArgs('Password', { hide: true }).returns(Promise.resolve('password'))
 
     let body = {
       'scope': ['global'],
       'expires_in': 31536000
     }
 
-    let headers = {Authorization: 'Basic ZW1haWw6cGFzc3dvcmQ='}
+    let headers = { Authorization: 'Basic ZW1haWw6cGFzc3dvcmQ=' }
 
-    let api = nock('https://api.heroku.com', {reqheaders: headers})
+    let api = nock('https://api.heroku.com', { reqheaders: headers })
       .post('/oauth/authorizations', _.matches(body))
       .reply(200, {})
 
@@ -354,20 +354,20 @@ describe('auth', function () {
 
     let urlStub = stubOpen.withArgs(url).returns(Promise.resolve(undefined))
 
-    let tokenStub = stubPrompt.withArgs('Enter your access token (typing will be hidden)', {hide: true}).returns(Promise.resolve('token'))
-    let headers = {Authorization: 'Bearer token'}
+    let tokenStub = stubPrompt.withArgs('Enter your access token (typing will be hidden)', { hide: true }).returns(Promise.resolve('token'))
+    let headers = { Authorization: 'Bearer token' }
 
-    let api = nock('https://api.heroku.com', {reqheaders: headers})
+    let api = nock('https://api.heroku.com', { reqheaders: headers })
       .get('/account')
-      .reply(200, {email: 'foo@bar.com'})
+      .reply(200, { email: 'foo@bar.com' })
 
-    return auth.login({sso: true})
+    return auth.login({ sso: true })
       .then((auth) => {
         expect(urlStub.called, 'to equal', true)
         expect(tokenStub.called, 'to equal', true)
         expect(cli.stderr, 'to equal', 'Opening browser for login... done\n')
         api.done()
-        expect(auth, 'to equal', {token: 'token', email: 'foo@bar.com'})
+        expect(auth, 'to equal', { token: 'token', email: 'foo@bar.com' })
       })
   })
 
@@ -377,20 +377,20 @@ describe('auth', function () {
     let url = 'https://sso.heroku.com/saml/myorg/init?cli=true'
     let urlStub = stubOpen.withArgs(url).returns(Promise.resolve(undefined))
 
-    let tokenStub = stubPrompt.withArgs('Enter your access token (typing will be hidden)', {hide: true}).returns(Promise.resolve('token'))
-    let headers = {Authorization: 'Bearer token'}
+    let tokenStub = stubPrompt.withArgs('Enter your access token (typing will be hidden)', { hide: true }).returns(Promise.resolve('token'))
+    let headers = { Authorization: 'Bearer token' }
 
-    let api = nock('https://api.heroku.com', {reqheaders: headers})
+    let api = nock('https://api.heroku.com', { reqheaders: headers })
       .get('/account')
-      .reply(200, {email: 'foo@bar.com'})
+      .reply(200, { email: 'foo@bar.com' })
 
-    return auth.login({sso: true})
+    return auth.login({ sso: true })
       .then((auth) => {
         expect(urlStub.called, 'to equal', true)
         expect(tokenStub.called, 'to equal', true)
         expect(cli.stderr, 'to equal', 'Opening browser for login... done\n')
         api.done()
-        expect(auth, 'to equal', {token: 'token', email: 'foo@bar.com'})
+        expect(auth, 'to equal', { token: 'token', email: 'foo@bar.com' })
       })
   })
 
@@ -400,21 +400,21 @@ describe('auth', function () {
     let url = 'https://sso.heroku.com/saml/myorg/init?cli=true'
     let urlStub = stubOpen.withArgs(url).returns(Promise.resolve(undefined))
 
-    let tokenStub = stubPrompt.withArgs('Enter your access token (typing will be hidden)', {hide: true}).returns(Promise.resolve('token'))
-    let headers = {Authorization: 'Bearer token'}
+    let tokenStub = stubPrompt.withArgs('Enter your access token (typing will be hidden)', { hide: true }).returns(Promise.resolve('token'))
+    let headers = { Authorization: 'Bearer token' }
 
-    let api = nock('https://api.heroku.com', {reqheaders: headers})
+    let api = nock('https://api.heroku.com', { reqheaders: headers })
       .get('/account')
-      .reply(200, {email: 'foo@bar.com'})
+      .reply(200, { email: 'foo@bar.com' })
 
-    return auth.login({sso: true})
+    return auth.login({ sso: true })
       .then((auth) => {
         expect(orgStub.called, 'to equal', true)
         expect(urlStub.called, 'to equal', true)
         expect(tokenStub.called, 'to equal', true)
         expect(cli.stderr, 'to equal', 'Opening browser for login... done\n')
         api.done()
-        expect(auth, 'to equal', {token: 'token', email: 'foo@bar.com'})
+        expect(auth, 'to equal', { token: 'token', email: 'foo@bar.com' })
       })
   })
 
@@ -424,14 +424,14 @@ describe('auth', function () {
     let url = 'https://sso.heroku.com/saml/myorg/init?cli=true'
     let urlStub = stubOpen.withArgs(url).returns(Promise.resolve(undefined))
 
-    let tokenStub = stubPrompt.withArgs('Enter your access token (typing will be hidden)', {hide: true}).returns(Promise.resolve('token'))
-    let headers = {Authorization: 'Bearer token'}
+    let tokenStub = stubPrompt.withArgs('Enter your access token (typing will be hidden)', { hide: true }).returns(Promise.resolve('token'))
+    let headers = { Authorization: 'Bearer token' }
 
-    let api = nock('https://api.heroku.com', {reqheaders: headers})
+    let api = nock('https://api.heroku.com', { reqheaders: headers })
       .get('/account')
-      .reply(403, {message: 'api message'})
+      .reply(403, { message: 'api message' })
 
-    return expect(auth.login({sso: true}), 'to be rejected with', {body: {message: 'api message'}})
+    return expect(auth.login({ sso: true }), 'to be rejected with', { body: { message: 'api message' } })
       .then(() => {
         expect(orgStub.called, 'to equal', true)
         expect(urlStub.called, 'to equal', true)
@@ -447,28 +447,28 @@ describe('auth', function () {
     let url = 'https://sso.heroku.com/saml/myorg/init?cli=true'
     let urlStub = stubOpen.withArgs(url).returns(Promise.reject(new Error('cannot open')))
 
-    let tokenStub = stubPrompt.withArgs('Enter your access token (typing will be hidden)', {hide: true}).returns(Promise.resolve('token'))
-    let headers = {Authorization: 'Bearer token'}
+    let tokenStub = stubPrompt.withArgs('Enter your access token (typing will be hidden)', { hide: true }).returns(Promise.resolve('token'))
+    let headers = { Authorization: 'Bearer token' }
 
-    let api = nock('https://api.heroku.com', {reqheaders: headers})
+    let api = nock('https://api.heroku.com', { reqheaders: headers })
       .get('/account')
-      .reply(200, {email: 'foo@bar.com'})
+      .reply(200, { email: 'foo@bar.com' })
 
-    return auth.login({sso: true})
+    return auth.login({ sso: true })
       .then((auth) => {
         expect(orgStub.called, 'to equal', true)
         expect(urlStub.called, 'to equal', true)
         expect(tokenStub.called, 'to equal', true)
         expect(cli.stderr, 'to equal', 'Opening browser for login... done\ncannot open\n')
         api.done()
-        expect(auth, 'to equal', {token: 'token', email: 'foo@bar.com'})
+        expect(auth, 'to equal', { token: 'token', email: 'foo@bar.com' })
       })
   })
 
   context('win shells that are not tty', () => {
     it('recommends using cmd.exe on windows', () => {
       stubPrompt.withArgs('Email').returns(Promise.resolve('email'))
-      stubPrompt.withArgs('Password', {hide: true}).returns(Promise.reject(new PromptMaskError('CLI needs to prompt for Login but stdin is not a tty.')))
+      stubPrompt.withArgs('Password', { hide: true }).returns(Promise.reject(new PromptMaskError('CLI needs to prompt for Login but stdin is not a tty.')))
       os.platform = sinon.stub().returns('win32')
       return expect(auth.login(), 'to be rejected with', 'Login is currently incompatible with git bash/Cygwin/MinGW')
     })

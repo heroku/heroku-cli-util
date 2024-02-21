@@ -13,7 +13,7 @@ describe('vars', () => {
   })
 
   it('respects HEROKU_HOST', () => {
-    const vars = new Vars({HEROKU_HOST: 'customhost'})
+    const vars = new Vars({ HEROKU_HOST: 'customhost' })
     expect(vars.host, 'to equal', 'customhost')
     expect(vars.apiHost, 'to equal', 'api.customhost')
     expect(vars.httpGitHost, 'to equal', 'git.customhost')
@@ -21,7 +21,7 @@ describe('vars', () => {
   })
 
   it('respects HEROKU_HOST as url', () => {
-    const vars = new Vars({HEROKU_HOST: 'https://customhost'})
+    const vars = new Vars({ HEROKU_HOST: 'https://customhost' })
     expect(vars.host, 'to equal', 'https://customhost')
     expect(vars.apiHost, 'to equal', 'customhost')
     expect(vars.httpGitHost, 'to equal', 'customhost')

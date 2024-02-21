@@ -21,21 +21,21 @@ describe('command', function () {
   it('2fa should retry just the failing request', function () {
     let api = nock('https://api.heroku.com')
 
-    api.post('/bizbaz', {}).reply(200, {value: 'bizbaz'})
+    api.post('/bizbaz', {}).reply(200, { value: 'bizbaz' })
 
-    api.post('/foobar', {}).reply(403, {'id': 'two_factor'})
+    api.post('/foobar', {}).reply(403, { 'id': 'two_factor' })
 
     let api2FA = nock('https://api.heroku.com', {
-      reqheaders: {'Heroku-Two-Factor-Code': '2fa'}
+      reqheaders: { 'Heroku-Two-Factor-Code': '2fa' }
     })
 
-    api2FA.post('/foobar', {}).reply(200, {value: 'foobar'})
+    api2FA.post('/foobar', {}).reply(200, { value: 'foobar' })
 
-    return command({preauth: false}, co.wrap(function * (context, heroku) {
-      let bizbaz = yield heroku.post('/bizbaz', {body: {}})
+    return command({ preauth: false }, co.wrap(function * (context, heroku) {
+      let bizbaz = yield heroku.post('/bizbaz', { body: {} })
       cli.log(bizbaz.value)
 
-      let foobar = yield heroku.post('/foobar', {body: {}})
+      let foobar = yield heroku.post('/foobar', { body: {} })
       cli.log(foobar.value)
     }))({})
       .then(() => {
@@ -50,18 +50,18 @@ describe('command', function () {
       badheaders: ['Heroku-Two-Factor-Code']
     })
 
-    api.post('/foobar', {}).reply(403, {'id': 'two_factor'})
+    api.post('/foobar', {}).reply(403, { 'id': 'two_factor' })
 
     let api2FA = nock('https://api.heroku.com', {
-      reqheaders: {'Heroku-Two-Factor-Code': '2fa'}
+      reqheaders: { 'Heroku-Two-Factor-Code': '2fa' }
     })
 
-    api2FA.post('/foobar', {}).reply(200, {value: 'foobar'})
+    api2FA.post('/foobar', {}).reply(200, { value: 'foobar' })
 
     return command({}, co.wrap(function * (context, heroku) {
-      let foobar = yield heroku.post('/foobar', {body: {}})
+      let foobar = yield heroku.post('/foobar', { body: {} })
       cli.log(foobar.value)
-    }))({app: 'fuzz'})
+    }))({ app: 'fuzz' })
       .then(() => {
         api.done()
         api2FA.done()
@@ -74,25 +74,25 @@ describe('command', function () {
       badheaders: ['Heroku-Two-Factor-Code']
     })
 
-    api.post('/bizbaz', {}).reply(200, {value: 'bizbaz'})
+    api.post('/bizbaz', {}).reply(200, { value: 'bizbaz' })
 
-    api.post('/foobar', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'biz'}})
+    api.post('/foobar', {}).reply(403, { 'id': 'two_factor', 'app': { 'name': 'biz' } })
 
     let api2FA = nock('https://api.heroku.com', {
-      reqheaders: {'Heroku-Two-Factor-Code': '2fa'}
+      reqheaders: { 'Heroku-Two-Factor-Code': '2fa' }
     })
 
     api2FA.put('/apps/biz/pre-authorizations').reply(200, {})
 
-    api.post('/foobar', {}).reply(200, {value: 'foobar'})
+    api.post('/foobar', {}).reply(200, { value: 'foobar' })
 
-    return command({preauth: true}, co.wrap(function * (context, heroku) {
-      let bizbaz = yield heroku.post('/bizbaz', {body: {}})
+    return command({ preauth: true }, co.wrap(function * (context, heroku) {
+      let bizbaz = yield heroku.post('/bizbaz', { body: {} })
       cli.log(bizbaz.value)
 
-      let foobar = yield heroku.post('/foobar', {body: {}})
+      let foobar = yield heroku.post('/foobar', { body: {} })
       cli.log(foobar.value)
-    }))({app: 'fuzz'})
+    }))({ app: 'fuzz' })
       .then(() => {
         api.done()
         api2FA.done()
@@ -105,25 +105,25 @@ describe('command', function () {
       badheaders: ['Heroku-Two-Factor-Code']
     })
 
-    api.post('/bizbaz', {}).reply(200, {value: 'bizbaz'})
+    api.post('/bizbaz', {}).reply(200, { value: 'bizbaz' })
 
-    api.post('/foobar', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'biz'}})
+    api.post('/foobar', {}).reply(403, { 'id': 'two_factor', 'app': { 'name': 'biz' } })
 
     let api2FA = nock('https://api.heroku.com', {
-      reqheaders: {'Heroku-Two-Factor-Code': '2fa'}
+      reqheaders: { 'Heroku-Two-Factor-Code': '2fa' }
     })
 
     api2FA.put('/apps/biz/pre-authorizations').reply(200, {})
 
-    api.post('/foobar', {}).reply(200, {value: 'foobar'})
+    api.post('/foobar', {}).reply(200, { value: 'foobar' })
 
     return command({}, co.wrap(function * (context, heroku) {
-      let bizbaz = yield heroku.post('/bizbaz', {body: {}})
+      let bizbaz = yield heroku.post('/bizbaz', { body: {} })
       cli.log(bizbaz.value)
 
-      let foobar = yield heroku.post('/foobar', {body: {}})
+      let foobar = yield heroku.post('/foobar', { body: {} })
       cli.log(foobar.value)
-    }))({app: 'fuzz'})
+    }))({ app: 'fuzz' })
       .then(() => {
         api.done()
         api2FA.done()
@@ -136,25 +136,25 @@ describe('command', function () {
       badheaders: ['Heroku-Two-Factor-Code']
     })
 
-    api.post('/foobar/a', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'biz'}})
-    api.post('/foobar/b', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'biz'}})
+    api.post('/foobar/a', {}).reply(403, { 'id': 'two_factor', 'app': { 'name': 'biz' } })
+    api.post('/foobar/b', {}).reply(403, { 'id': 'two_factor', 'app': { 'name': 'biz' } })
 
     let api2FA = nock('https://api.heroku.com', {
-      reqheaders: {'Heroku-Two-Factor-Code': '2fa'}
+      reqheaders: { 'Heroku-Two-Factor-Code': '2fa' }
     })
 
     api2FA.put('/apps/biz/pre-authorizations').reply(200, {})
 
-    api.post('/foobar/a', {}).reply(200, {value: 'foobara'})
-    api.post('/foobar/b', {}).reply(200, {value: 'foobarb'})
+    api.post('/foobar/a', {}).reply(200, { value: 'foobara' })
+    api.post('/foobar/b', {}).reply(200, { value: 'foobarb' })
 
-    return command({preauth: true}, co.wrap(function * (context, heroku) {
+    return command({ preauth: true }, co.wrap(function * (context, heroku) {
       let bizbaz = yield [
-        heroku.post('/foobar/a', {body: {}}),
-        heroku.post('/foobar/b', {body: {}})
+        heroku.post('/foobar/a', { body: {} }),
+        heroku.post('/foobar/b', { body: {} })
       ]
       bizbaz.forEach((l) => cli.log(l.value))
-    }))({app: 'fuzz'})
+    }))({ app: 'fuzz' })
       .then(() => {
         api.done()
         api2FA.done()
@@ -168,26 +168,26 @@ describe('command', function () {
       badheaders: ['Heroku-Two-Factor-Code']
     })
 
-    api.post('/foobar/a', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'biz'}})
-    api.post('/foobar/b', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'baz'}})
+    api.post('/foobar/a', {}).reply(403, { 'id': 'two_factor', 'app': { 'name': 'biz' } })
+    api.post('/foobar/b', {}).reply(403, { 'id': 'two_factor', 'app': { 'name': 'baz' } })
 
     let api2FA = nock('https://api.heroku.com', {
-      reqheaders: {'Heroku-Two-Factor-Code': '2fa'}
+      reqheaders: { 'Heroku-Two-Factor-Code': '2fa' }
     })
 
     api2FA.put('/apps/biz/pre-authorizations').reply(200, {})
     api2FA.put('/apps/baz/pre-authorizations').reply(200, {})
 
-    api.post('/foobar/a', {}).reply(200, {value: 'foobara'})
-    api.post('/foobar/b', {}).reply(200, {value: 'foobarb'})
+    api.post('/foobar/a', {}).reply(200, { value: 'foobara' })
+    api.post('/foobar/b', {}).reply(200, { value: 'foobarb' })
 
-    return command({preauth: true}, co.wrap(function * (context, heroku) {
+    return command({ preauth: true }, co.wrap(function * (context, heroku) {
       let bizbaz = yield [
-        heroku.post('/foobar/a', {body: {}}),
-        heroku.post('/foobar/b', {body: {}})
+        heroku.post('/foobar/a', { body: {} }),
+        heroku.post('/foobar/b', { body: {} })
       ]
       bizbaz.forEach((l) => cli.log(l.value))
-    }))({app: 'fuzz'})
+    }))({ app: 'fuzz' })
       .then(() => {
         api.done()
         api2FA.done()
@@ -196,7 +196,7 @@ describe('command', function () {
   })
 
   it('2fa should preauth for each app', function () {
-    let c = {count: 0}
+    let c = { count: 0 }
 
     let promises = [
       function () {
@@ -225,31 +225,31 @@ describe('command', function () {
       badheaders: ['Heroku-Two-Factor-Code']
     })
 
-    api.post('/foobar/a', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'biz'}})
-    api.post('/foobar/b', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'baz'}})
+    api.post('/foobar/a', {}).reply(403, { 'id': 'two_factor', 'app': { 'name': 'biz' } })
+    api.post('/foobar/b', {}).reply(403, { 'id': 'two_factor', 'app': { 'name': 'baz' } })
 
     let api2FA1 = nock('https://api.heroku.com', {
-      reqheaders: {'Heroku-Two-Factor-Code': '2fa-1'}
+      reqheaders: { 'Heroku-Two-Factor-Code': '2fa-1' }
     })
 
     let api2FA2 = nock('https://api.heroku.com', {
-      reqheaders: {'Heroku-Two-Factor-Code': '2fa-2'}
+      reqheaders: { 'Heroku-Two-Factor-Code': '2fa-2' }
     })
 
     api2FA1.put('/apps/biz/pre-authorizations').reply(200, {})
     api2FA2.put('/apps/baz/pre-authorizations').reply(200, {})
 
-    api.post('/foobar/a', {}).reply(200, {value: 'foobara'})
-    api.post('/foobar/b', {}).reply(200, {value: 'foobarb'})
+    api.post('/foobar/a', {}).reply(200, { value: 'foobara' })
+    api.post('/foobar/b', {}).reply(200, { value: 'foobarb' })
 
-    return command({preauth: true}, co.wrap(function * (context, heroku) {
+    return command({ preauth: true }, co.wrap(function * (context, heroku) {
       yield [
-        heroku.post('/foobar/a', {body: {}})
+        heroku.post('/foobar/a', { body: {} })
           .then(l => cli.log(l.value)),
-        heroku.post('/foobar/b', {body: {}})
+        heroku.post('/foobar/b', { body: {} })
           .then(l => cli.log(l.value))
       ]
-    }))({app: 'fuzz'})
+    }))({ app: 'fuzz' })
       .then(() => {
         api.done()
         api2FA1.done()
@@ -263,25 +263,25 @@ describe('command', function () {
       badheaders: ['Heroku-Two-Factor-Code']
     })
 
-    api.post('/foobar/a', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'biz'}})
-    api.post('/foobar/b', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'biz'}})
+    api.post('/foobar/a', {}).reply(403, { 'id': 'two_factor', 'app': { 'name': 'biz' } })
+    api.post('/foobar/b', {}).reply(403, { 'id': 'two_factor', 'app': { 'name': 'biz' } })
 
     let api2FA = nock('https://api.heroku.com', {
-      reqheaders: {'Heroku-Two-Factor-Code': '2fa'}
+      reqheaders: { 'Heroku-Two-Factor-Code': '2fa' }
     })
 
     api2FA.put('/apps/biz/pre-authorizations').reply(200, {})
 
-    api.post('/foobar/a', {}).reply(200, {value: 'foobara'})
-    api.post('/foobar/b', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'biz'}})
+    api.post('/foobar/a', {}).reply(200, { value: 'foobara' })
+    api.post('/foobar/b', {}).reply(403, { 'id': 'two_factor', 'app': { 'name': 'biz' } })
 
-    return command({preauth: true}, co.wrap(function * (context, heroku) {
+    return command({ preauth: true }, co.wrap(function * (context, heroku) {
       let bizbaz = yield [
-        heroku.post('/foobar/a', {body: {}}),
-        heroku.post('/foobar/b', {body: {}})
+        heroku.post('/foobar/a', { body: {} }),
+        heroku.post('/foobar/b', { body: {} })
       ]
       bizbaz.forEach((l) => cli.log(l.value))
-    }))({app: 'fuzz'})
+    }))({ app: 'fuzz' })
       .then(() => {
         expect(true, 'to equal', false)
       })
@@ -293,7 +293,7 @@ describe('command', function () {
   it('2fa prompt error should propegate', function () {
     let api = nock('https://api.heroku.com')
 
-    api.post('/foobar', {}).reply(403, {'id': 'two_factor', 'app': {'name': 'biz'}})
+    api.post('/foobar', {}).reply(403, { 'id': 'two_factor', 'app': { 'name': 'biz' } })
 
     cli.prompt = function () {
       return new Promise(function (resolve, reject) {
@@ -302,18 +302,18 @@ describe('command', function () {
     }
 
     return expect(command(co.wrap(function * (context, heroku) {
-      let foobar = yield heroku.post('/foobar', {body: {}})
+      let foobar = yield heroku.post('/foobar', { body: {} })
       cli.log(foobar.value)
     }))({}), 'to be rejected with', 'error reading prompt')
   })
 
   it('non 2fa error should propagate', function () {
     let api = nock('https://api.heroku.com')
-    api.post('/foobar', {}).reply(403, {'id': 'not_two_factor'})
+    api.post('/foobar', {}).reply(403, { 'id': 'not_two_factor' })
 
     return expect(command(co.wrap(function * (context, heroku) {
-      yield heroku.post('/foobar', {body: {}})
-    }))({}), 'to be rejected with', {statusCode: 403, body: { id: 'not_two_factor' }})
+      yield heroku.post('/foobar', { body: {} })
+    }))({}), 'to be rejected with', { statusCode: 403, body: { id: 'not_two_factor' } })
   })
 
   it('non json error should propagate', function () {
@@ -321,7 +321,7 @@ describe('command', function () {
     api.post('/foobar', {}).reply(403, 'fizz')
 
     return expect(command(co.wrap(function * (context, heroku) {
-      yield heroku.post('/foobar', {body: {}})
-    }))({}), 'to be rejected with', {body: 'fizz'})
+      yield heroku.post('/foobar', { body: {} })
+    }))({}), 'to be rejected with', { body: 'fizz' })
   })
 })
