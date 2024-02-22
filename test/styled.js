@@ -8,7 +8,7 @@ describe('styledHash', function () {
   beforeEach(() => cli.mockConsole())
 
   it('prints out a styled hash', function () {
-    cli.styledHash({Name: 'myapp', Collaborators: ['user1@example.com', 'user2@example.com']})
+    cli.styledHash({ Name: 'myapp', Collaborators: ['user1@example.com', 'user2@example.com'] })
     expect(cli.stdout).to.eq('Collaborators: user1@example.com\n' +
       '               user2@example.com\n' +
       'Name:          myapp\n')
@@ -24,7 +24,7 @@ describe('styledNameValues', function () {
   beforeEach(() => cli.mockConsole())
 
   it('prints out a styled set of name values', function () {
-    cli.styledHash({Name: 'myapp', Collaborators: ['user1@example.com', 'user2@example.com']})
+    cli.styledHash({ Name: 'myapp', Collaborators: ['user1@example.com', 'user2@example.com'] })
     expect(cli.stdout).to.eq('Collaborators: user1@example.com\n' +
       '               user2@example.com\n' +
       'Name:          myapp\n')
@@ -40,7 +40,7 @@ describe('styledJSON', function () {
   beforeEach(() => cli.mockConsole())
 
   it('prints out indented json', function () {
-    cli.styledJSON({name: 'Name', values: ['myapp']})
+    cli.styledJSON({ name: 'Name', values: ['myapp'] })
     expect(cli.stdout).to.eq(`{
   "name": "Name",
   "values": [

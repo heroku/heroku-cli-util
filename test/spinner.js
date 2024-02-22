@@ -11,7 +11,7 @@ describe('spinner', () => {
   function readOutput (spinner, callback) {
     let out = ''
 
-    const unhook = hookStd.stderr({silent: true}, output => {
+    const unhook = hookStd.stderr({ silent: true }, output => {
       out += output
     })
 
@@ -34,7 +34,7 @@ describe('spinner', () => {
   })
 
   it('main', () => {
-    const spinner = new Spinner({text: 'foo'})
+    const spinner = new Spinner({ text: 'foo' })
 
     spinner.enabled = true
 

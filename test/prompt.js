@@ -19,21 +19,21 @@ describe('login', function () {
 
   it('throws error when prompt hidden and dumb', function () {
     process.env['TERM'] = 'dumb'
-    return expect(prompt('foo', {hide: true}), 'to be rejected with', 'CLI needs to prompt for foo but stdin is not a tty.')
+    return expect(prompt('foo', { hide: true }), 'to be rejected with', 'CLI needs to prompt for foo but stdin is not a tty.')
   })
 
   it('throws error when prompt masked and dumb', function () {
     process.env['TERM'] = 'dumb'
-    return expect(prompt('foo', {mask: true}), 'to be rejected with', 'CLI needs to prompt for foo but stdin is not a tty.')
+    return expect(prompt('foo', { mask: true }), 'to be rejected with', 'CLI needs to prompt for foo but stdin is not a tty.')
   })
 
   it('throws error when prompt hidden and not tty', function () {
     process.stdin.isTTY = false
-    return expect(prompt('foo', {hide: true}), 'to be rejected with', 'CLI needs to prompt for foo but stdin is not a tty.')
+    return expect(prompt('foo', { hide: true }), 'to be rejected with', 'CLI needs to prompt for foo but stdin is not a tty.')
   })
 
   it('throws error when prompt masked and not tty', function () {
     process.stdin.isTTY = false
-    return expect(prompt('foo', {mask: true}), 'to be rejected with', 'CLI needs to prompt for foo but stdin is not a tty.')
+    return expect(prompt('foo', { mask: true }), 'to be rejected with', 'CLI needs to prompt for foo but stdin is not a tty.')
   })
 })
