@@ -830,15 +830,11 @@ detect-indent@3.0.1:
     minimist "^1.1.0"
     repeating "^1.1.0"
 
-diff@4.0.2:
-  version "4.0.2"
-  resolved "https://registry.npmjs.org/diff/-/diff-4.0.2.tgz"
-
 diff@5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/diff/-/diff-5.0.0.tgz"
 
-diff@^5.2.0:
+diff@^5.0.0, diff@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-5.2.0.tgz#26ded047cd1179b78b9537d5ef725503ce1ae531"
 
@@ -1930,9 +1926,9 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
-magicpen@^6.2.1:
+magicpen@^6.2.4:
   version "6.2.4"
-  resolved "https://registry.npmjs.org/magicpen/-/magicpen-6.2.4.tgz"
+  resolved "https://registry.yarnpkg.com/magicpen/-/magicpen-6.2.4.tgz#9ee059a48c2ea1f4e224239710be573de9fb4d71"
   dependencies:
     ansi-styles "2.0.0"
     color-diff "0.1.7"
@@ -2980,9 +2976,9 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-ukkonen@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.npmjs.org/ukkonen/-/ukkonen-1.4.0.tgz"
+ukkonen@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/ukkonen/-/ukkonen-2.1.0.tgz#7af741397e603462290aa5d4e65e514f400b29f7"
 
 unbox-primitive@^1.0.2:
   version "1.0.2"
@@ -3001,17 +2997,17 @@ unexpected-bluebird@2.9.34-longstack2:
   version "2.9.34-longstack2"
   resolved "https://registry.npmjs.org/unexpected-bluebird/-/unexpected-bluebird-2.9.34-longstack2.tgz"
 
-unexpected@^11.15.1:
-  version "11.15.1"
-  resolved "https://registry.npmjs.org/unexpected/-/unexpected-11.15.1.tgz"
+unexpected@^13.2.1:
+  version "13.2.1"
+  resolved "https://registry.yarnpkg.com/unexpected/-/unexpected-13.2.1.tgz#d21d0dcc633e0ff00754ebdcf6925ac3f9c66799"
   dependencies:
     array-changes "3.0.1"
     array-changes-async "3.0.1"
     detect-indent "3.0.1"
-    diff "4.0.2"
+    diff "^5.0.0"
     greedy-interval-packer "1.2.0"
-    magicpen "^6.2.1"
-    ukkonen "^1.4.0"
+    magicpen "^6.2.4"
+    ukkonen "^2.1.0"
     unexpected-bluebird "2.9.34-longstack2"
 
 uniq@^1.0.1:
