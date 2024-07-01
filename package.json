@@ -19,7 +19,7 @@
     "opn": "^3.0.3",
     "strip-ansi": "^4.0.0",
     "supports-color": "^9.4.0",
-    "tslib": "^1.9.0",
+    "tslib": "^2.6.3",
     "tunnel-agent": "^0.6.0"
   },
   "devDependencies": {
