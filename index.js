@@ -2,7 +2,7 @@
 
 exports.color = require('@heroku-cli/color').default
 
-var console = require('./lib/console')
+const console = require('./lib/console')
 var errors = require('./lib/errors')
 var prompt = require('./lib/prompt')
 var styled = require('./lib/styled')
