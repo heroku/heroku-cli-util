@@ -1902,9 +1902,10 @@ heroku-client@^3.1.0:
     is-retry-allowed "^1.0.0"
     tunnel-agent "^0.6.0"
 
-hook-std@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.npmjs.org/hook-std/-/hook-std-0.4.0.tgz"
+hook-std@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/hook-std/-/hook-std-2.0.0.tgz#ff9aafdebb6a989a354f729bb6445cf4a3a7077c"
+  integrity sha512-zZ6T5WcuBMIUVh49iPQS9t977t7C0l7OtHrpeMb5uk48JdflRX0NSFvCekfYNmGQETnLq9W/isMyHl69kxGi8g==
 
 html-escaper@^2.0.0:
   version "2.0.2"
