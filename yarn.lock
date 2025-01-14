@@ -3012,9 +3012,10 @@ propagate@^2.0.0:
   version "2.0.1"
   resolved "https://registry.npmjs.org/propagate/-/propagate-2.0.1.tgz"
 
-proxyquire@^1.7.11:
+proxyquire@^1.8.0:
   version "1.8.0"
-  resolved "https://registry.npmjs.org/proxyquire/-/proxyquire-1.8.0.tgz"
+  resolved "https://registry.yarnpkg.com/proxyquire/-/proxyquire-1.8.0.tgz#02d514a5bed986f04cbb2093af16741535f79edc"
+  integrity sha512-mZZq4F50qaBkngvlf9paNfaSb5gtJ0mFPnBjda4NxCpXpMAaVfSLguRr9y2KXF6koOSBf4AanD2inuEQw3aCcA==
   dependencies:
     fill-keys "^1.0.2"
     module-not-found-error "^1.0.0"
