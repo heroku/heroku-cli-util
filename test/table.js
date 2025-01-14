@@ -1,8 +1,8 @@
 'use strict'
 /* globals describe it */
 
-let _table = require('../lib/table')
-let expectOutput = require('./util').expectOutput
+const _table = require('../lib/table')
+const expectOutput = require('./util').expectOutput
 
 function table (data, options) {
   let out = ''
@@ -18,7 +18,7 @@ function table (data, options) {
 
 describe('table()', function () {
   it('takes simple data', function () {
-    let out = table([{ Name: 'Jane Doe', Country: 'Australia' },
+    const out = table([{ Name: 'Jane Doe', Country: 'Australia' },
       { Name: 'Bob Smith', Country: 'USA' }])
 
     expectOutput(out, `
@@ -29,7 +29,7 @@ Bob Smith  USA`)
   })
 
   it('takes a simple column list', function () {
-    let out = table([{ Name: 'Jane Doe', Country: 'Australia' },
+    const out = table([{ Name: 'Jane Doe', Country: 'Australia' },
       { Name: 'Bob Smith', Country: 'USA' }],
 
     { columns: ['Name'] })
@@ -41,11 +41,13 @@ Bob Smith`)
   })
 
   it('takes a specific column key list', function () {
-    let out = table([{ n: 'Jane Doe', c: 'Australia' },
+    const out = table([{ n: 'Jane Doe', c: 'Australia' },
       { n: 'Bob Smith', c: 'USA' }],
 
-    { columns: [{ key: 'n' },
-      { key: 'c' }] })
+    {
+      columns: [{ key: 'n' },
+        { key: 'c' }]
+    })
 
     expectOutput(out, `
 n          c
@@ -55,11 +57,13 @@ Bob Smith  USA`)
   })
 
   it('lets header names be customized', function () {
-    let out = table([{ n: 'Jane Doe', c: 'Australia' },
+    const out = table([{ n: 'Jane Doe', c: 'Australia' },
       { n: 'Bob Smith', c: 'USA' }],
 
-    { columns: [{ key: 'n', label: 'Name' },
-      { key: 'c', label: 'Country' }] })
+    {
+      columns: [{ key: 'n', label: 'Name' },
+        { key: 'c', label: 'Country' }]
+    })
 
     expectOutput(out, `
 Name       Country
@@ -69,7 +73,7 @@ Bob Smith  USA`)
   })
 
   it('takes custom column separator', function () {
-    let out = table([{ Name: 'Jane Doe', Country: 'Australia' },
+    const out = table([{ Name: 'Jane Doe', Country: 'Australia' },
       { Name: 'Bob Smith', Country: 'USA' }],
 
     { colSep: ' | ' })
@@ -90,13 +94,15 @@ Bob Smith | USA`)
       return `[[${str.toUpperCase()}]]`
     }
 
-    let out = table([{ Name: 'Jane Doe', Country: 'Australia' },
+    const out = table([{ Name: 'Jane Doe', Country: 'Australia' },
       { Name: 'Bob Smith', Country: 'USA' }],
 
-    { columns: [{ key: 'Name' },
-      { key: 'Name', label: 'Initials', format: initials },
-      { key: 'Country', format: highlight },
-      { key: 'null column', format: () => null }] })
+    {
+      columns: [{ key: 'Name' },
+        { key: 'Name', label: 'Initials', format: initials },
+        { key: 'Country', format: highlight },
+        { key: 'null column', format: () => null }]
+    })
 
     expectOutput(out, `
 Name       Initials  Country        null column
@@ -110,14 +116,20 @@ Bob Smith  B. S.     [[USA]]`)
       return `${country.name} (${country.code})`
     }
 
-    let out = table([{ name: { given: 'Jane', family: 'Doe' },
-      country: { name: 'Australia', code: 'AUS' } },
-    { name: { given: 'Bob', family: 'Smith' },
-      country: { name: 'United States of America', code: 'USA' } }],
+    const out = table([{
+      name: { given: 'Jane', family: 'Doe' },
+      country: { name: 'Australia', code: 'AUS' }
+    },
+    {
+      name: { given: 'Bob', family: 'Smith' },
+      country: { name: 'United States of America', code: 'USA' }
+    }],
 
-    { columns: [{ key: 'name.given', label: 'Given name' },
-      { key: 'name.family', label: 'Family name' },
-      { key: 'country', label: 'Country', format: fmtCountry }] })
+    {
+      columns: [{ key: 'name.given', label: 'Given name' },
+        { key: 'name.family', label: 'Family name' },
+        { key: 'country', label: 'Country', format: fmtCountry }]
+    })
 
     expectOutput(out, `
 Given name  Family name  Country
@@ -127,14 +139,16 @@ Bob         Smith        United States of America (USA)`)
   })
 
   it('calls callback after each row', function () {
-    let out = table([{ Name: 'Jane Doe', Country: 'Australia', pets: ['Spot', 'Scruffy'] },
+    const out = table([{ Name: 'Jane Doe', Country: 'Australia', pets: ['Spot', 'Scruffy'] },
       { Name: 'Bob Smith', Country: 'USA', pets: [] }],
-    { columns: ['Name'],
+    {
+      columns: ['Name'],
       after: function (row, opts) {
         row.pets.forEach(function (pet) {
           opts.printLine(`-> ${pet}`)
         })
-      } })
+      }
+    })
 
     expectOutput(out, `
 Name
@@ -146,7 +160,7 @@ Bob Smith`)
   })
 
   it('handles multi-line cells', function () {
-    let out = table([{ Name: 'Jane Doe', 'Favourite Pizza Toppings': 'Garlic\nPepperoni\nHam\nPineapple' },
+    const out = table([{ Name: 'Jane Doe', 'Favourite Pizza Toppings': 'Garlic\nPepperoni\nHam\nPineapple' },
       { Name: 'Bob Smith', 'Favourite Pizza Toppings': 'Pumpkin\r\nSpinach\nGarlic' }])
 
     expectOutput(out, `

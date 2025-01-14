@@ -13,7 +13,7 @@ describe('action', function () {
   })
 
   it('warns', function () {
-    let p = cli.action('working', new Promise((resolve) => process.nextTick(() => resolve())))
+    const p = cli.action('working', new Promise((resolve) => process.nextTick(() => resolve())))
       .then(() => expect(cli.stderr, 'to equal', 'working... !\n ▸    warning!\nworking... done\n'))
     cli.action.warn('warning!')
     return p
