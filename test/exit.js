@@ -3,7 +3,7 @@
 
 const cli = require('..')
 const stripAnsi = require('strip-ansi')
-let expect = require('chai').expect
+const expect = require('chai').expect
 
 describe('errors', function () {
   beforeEach(function () {

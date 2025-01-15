@@ -8,16 +8,15 @@ const stripColor = require('strip-ansi')
 const expect = require('unexpected')
 
 describe('spinner', () => {
-  function readOutput (spinner, callback) {
+  async function readOutput (spinner, callback) {
     let out = ''
 
     const unhook = hookStd.stderr({ silent: true }, output => {
       out += output
     })
-
     spinner.start()
     spinner.stop()
-    unhook()
+    await unhook
 
     callback(out)
   }

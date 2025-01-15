@@ -1,9 +1,9 @@
 'use strict'
 /* globals describe it beforeEach */
 
-let cli = require('..')
-let Mutex = require('../lib/mutex')
-let expect = require('unexpected')
+const cli = require('..')
+const Mutex = require('../lib/mutex')
+const expect = require('unexpected')
 
 describe('mutex', function () {
   beforeEach(function () {
@@ -11,7 +11,7 @@ describe('mutex', function () {
   })
 
   it('should run promises in order', function () {
-    let mutex = new Mutex()
+    const mutex = new Mutex()
     return Promise.all([
       mutex.synchronize(function () {
         return new Promise(function (resolve, reject) {
@@ -36,7 +36,7 @@ describe('mutex', function () {
   })
 
   it('should propegate errors', function () {
-    let mutex = new Mutex()
+    const mutex = new Mutex()
     return Promise.all([
       mutex.synchronize(function () {
         return new Promise(function (resolve, reject) {
@@ -65,7 +65,7 @@ describe('mutex', function () {
   })
 
   it('should run promises after draining the queue', function (done) {
-    let mutex = new Mutex()
+    const mutex = new Mutex()
     mutex.synchronize(function () {
       return new Promise(function (resolve, reject) {
         cli.log('foo')

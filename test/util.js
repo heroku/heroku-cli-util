@@ -1,6 +1,6 @@
 'use strict'
 
-let expect = require('chai').expect
+const expect = require('chai').expect
 
 function stripIndents (str) {
   return str.trim().replace(/\s+$/mg, '')

@@ -1,4 +1,5 @@
 'use strict'
+/* globals describe it */
 
 const Vars = require('../lib/vars').constructor
 const expect = require('unexpected')
