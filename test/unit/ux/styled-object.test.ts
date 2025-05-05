@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import stripAnsi = require('strip-ansi');
-import styledObject from '@oclif/core/lib/cli-ux/styled/object.js';
 import { stdout } from '../../../src/test-helpers/stub-output';
+import { styledObject } from '../../../src/ux/styled-object';
 
 describe('styledObject', () => {
   it('should print the correct styled object output', () => {
@@ -14,4 +14,5 @@ describe('styledObject', () => {
     expect(actual).to.include('foo: bar');
     expect(actual).to.include('baz: 42');
   });
-}); 
+});
+

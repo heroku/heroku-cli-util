@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import stripAnsi = require('strip-ansi');
-import styledJson from '@oclif/core/lib/cli-ux/styled/json.js';
+import { styledJson } from '../../../src/ux/styled-json';
 import { stdout } from '../../../src/test-helpers/stub-output';
 
 describe('styledObject', () => {
