@@ -1,5 +1,5 @@
-import { ux } from '@oclif/core';
+import {ux} from '@oclif/core'
 
-export function styledObject(obj: any, keys?: string[]): void {
-  return ux.styledObject(obj, keys);
-} 
+export function styledObject(obj: unknown, keys?: string[]): void {
+  return ux.styledObject(obj, keys)
+}

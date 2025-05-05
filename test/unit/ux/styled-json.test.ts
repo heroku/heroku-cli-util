@@ -1,17 +1,19 @@
-import { expect } from 'chai';
-import stripAnsi = require('strip-ansi');
-import { styledJson } from '../../../src/ux/styled-json';
-import { stdout } from '../../../src/test-helpers/stub-output';
+import {expect} from 'chai'
 
-describe('styledObject', () => {
-  it('should print the correct styled object output', () => {
-    const obj = { foo: 'bar', baz: 42 };
+import {stdout} from '../../../src/test-helpers/stub-output'
+import {styledJson} from '../../../src/ux/styled-json'
+
+import stripAnsi = require('strip-ansi');
+
+describe('styledObject', function () {
+  it('should print the correct styled object output', function () {
+    const obj = {baz: 42, foo: 'bar'}
     // Use the actual function to get the output string
-    const output = styledJson(obj);
+    const output = styledJson(obj)
     // Print to stdout so the test helper can capture it
-    process.stdout.write(output + '\n');
-    const actual = stripAnsi(stdout());
-    expect(actual).to.include('"foo": "bar"');
-    expect(actual).to.include('"baz": 42');
-  });
-}); 
+    process.stdout.write(output + '\n')
+    const actual = stripAnsi(stdout())
+    expect(actual).to.include('"foo": "bar"')
+    expect(actual).to.include('"baz": 42')
+  })
+})

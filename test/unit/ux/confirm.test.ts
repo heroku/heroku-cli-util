@@ -1,36 +1,38 @@
-import { expect } from 'chai'
+import {expect} from 'chai'
 import * as sinon from 'sinon'
-import stripAnsi = require('strip-ansi')
-import { confirm } from '../../../src/ux/confirm'
-import { stderr } from '../../../src/test-helpers/stub-output'
 
-describe('confirm', () => {
+import {stderr} from '../../../src/test-helpers/stub-output'
+import {confirm} from '../../../src/ux/confirm'
+
+import stripAnsi = require('strip-ansi')
+
+describe('confirm', function () {
   let stdinStub: sinon.SinonStub
 
-  beforeEach(() => {
+  beforeEach(function () {
     stdinStub = sinon.stub(process.stdin, 'once')
-  });
+  })
 
-  afterEach(() => {
+  afterEach(function () {
     stdinStub.restore()
-  });
+  })
 
-  it('should print the prompt and return true for yes', async () => {
+  it('should print the prompt and return true for yes', async function () {
     stdinStub.callsFake((event, cb) => {
       if (event === 'data') cb('y\n')
-      return process.stdin;
-    });
+      return process.stdin
+    })
     const result = await confirm('Are you sure?')
     const output = stripAnsi(stderr())
     expect(output).to.include('Are you sure?')
     expect(result).to.equal(true)
-  });
+  })
 
-  it('should print the prompt and return false for no', async () => {
+  it('should print the prompt and return false for no', async function () {
     stdinStub.callsFake((event, cb) => {
       if (event === 'data') cb('n\n')
-      return process.stdin;
-    });
+      return process.stdin
+    })
     const result = await confirm('Are you sure?')
     const output = stripAnsi(stderr())
     expect(output).to.include('Are you sure?')

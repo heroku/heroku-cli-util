@@ -7,14 +7,14 @@ let stderrOutput = ''
 
 beforeEach(function () {
   stdoutOutput = ''
-  stdoutWriteStub = sinon.stub(process.stdout, 'write').callsFake((str: string | Uint8Array) => {
+  stdoutWriteStub = sinon.stub(process.stdout, 'write').callsFake((str: Uint8Array | string) => {
     stdoutOutput += str.toString()
-    return true;
+    return true
   })
   stderrOutput = ''
-  stderrWriteStub = sinon.stub(process.stderr, 'write').callsFake((str: string | Uint8Array) => {
+  stderrWriteStub = sinon.stub(process.stderr, 'write').callsFake((str: Uint8Array | string) => {
     stderrOutput += str.toString()
-    return true;
+    return true
   })
 })
 
@@ -31,4 +31,4 @@ export function stdout() {
 
 export function stderr() {
   return stderrOutput
-} 
+}

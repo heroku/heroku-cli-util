@@ -1,5 +1,5 @@
-import { ux } from '@oclif/core';
+import {ux} from '@oclif/core'
 
 export function styledHeader(header: string): void {
-  return ux.styledHeader(header);
+  return ux.styledHeader(header)
 }

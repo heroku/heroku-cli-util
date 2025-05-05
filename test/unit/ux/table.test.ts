@@ -1,21 +1,23 @@
-import { expect } from 'chai';
-import { table } from '../../../src/ux/table'
-import stripAnsi = require('strip-ansi')
-import { stdout } from '../../../src/test-helpers/stub-output'
+import {expect} from 'chai'
 
-describe('table', () => {
-  it('should print the correct table output', () => {
+import {stdout} from '../../../src/test-helpers/stub-output'
+import {table} from '../../../src/ux/table'
+
+import stripAnsi = require('strip-ansi')
+
+describe('table', function () {
+  it('should print the correct table output', function () {
     const data = [
-      { foo: 'bar', baz: 42 },
-      { foo: 'qux', baz: 7 }
-    ];
-    const columns = { foo: { header: 'Foo' }, baz: { header: 'Baz' } }
+      {baz: 42, foo: 'bar'},
+      {baz: 7, foo: 'qux'},
+    ]
+    const columns = {baz: {header: 'Baz'}, foo: {header: 'Foo'}}
     table(data, columns)
-    const expected =
-      ' Foo Baz \n' +
-      ' ─── ─── \n' +
-      ' bar 42  \n' +
-      ' qux 7   \n'
+    const expected
+      = ' Foo Baz \n'
+      + ' ─── ─── \n'
+      + ' bar 42  \n'
+      + ' qux 7   \n'
     // Remove ANSI color codes and normalize whitespace for comparison
     const actual = stripAnsi(stdout())
     expect(actual).to.include(stripAnsi(expected))
