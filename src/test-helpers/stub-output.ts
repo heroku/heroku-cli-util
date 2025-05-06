@@ -5,7 +5,7 @@ let stdoutOutput = ''
 let stderrWriteStub: sinon.SinonStub
 let stderrOutput = ''
 
-beforeEach(function () {
+export function setupStdoutStderr() {
   stdoutOutput = ''
   stdoutWriteStub = sinon.stub(process.stdout, 'write').callsFake((str: Uint8Array | string) => {
     stdoutOutput += str.toString()
@@ -16,14 +16,14 @@ beforeEach(function () {
     stderrOutput += str.toString()
     return true
   })
-})
+}
 
-afterEach(function () {
+export function restoreStdoutStderr() {
   stdoutWriteStub.restore()
   stdoutOutput = ''
   stderrWriteStub.restore()
   stderrOutput = ''
-})
+}
 
 export function stdout() {
   return stdoutOutput

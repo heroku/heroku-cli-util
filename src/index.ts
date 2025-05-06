@@ -1,8 +1,23 @@
 // Test helpers (optional, for test environments)
-export {default as expectOutput} from './test-helpers/expect-output'
+import expectOutput from './test-helpers/expect-output'
+import {initCliTest} from './test-helpers/init'
+import {
+  restoreStdoutStderr,
+  setupStdoutStderr,
+  stderr,
+  stdout,
+} from './test-helpers/stub-output'
 
-export * from './test-helpers/init'
-export * from './test-helpers/stub-output'
+export const testHelpers = {
+  expectOutput,
+  initCliTest,
+  restoreStdoutStderr,
+  setupStdoutStderr,
+  stderr,
+  stdout,
+}
+
+export {default as expectOutput} from './test-helpers/expect-output'
 
 // Types - Errors
 export * from './types/errors/ambiguous'
