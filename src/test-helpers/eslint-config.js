@@ -14,7 +14,7 @@ module.exports = {
   ],
   plugins: ['import', 'mocha'],
   rules: {
-    // Add or override rules here
+    camelcase: 'warn',
     'import/namespace': 'warn',
     indent: ['error', 2, {MemberExpression: 1}],
     'no-console': 'off',
