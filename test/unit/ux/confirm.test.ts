@@ -1,6 +1,7 @@
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
+import expectOutput from '../../../src/test-helpers/expect-output'
 import {stderr} from '../../../src/test-helpers/stub-output'
 import {confirm} from '../../../src/ux/confirm'
 
@@ -22,9 +23,9 @@ describe('confirm', function () {
       if (event === 'data') cb('y\n')
       return process.stdin
     })
-    const result = await confirm('Are you sure?')
+    const result = await confirm('Are you sure')
     const output = stripAnsi(stderr())
-    expect(output).to.include('Are you sure?')
+    expectOutput(output, 'Are you sure:')
     expect(result).to.equal(true)
   })
 
@@ -33,9 +34,9 @@ describe('confirm', function () {
       if (event === 'data') cb('n\n')
       return process.stdin
     })
-    const result = await confirm('Are you sure?')
+    const result = await confirm('Are you sure')
     const output = stripAnsi(stderr())
-    expect(output).to.include('Are you sure?')
+    expectOutput(output, 'Are you sure:')
     expect(result).to.equal(false)
   })
 })

@@ -1,5 +1,4 @@
-import {expect} from 'chai'
-
+import expectOutput from '../../../src/test-helpers/expect-output'
 import {stdout} from '../../../src/test-helpers/stub-output'
 import {styledHeader} from '../../../src/ux/styled-header'
 
@@ -10,7 +9,6 @@ describe('styledHeader', function () {
     const header = 'My Test Header'
     styledHeader(header)
     const actual = stripAnsi(stdout())
-    expect(actual).to.match(/^=== My Test Header/)
-    expect(actual).to.match(/\n\n$/)
+    expectOutput(actual, '=== My Test Header\n\n')
   })
 })

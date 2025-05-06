@@ -1,5 +1,6 @@
-import {expect} from 'chai'
+import heredoc from 'tsheredoc'
 
+import expectOutput from '../../../src/test-helpers/expect-output'
 import {stdout} from '../../../src/test-helpers/stub-output'
 import {table} from '../../../src/ux/table'
 
@@ -13,13 +14,13 @@ describe('table', function () {
     ]
     const columns = {baz: {header: 'Baz'}, foo: {header: 'Foo'}}
     table(data, columns)
-    const expected
-      = ' Foo Baz \n'
-      + ' ─── ─── \n'
-      + ' bar 42  \n'
-      + ' qux 7   \n'
-    // Remove ANSI color codes and normalize whitespace for comparison
+    const expected = heredoc(`
+      Baz Foo
+       ─── ───
+       42  bar
+       7   qux
+    `)
     const actual = stripAnsi(stdout())
-    expect(actual).to.include(stripAnsi(expected))
+    expectOutput(expected, actual)
   })
 })

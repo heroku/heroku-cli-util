@@ -1,6 +1,7 @@
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
+import expectOutput from '../../../src/test-helpers/expect-output'
 import {stderr} from '../../../src/test-helpers/stub-output'
 import {prompt} from '../../../src/ux/prompt'
 
@@ -22,9 +23,9 @@ describe('prompt', function () {
       if (event === 'data') cb('test-value\n')
       return process.stdin
     })
-    const result = await prompt('Enter something:')
+    const result = await prompt('Enter something')
     const output = stripAnsi(stderr())
-    expect(output).to.include('Enter something:')
+    expectOutput(output, 'Enter something:')
     expect(result).to.equal('test-value')
   })
 })
