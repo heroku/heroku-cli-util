@@ -1,5 +1,4 @@
 const path = require('node:path')
-// eslint-disable-next-line n/no-missing-require
 const {color} = require('@heroku-cli/color')
 const nock = require('nock')
 

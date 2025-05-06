@@ -48,7 +48,8 @@
   "mocha": {
     "require": [
       "ts-node/register",
-      "source-map-support/register"
+      "source-map-support/register",
+      "test/hooks.ts"
     ],
     "file": [
       "src/test-helpers/stub-output.ts"
