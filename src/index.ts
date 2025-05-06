@@ -1,6 +1,7 @@
 // Test helpers (optional, for test environments)
 import expectOutput from './test-helpers/expect-output'
 import {initCliTest} from './test-helpers/init'
+import {runCommand} from './test-helpers/run-command'
 import {
   restoreStdoutStderr,
   setupStdoutStderr,
@@ -12,6 +13,7 @@ export const testHelpers = {
   expectOutput,
   initCliTest,
   restoreStdoutStderr,
+  runCommand,
   setupStdoutStderr,
   stderr,
   stdout,

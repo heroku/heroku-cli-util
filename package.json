@@ -40,6 +40,7 @@
     "@heroku-cli/command": "^11.5.0",
     "debug": "^4.4.0",
     "nock": "^13.2.9",
+    "stdout-stderr": "^0.1.13",
     "tunnel-ssh": "4.1.6"
   },
   "engines": {
@@ -60,10 +61,10 @@
     "timeout": 360000
   },
   "scripts": {
-    "build": "tsc",
+    "build": "npm run clean && tsc",
     "clean": "rm -rf dist",
     "lint": "eslint . --ext .ts --config .eslintrc.js",
-    "prepare": "npm run clean && npm run build",
+    "prepare": "npm run build",
     "test": "nyc mocha  --forbid-only \"test/**/*.test.ts\"",
     "test:local": "mocha \"test/**/*.test.ts\""
   }
