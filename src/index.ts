@@ -17,8 +17,10 @@ import {exec} from './utils/pg/psql'
 import {confirm} from './ux/confirm'
 import {prompt} from './ux/prompt'
 import {styledHeader} from './ux/styled-header'
-import {styledJson} from './ux/styled-json'
+import {styledJSON} from './ux/styled-json'
 import {styledObject} from './ux/styled-object'
+import {table} from './ux/table'
+import {wait} from './ux/wait'
 
 export const testHelpers = {
   expectOutput,
@@ -59,6 +61,8 @@ export const hux = {
   confirm,
   prompt,
   styledHeader,
-  styledJson,
+  styledJSON,
   styledObject,
+  table,
+  wait,
 }
