@@ -55,7 +55,7 @@ export const utils = {
   },
 }
 
-export const ux = {
+export const hux = {
   confirm,
   prompt,
   styledHeader,

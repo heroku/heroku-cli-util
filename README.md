@@ -19,50 +19,97 @@ npm install @heroku/heroku-cli-util
 
 ## Usage
 
-You can import the utilities you need.
+You can import the utilities you need from the main exports.
 
 ### Output Utilities
 
 ```js
+import { hux } from '@heroku/heroku-cli-util';
+
 // Styled header
-import { styledHeader } from '@heroku/heroku-cli-util/dist/ux/styled-header';
-styledHeader('My CLI Header');
+hux.styledHeader('My CLI Header');
 
 // Styled JSON
-import { styledJSON } from '@heroku/heroku-cli-util/dist/ux/styled-json';
-styledJSON({ foo: 'bar' });
+hux.styledJson({ foo: 'bar' });
 
 // Styled object
-import { styledObject } from '@heroku/heroku-cli-util/dist/ux/styled-object';
-styledObject({ foo: 'bar' });
-
-// Table
-import { table } from '@heroku/heroku-cli-util/dist/ux/table';
-table([{ name: 'Alice' }, { name: 'Bob' }], { columns: [{ key: 'name' }] });
-
-// Wait
-import { wait } from '@heroku/heroku-cli-util/dist/ux/wait';
-await wait('Processing...');
+hux.styledObject({ foo: 'bar' });
 ```
 
 ### User Interaction
 
 ```js
-import { prompt } from '@heroku/heroku-cli-util/dist/ux/prompt';
-const name = await prompt('What is your name?');
+import { hux } from '@heroku/heroku-cli-util';
 
-import { confirm } from '@heroku/heroku-cli-util/dist/ux/confirm';
-const proceed = await confirm('Continue?');
+const name = await hux.prompt('What is your name?');
+const proceed = await hux.confirm('Continue?');
 ```
 
 ### Test Helpers
 
 ```js
-import { initCliTest } from '@heroku/heroku-cli-util/dist/test-helpers/init';
-initCliTest();
+import { testHelpers } from '@heroku/heroku-cli-util';
 
-import { stdout, stderr } from '@heroku/heroku-cli-util/dist/test-helpers/stub-output';
-// Use stdout() and stderr() in your tests to capture CLI output
+testHelpers.initCliTest();
+
+testHelpers.setupStdoutStderr();
+// ...run your CLI code...
+const output = testHelpers.stdout();
+const errorOutput = testHelpers.stderr();
+testHelpers.restoreStdoutStderr();
+
+testHelpers.expectOutput(output, 'expected output');
+
+// Run a command (see docs for details)
+// await testHelpers.runCommand(MyCommand, ['arg1', 'arg2']);
+```
+
+### Types
+
+```js
+import { types } from '@heroku/heroku-cli-util';
+
+// Error types
+try {
+  throw new types.errors.AmbiguousError([{ name: 'foo' }, { name: 'bar' }], 'addon');
+} catch (err) {
+  if (err instanceof types.errors.AmbiguousError) {
+    console.error('Ambiguous:', err.message);
+  }
+}
+
+try {
+  throw new types.errors.NotFound();
+} catch (err) {
+  if (err instanceof types.errors.NotFound) {
+    console.error('Not found:', err.message);
+  }
+}
+
+// PG types (for TypeScript)
+/**
+ * types.pg.AddOnAttachmentWithConfigVarsAndPlan
+ * types.pg.AddOnWithRelatedData
+ * types.pg.ConnectionDetails
+ * types.pg.ConnectionDetailsWithAttachment
+ * types.pg.Link
+ * types.pg.TunnelConfig
+ */
+```
+
+### Database and Utility Helpers
+
+```js
+import { utils } from '@heroku/heroku-cli-util';
+
+// Get Heroku Postgres database connection details (requires APIClient from @heroku-cli/command)
+// const db = await utils.pg.databases(herokuApiClient, 'my-app', 'DATABASE_URL');
+
+// Get Heroku Postgres host
+const host = utils.pg.host();
+
+// Run a query (requires a ConnectionDetails object)
+// const result = await utils.pg.psql.exec(db, 'SELECT 1');
 ```
 
 ## Development
