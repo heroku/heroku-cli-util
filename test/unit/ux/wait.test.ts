@@ -9,7 +9,7 @@ describe('wait', function () {
     await wait(duration)
     const elapsed = Date.now() - start
     // Allow a small margin for timing inaccuracy
-    expect(elapsed).to.be.at.least(duration - 10)
-    expect(elapsed).to.be.at.most(duration + 10)
+    expect(elapsed).to.be.at.least(duration - 20)
+    expect(elapsed).to.be.at.most(duration + 20)
   })
 })

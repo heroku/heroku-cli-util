@@ -1,4 +1,3 @@
-// Test helpers (optional, for test environments)
 import expectOutput from './test-helpers/expect-output'
 import {initCliTest} from './test-helpers/init'
 import {runCommand} from './test-helpers/run-command'
@@ -8,6 +7,18 @@ import {
   stderr,
   stdout,
 } from './test-helpers/stub-output'
+import {AmbiguousError} from './types/errors/ambiguous'
+import {NotFound} from './types/errors/not-found'
+import {AddOnAttachmentWithConfigVarsAndPlan, AddOnWithRelatedData, Link} from './types/pg/data-api'
+import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from './types/pg/tunnel'
+import {getDatabase} from './utils/pg/databases'
+import getHost from './utils/pg/host'
+import {exec} from './utils/pg/psql'
+import {confirm} from './ux/confirm'
+import {prompt} from './ux/prompt'
+import {styledHeader} from './ux/styled-header'
+import {styledJson} from './ux/styled-json'
+import {styledObject} from './ux/styled-object'
 
 export const testHelpers = {
   expectOutput,
@@ -19,29 +30,35 @@ export const testHelpers = {
   stdout,
 }
 
-export {default as expectOutput} from './test-helpers/expect-output'
+export const types = {
+  errors: {
+    AmbiguousError,
+    NotFound,
+  },
+  pg: {
+    AddOnAttachmentWithConfigVarsAndPlan: {} as AddOnAttachmentWithConfigVarsAndPlan,
+    AddOnWithRelatedData: {} as AddOnWithRelatedData,
+    ConnectionDetails: {} as ConnectionDetails,
+    ConnectionDetailsWithAttachment: {} as ConnectionDetailsWithAttachment,
+    Link: {} as Link,
+    TunnelConfig: {} as TunnelConfig,
+  },
+}
 
-// Types - Errors
-export * from './types/errors/ambiguous'
-export * from './types/errors/not-found'
+export const utils = {
+  pg: {
+    databases: getDatabase,
+    host: getHost,
+    psql: {
+      exec,
+    },
+  },
+}
 
-// Types - PG
-export * from './types/pg/data-api'
-export * from './types/pg/tunnel'
-export * from './utils/addons/resolve'
-
-// Utilities - Postgres
-export * from './utils/pg/bastion'
-export * from './utils/pg/config-vars'
-export * from './utils/pg/databases'
-export {default as getPgHost} from './utils/pg/host'
-export * from './utils/pg/psql'
-
-// UX helpers
-export * from './ux/confirm'
-export * from './ux/prompt'
-export * from './ux/styled-header'
-export * from './ux/styled-json'
-export * from './ux/styled-object'
-export * from './ux/table'
-export * from './ux/wait'
+export const ux = {
+  confirm,
+  prompt,
+  styledHeader,
+  styledJson,
+  styledObject,
+}
