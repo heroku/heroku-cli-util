@@ -1,10 +1,9 @@
 import {ux} from '@oclif/core'
-import {table as cliTable} from '@oclif/core/lib/cli-ux'
 
-export function table<T extends Record<string, unknown>>(
-  data: T[],
-  columns: Parameters<typeof cliTable>[1],
-  options?: Parameters<typeof cliTable>[2],
+export function table(
+  data: Record<string, unknown>[],
+  columns: ux.Table.table.Columns<Record<string, unknown>>,
+  options?: ux.Table.table.Options,
 ): void {
   return ux.table(data, columns, options)
 }
