@@ -2,8 +2,8 @@ import {ux} from '@oclif/core'
 
 export function table<T extends Record<string, unknown>>(
   data: T[],
-  columns: Parameters<typeof ux.table>[1],
-  options?: Parameters<typeof ux.table>[2],
+  columns: ux.Table.table.Columns<T>,
+  options?: ux.Table.table.Options,
 ): void {
-  return ux.table(data, columns, options)
+  return ux.table<T>(data, columns, options)
 }

@@ -30,10 +30,24 @@ import { hux } from '@heroku/heroku-cli-util';
 hux.styledHeader('My CLI Header');
 
 // Styled JSON
-hux.styledJson({ foo: 'bar' });
+hux.styledJSON({ foo: 'bar' });
 
 // Styled object
 hux.styledObject({ foo: 'bar' });
+
+// Table output
+hux.table([
+  {name: 'Alice', age: 30},
+  {name: 'Bob', age: 25},
+], {
+  name: {header: 'Name'},
+  age: {header: 'Age'},
+});
+
+// Wait indicator
+const stop = hux.wait('Processing...');
+// ...do async work...
+stop();
 ```
 
 ### User Interaction
