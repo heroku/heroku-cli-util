@@ -17,7 +17,7 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.15.3",
     "@types/sinon": "^17.0.4",
-    "@types/tunnel-ssh": "4.1.1",
+    "@types/tunnel-ssh": "5.0.4",
     "chai-as-promised": "^8.0.1",
     "eslint": "^8.57.0",
     "eslint-config-oclif": "^5.0.0",
@@ -43,7 +43,7 @@
     "debug": "^4.4.0",
     "nock": "^13.2.9",
     "stdout-stderr": "^0.1.13",
-    "tunnel-ssh": "4.1.6"
+    "tunnel-ssh": "5.2.0"
   },
   "engines": {
     "node": ">=20"
