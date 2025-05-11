@@ -34,12 +34,12 @@
     "typescript": "^5.4.0"
   },
   "dependencies": {
-    "@types/chai": "^4.3.13",
+    "@types/chai": "^5.2.2",
     "@heroku-cli/color": "^2.0.4",
     "@heroku-cli/command": "^11.5.0",
     "@heroku/http-call": "^5.4.0",
     "@oclif/core": "^2.16.0",
-    "chai": "^4.4.1",
+    "chai": "^5.2.0",
     "debug": "^4.4.0",
     "nock": "^13.2.9",
     "stdout-stderr": "^0.1.13",
