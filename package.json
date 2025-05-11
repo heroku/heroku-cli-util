@@ -41,7 +41,7 @@
     "@oclif/core": "^2.16.0",
     "chai": "^4.4.1",
     "debug": "^4.4.0",
-    "nock": "^13.2.9",
+    "nock": "^14.0.4",
     "stdout-stderr": "^0.1.13",
     "tunnel-ssh": "4.1.6"
   },
