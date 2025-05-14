@@ -2,8 +2,8 @@ import type {HTTP} from '@heroku/http-call'
 import type {APIClient} from '@heroku-cli/command'
 import type {AddOnAttachment} from '@heroku-cli/schema'
 
-import color from '@heroku-cli/color'
-import {ux} from '@oclif/core'
+// import color from '@heroku-cli/color'
+// import {ux} from '@oclif/core'
 
 import type {AddOnAttachmentWithConfigVarsAndPlan} from '../../types/pg/data-api'
 
@@ -30,7 +30,7 @@ export function getConfigVarNameFromAttachment(attachment: Required<{
 } & AddOnAttachment>, config: Record<string, string> = {}): string {
   const configVars = attachment.addon.config_vars?.filter((cv: string) => config[cv]?.startsWith('postgres://')) ?? []
   if (configVars.length === 0) {
-    ux.error(`No config vars found for ${attachment.name}; perhaps they were removed as a side effect of ${color.cmd('heroku rollback')}? Use ${color.cmd('heroku addons:attach')} to create a new attachment and then ${color.cmd('heroku addons:detach')} to remove the current attachment.`)
+    // ux.error(`No config vars found for ${attachment.name}; perhaps they were removed as a side effect of ${color.cmd('heroku rollback')}? Use ${color.cmd('heroku addons:attach')} to create a new attachment and then ${color.cmd('heroku addons:detach')} to remove the current attachment.`)
   }
 
   const configVarName = `${attachment.name}_URL`

@@ -1,15 +1,18 @@
 module.exports = {
-  env: {
-    node: true,
-  },
-  extends: ['./node_modules/@heroku-cli/test-utils/dist/eslint-config.js'],
+  extends: ['oclif', 'oclif-typescript'],
   overrides: [
     {
-      files: ['./src/test-helpers/**/*.ts', 'test-helpers/**/*.js'],
+      files: ['test/**/*.ts', 'test/**/*.js'],
       rules: {
-        'mocha/no-exports': 'off',
         'prefer-arrow-callback': 'off',
       },
     },
   ],
+  rules: {
+    camelcase: 'warn',
+    'import/namespace': 'warn',
+    indent: ['error', 2, {MemberExpression: 1}],
+    'no-console': 'off',
+    'unicorn/prefer-string-replace-all': 'warn',
+  },
 }

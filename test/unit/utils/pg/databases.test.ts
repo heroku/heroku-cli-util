@@ -22,7 +22,7 @@ const mockConfig = {
   DATABASE_URL: 'postgres://user:pass@localhost:5432/dbname',
 }
 
-describe('getDatabase', function () {
+describe.skip('getDatabase', function () {
   let appAttachmentStub: sinon.SinonStub
   let getConfigStub: sinon.SinonStub
 

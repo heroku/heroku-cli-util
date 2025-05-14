@@ -42,7 +42,8 @@
     "@heroku-cli/color": "^2.0.4",
     "@heroku-cli/command": "^11.5.0",
     "@heroku/http-call": "^5.4.0",
-    "@oclif/core": "^2.16.0",
+    "@oclif/core": "^4.3.0",
+    "chai": "^4.4.1",
     "debug": "^4.4.0",
     "tunnel-ssh": "4.1.6"
   },

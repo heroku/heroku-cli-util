@@ -5,13 +5,13 @@ import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from '
 import {getDatabase} from './utils/pg/databases'
 import getHost from './utils/pg/host'
 import {exec} from './utils/pg/psql'
-import {confirm} from './ux/confirm'
-import {prompt} from './ux/prompt'
-import {styledHeader} from './ux/styled-header'
-import {styledJSON} from './ux/styled-json'
-import {styledObject} from './ux/styled-object'
-import {table} from './ux/table'
-import {wait} from './ux/wait'
+// import {confirm} from './ux/confirm'
+// import {prompt} from './ux/prompt'
+// import {styledHeader} from './ux/styled-header'
+// import {styledJSON} from './ux/styled-json'
+// import {styledObject} from './ux/styled-object'
+// import {table} from './ux/table'
+// import {wait} from './ux/wait'
 
 export const types = {
   errors: {
@@ -39,11 +39,11 @@ export const utils = {
 }
 
 export const hux = {
-  confirm,
-  prompt,
-  styledHeader,
-  styledJSON,
-  styledObject,
-  table,
-  wait,
+  // confirm,
+  // prompt,
+  // styledHeader,
+  // styledJSON,
+  // styledObject,
+  // table,
+  // wait,
 }

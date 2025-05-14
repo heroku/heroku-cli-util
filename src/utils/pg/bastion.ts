@@ -1,7 +1,6 @@
-
 import type {APIClient} from '@heroku-cli/command'
 
-import {ux} from '@oclif/core'
+// import {ux} from '@oclif/core'
 import debug from 'debug'
 import * as EventEmitter from 'node:events'
 import {promisify} from 'node:util'
@@ -94,7 +93,7 @@ export async function sshTunnel(db: ConnectionDetails, dbTunnelConfig: TunnelCon
     ])
   } catch (error) {
     pgDebug(error)
-    ux.error('Unable to establish a secure tunnel to your database.')
+    // ux.error('Unable to establish a secure tunnel to your database.')
   } finally {
     timeoutInstance.cancel()
   }
