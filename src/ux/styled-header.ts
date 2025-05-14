@@ -1,5 +1,8 @@
-import {ux} from '@oclif/core'
+// import {ux} from '@oclif/core'
 
-export function styledHeader(header: string): void {
-  return ux.styledHeader(header)
-}
+// export function styledHeader(header: string): void {
+//   return ux.styledHeader(header)
+// }
+
+// Temporarily disabled UX functions
+export const disabled = true

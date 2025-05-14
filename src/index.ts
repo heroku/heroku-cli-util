@@ -1,12 +1,3 @@
-import expectOutput from './test-helpers/expect-output'
-import {initCliTest} from './test-helpers/init'
-import {runCommand} from './test-helpers/run-command'
-import {
-  restoreStdoutStderr,
-  setupStdoutStderr,
-  stderr,
-  stdout,
-} from './test-helpers/stub-output'
 import {AmbiguousError} from './types/errors/ambiguous'
 import {NotFound} from './types/errors/not-found'
 import {AddOnAttachmentWithConfigVarsAndPlan, AddOnWithRelatedData, Link} from './types/pg/data-api'
@@ -14,23 +5,13 @@ import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from '
 import {getDatabase} from './utils/pg/databases'
 import getHost from './utils/pg/host'
 import {exec} from './utils/pg/psql'
-import {confirm} from './ux/confirm'
-import {prompt} from './ux/prompt'
-import {styledHeader} from './ux/styled-header'
-import {styledJSON} from './ux/styled-json'
-import {styledObject} from './ux/styled-object'
-import {table} from './ux/table'
-import {wait} from './ux/wait'
-
-export const testHelpers = {
-  expectOutput,
-  initCliTest,
-  restoreStdoutStderr,
-  runCommand,
-  setupStdoutStderr,
-  stderr,
-  stdout,
-}
+// import {confirm} from './ux/confirm'
+// import {prompt} from './ux/prompt'
+// import {styledHeader} from './ux/styled-header'
+// import {styledJSON} from './ux/styled-json'
+// import {styledObject} from './ux/styled-object'
+// import {table} from './ux/table'
+// import {wait} from './ux/wait'
 
 export const types = {
   errors: {
@@ -58,11 +39,11 @@ export const utils = {
 }
 
 export const hux = {
-  confirm,
-  prompt,
-  styledHeader,
-  styledJSON,
-  styledObject,
-  table,
-  wait,
+  // confirm,
+  // prompt,
+  // styledHeader,
+  // styledJSON,
+  // styledObject,
+  // table,
+  // wait,
 }
