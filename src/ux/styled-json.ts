@@ -1,8 +1,6 @@
-// import {ux} from '@oclif/core'
+import {ux} from '@oclif/core'
 
-// export function styledJSON(obj: unknown): void {
-//   return ux.styledJSON(obj)
-// }
+export function styledJSON(obj: unknown): void {
+  ux.stdout(ux.colorizeJson(obj))
+}
 
-// Temporarily disabled UX functions
-export const disabled = true

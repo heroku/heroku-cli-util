@@ -1,22 +1,25 @@
-// import heredoc from 'tsheredoc'
+import {expect} from 'chai'
+import {stdout} from 'stdout-stderr'
+import heredoc from 'tsheredoc'
 
-// import expectOutput from '../../../src/test-helpers/expect-output'
-// import {stdout} from '../../../src/test-helpers/stub-output'
-// import {styledJSON} from '../../../src/ux/styled-json'
+import {styledJSON} from '../../../src/ux/styled-json'
 
-// import stripAnsi = require('strip-ansi');
+import stripAnsi = require('strip-ansi')
 
-describe.skip('styledObject', function () {
+describe('styledJSON', function () {
   it('should print the correct styled object output', function () {
-    // const obj = {baz: 42, foo: 'bar'}
-    // styledJSON(obj)
-    // const expected = heredoc(`
-    //   {
-    //     "baz": 42,
-    //     "foo": "bar"
-    //   }
-    // `)
-    // const actual = stripAnsi(stdout())
-    // expectOutput(expected, actual)
+    const obj = {baz: 42, foo: 'bar', test: {one: 'two'}}
+    styledJSON(obj)
+    const expected = heredoc(`
+      {
+        "baz": 42,
+        "foo": "bar",
+        "test": {
+          "one": "two"
+        }
+      }
+    `)
+    const actual = stripAnsi(stdout.output)
+    expect(actual).to.equal(expected)
   })
 })
