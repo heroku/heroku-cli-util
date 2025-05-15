@@ -44,7 +44,7 @@
     "@heroku-cli/command": "^11.5.0",
     "@heroku/http-call": "^5.4.0",
     "@oclif/core": "^4.3.0",
-    "@oclif/table": "0.3.9",
+    "@oclif/table": "0.4.8",
     "debug": "^4.4.0",
     "inquirer": "^12.6.1",
     "tunnel-ssh": "4.1.6"
