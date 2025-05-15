@@ -1,7 +1,7 @@
 import {ux} from '@oclif/core'
-import inquirer from 'inquirer'
+import {createPromptModule} from 'inquirer'
 
-const prompt = inquirer.createPromptModule()
+const prompt = createPromptModule()
 
 export type PromptInputs<T> = {
   /**
