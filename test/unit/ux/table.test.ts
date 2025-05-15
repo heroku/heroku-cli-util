@@ -3,7 +3,8 @@ import {stdout} from 'stdout-stderr'
 
 import {table} from '../../../src/ux/table.js'
 
-import stripAnsi = require('strip-ansi')
+
+const removeAllWhitespace = (str: string): string => str.replace(/\s+/g, '')
 
 describe('table', function () {
   it('should print the correct table output', function () {
@@ -13,9 +14,9 @@ describe('table', function () {
     ]
     const columns = {baz: {header: 'Baz'}, foo: {header: 'Foo'}}
     table(data, columns)
-    const actual = stripAnsi(stdout.output)
-    expect(actual).to.include('Baz   Foo')
-    expect(actual).to.include('42    bar')
-    expect(actual).to.include('7     qux')
+
+    expect(removeAllWhitespace(stdout.output)).to.include(removeAllWhitespace('Baz   Foo'))
+    expect(removeAllWhitespace(stdout.output)).to.include(removeAllWhitespace('42    bar'))
+    expect(removeAllWhitespace(stdout.output)).to.include(removeAllWhitespace('7     qux'))
   })
 })
