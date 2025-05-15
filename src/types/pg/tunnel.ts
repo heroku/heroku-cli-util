@@ -3,7 +3,7 @@ import type {AddOnAttachment} from '@heroku-cli/schema'
 import {Server} from 'node:net'
 import * as createTunnel from 'tunnel-ssh'
 
-import type {AddOnAttachmentWithConfigVarsAndPlan} from './data-api'
+import type {AddOnAttachmentWithConfigVarsAndPlan} from './data-api.js'
 
 export type ConnectionDetails = {
   _tunnel?: Server

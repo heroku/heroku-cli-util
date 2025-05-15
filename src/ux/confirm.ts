@@ -1,6 +1,8 @@
 import {ux} from '@oclif/core'
 import inquirer from 'inquirer'
 
+const prompt = inquirer.createPromptModule()
+
 export type PromptInputs<T> = {
   /**
    * default value to offer to the user.  Will be used if the user does not respond within the timeout period.
@@ -14,12 +16,12 @@ export const confirm = async (message: string, {
   defaultAnswer = false,
   ms = 10_000,
 }: PromptInputs<boolean> = {}): Promise<boolean> =>  {
-  const promptPromise = inquirer.prompt([{
+  const promptPromise = prompt([{
     default: defaultAnswer,
     message,
     name: 'answer',
     type: 'confirm',
-  }]).then(({answer}) => answer)
+  }]).then(({answer}: {answer: boolean}) => answer)
 
   const timeoutPromise = new Promise<boolean>((resolve, reject) => {
     setTimeout(() => {

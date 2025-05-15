@@ -1,11 +1,9 @@
 import {expect} from 'chai'
+import {stdin as mockStdin} from 'mock-stdin'
 import {stdout} from 'stdout-stderr'
+import stripAnsi from 'strip-ansi'
 
-import {confirm} from '../../../src/ux/confirm'
-
-import stripAnsi = require('strip-ansi')
-
-const mockStdin = require('mock-stdin').stdin
+import {confirm} from '../../../src/ux/confirm.js'
 
 const wait = (ms: number): Promise<void> => new Promise(resolve => {
   setTimeout(resolve, ms)

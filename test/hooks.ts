@@ -1,6 +1,6 @@
 import {stderr, stdout} from 'stdout-stderr'
 
-exports.mochaHooks = {
+export const mochaHooks = {
   afterEach(done: () => void) {
     stdout.stop()
     stderr.stop()

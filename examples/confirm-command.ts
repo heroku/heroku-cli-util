@@ -1,6 +1,6 @@
 import {Command, ux} from '@oclif/core'
 
-import {confirm} from '../src/ux/confirm'
+import {confirm} from '../src/ux/confirm.js'
 
 export default class ConfirmCommand extends Command {
   static description = 'Example command demonstrating confirm usage'
@@ -16,4 +16,7 @@ export default class ConfirmCommand extends Command {
   }
 }
 
-(ConfirmCommand.run(process.argv.slice(2)) as any)
+ConfirmCommand.run(process.argv.slice(2)).catch(error => {
+  console.error('Error:', error)
+  throw error
+})
