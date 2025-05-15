@@ -29,10 +29,7 @@ export const confirm = async (message: string, {
         reject(ux.error('Prompt timed out'))
       } else {
         // Force the process to continue with the default answer
-        if (process.env.NODE_ENV !== 'test') {
-          process.stdin.push(null)
-        }
-
+        process.stdin.push(null)
         resolve(defaultAnswer)
       }
     }, ms)
