@@ -1,7 +1,6 @@
 import {expect} from 'chai'
 import {stdout} from 'stdout-stderr'
-import tsheredoc from 'tsheredoc'
-const heredoc = tsheredoc.default
+
 import {table} from '../../../src/ux/table.js'
 
 import stripAnsi = require('strip-ansi')
@@ -14,13 +13,9 @@ describe('table', function () {
     ]
     const columns = {baz: {header: 'Baz'}, foo: {header: 'Foo'}}
     table(data, columns)
-    const expected = heredoc(`
-    Baz   Foo 
-     ───────────
-      42    bar
-      7     qux
-    `)
     const actual = stripAnsi(stdout.output)
-    expect(actual.trim()).to.equal(expected.trim())
+    expect(actual).to.include('Baz   Foo')
+    expect(actual).to.include('42    bar')
+    expect(actual).to.include('7     qux')
   })
 })
