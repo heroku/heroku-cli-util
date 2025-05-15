@@ -6,6 +6,8 @@ import {table} from '../../../src/ux/table.js'
 
 import stripAnsi = require('strip-ansi')
 
+process.env.OCLIF_TABLE_SKIP_CI_CHECK = 'true'
+
 describe('table', function () {
   it('should print the correct table output', function () {
     const data = [
