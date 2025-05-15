@@ -8,8 +8,8 @@ import {exec} from './utils/pg/psql'
 // import {confirm} from './ux/confirm'
 // import {prompt} from './ux/prompt'
 // import {styledHeader} from './ux/styled-header'
-// import {styledJSON} from './ux/styled-json'
-// import {styledObject} from './ux/styled-object'
+import {styledJSON} from './ux/styled-json'
+import {styledObject} from './ux/styled-object'
 // import {table} from './ux/table'
 // import {wait} from './ux/wait'
 
@@ -42,8 +42,8 @@ export const hux = {
   // confirm,
   // prompt,
   // styledHeader,
-  // styledJSON,
-  // styledObject,
+  styledJSON,
+  styledObject,
   // table,
   // wait,
 }
