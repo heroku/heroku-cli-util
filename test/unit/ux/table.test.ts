@@ -3,7 +3,6 @@ import {stdout} from 'stdout-stderr'
 
 import {table} from '../../../src/ux/table.js'
 
-
 const removeAllWhitespace = (str: string): string => str.replace(/\s+/g, '')
 
 describe('table', function () {
