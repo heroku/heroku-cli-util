@@ -59,7 +59,7 @@
     "example": "sh examples/run.sh",
     "lint": "eslint . --ext .ts --config .eslintrc.cjs",
     "prepare": "npm run build",
-    "test": "nyc mocha --forbid-only \"test/**/*.test.+(ts|tsx)\"",
+    "test": "nyc mocha --forbid-only \"${npm_config_file:-test/**/*.test.+(ts|tsx)}\"",
     "test:local": "nyc mocha \"test/**/*.test.ts\""
   }
 }
