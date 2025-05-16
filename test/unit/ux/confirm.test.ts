@@ -1,43 +1,60 @@
-/* eslint-disable spaced-comment */
-// import {expect} from 'chai'
-import * as sinon from 'sinon'
+import {expect} from 'chai'
+import {stdin as mockStdin} from 'mock-stdin'
+import {stdout} from 'stdout-stderr'
+import stripAnsi from 'strip-ansi'
 
-// import expectOutput from '../../../src/test-helpers/expect-output'
-// import {stderr} from '../../../src/test-helpers/stub-output'
-// import {confirm} from '../../../src/ux/confirm'
+import {confirm} from '../../../src/ux/confirm.js'
 
-// import stripAnsi = require('strip-ansi')
+const wait = (ms: number): Promise<void> => new Promise(resolve => {
+  setTimeout(resolve, ms)
+})
 
-describe.skip('confirm', function () {
-  let stdinStub: sinon.SinonStub
+describe('confirm', function () {
+  let stdin: ReturnType<typeof mockStdin>
 
   beforeEach(function () {
-    stdinStub = sinon.stub(process.stdin, 'once')
+    stdin = mockStdin()
   })
 
   afterEach(function () {
-    stdinStub.restore()
+    stdin.restore()
   })
 
   it('should print the prompt and return true for yes', async function () {
-    stdinStub.callsFake((event, cb) => {
-      if (event === 'data') cb('y\n')
-      return process.stdin
-    })
-    //const result = await confirm('Are you sure')
-    // const output = stripAnsi(stderr())
-    // expectOutput(output, 'Are you sure:')
-    // expect(result).to.equal(true)
+    const confirmPromise = confirm('Are you sure')
+    await wait(2000)
+    stdin.send('y\n')
+    const result = await confirmPromise
+    const output = stripAnsi(stdout.output)
+    expect(output).to.contain('Are you sure')
+    expect(result).to.equal(true)
   })
 
   it('should print the prompt and return false for no', async function () {
-    stdinStub.callsFake((event, cb) => {
-      if (event === 'data') cb('n\n')
-      return process.stdin
-    })
-    // const result = await confirm('Are you sure')
-    // const output = stripAnsi(stderr())
-    // expectOutput(output, 'Are you sure:')
-    // expect(result).to.equal(false)
+    const confirmPromise = confirm('Are you sure')
+    await wait(2000)
+    stdin.send('n\n')
+    const result = await confirmPromise
+    const output = stripAnsi(stdout.output)
+    expect(output).to.contain('Are you sure')
+    expect(result).to.equal(false)
+  })
+
+  it('should use default answer when timed out', async function () {
+    const confirmPromise = confirm('Are you sure', {ms: 1000})
+    await wait(2000) // Wait longer than the timeout
+    const result = await confirmPromise
+    const output = stripAnsi(stdout.output)
+    expect(output).to.contain('Are you sure')
+    expect(result).to.equal(false) // Default answer is false
+  })
+
+  it('should use custom default answer when timed out', async function () {
+    const confirmPromise = confirm('Are you sure', {defaultAnswer: true, ms: 1000})
+    await wait(2000) // Wait longer than the timeout
+    const result = await confirmPromise
+    const output = stripAnsi(stdout.output)
+    expect(output).to.contain('Are you sure')
+    expect(result).to.equal(true) // Custom default answer is true
   })
 })

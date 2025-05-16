@@ -1,8 +1,9 @@
 import {expect} from 'chai'
 import {stdout} from 'stdout-stderr'
-import heredoc from 'tsheredoc'
+import tsheredoc from 'tsheredoc'
+const heredoc = tsheredoc.default
 
-import {styledJSON} from '../../../src/ux/styled-json'
+import {styledJSON} from '../../../src/ux/styled-json.js'
 
 import stripAnsi = require('strip-ansi')
 

@@ -1,15 +1,15 @@
-// import {initCliTest} from '../src/test-helpers/init'
-// import {restoreStdoutStderr, setupStdoutStderr} from '../src/test-helpers/stub-output'
-import {stdout} from 'stdout-stderr'
+import {stderr, stdout} from 'stdout-stderr'
 
-exports.mochaHooks = {
+export const mochaHooks = {
   afterEach(done: () => void) {
     stdout.stop()
+    stderr.stop()
     done()
   },
 
   beforeEach(done: () => void) {
     stdout.start()
+    stderr.start()
     done()
   },
 }

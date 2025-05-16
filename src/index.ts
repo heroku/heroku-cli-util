@@ -1,17 +1,16 @@
-import {AmbiguousError} from './types/errors/ambiguous'
-import {NotFound} from './types/errors/not-found'
-import {AddOnAttachmentWithConfigVarsAndPlan, AddOnWithRelatedData, Link} from './types/pg/data-api'
-import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from './types/pg/tunnel'
-import {getDatabase} from './utils/pg/databases'
-import getHost from './utils/pg/host'
-import {exec} from './utils/pg/psql'
-// import {confirm} from './ux/confirm'
+import {AmbiguousError} from './types/errors/ambiguous.js'
+import {NotFound} from './types/errors/not-found.js'
+import {AddOnAttachmentWithConfigVarsAndPlan, AddOnWithRelatedData, Link} from './types/pg/data-api.js'
+import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from './types/pg/tunnel.js'
+// import {getDatabase} from './utils/pg/databases.js'
+import getHost from './utils/pg/host.js'
+// import {exec} from './utils/pg/psql.js'
+import {confirm} from './ux/confirm.js'
+import {styledHeader} from './ux/styled-header.js'
 // import {prompt} from './ux/prompt'
-// import {styledHeader} from './ux/styled-header'
-import {styledJSON} from './ux/styled-json'
-import {styledObject} from './ux/styled-object'
-// import {table} from './ux/table'
-// import {wait} from './ux/wait'
+import {styledJSON} from './ux/styled-json.js'
+import {styledObject} from './ux/styled-object.js'
+import {table} from './ux/table.js'
 
 export const types = {
   errors: {
@@ -30,20 +29,20 @@ export const types = {
 
 export const utils = {
   pg: {
-    databases: getDatabase,
+    // databases: getDatabase,
     host: getHost,
     psql: {
-      exec,
+      // exec,
     },
   },
 }
 
 export const hux = {
-  // confirm,
+  confirm,
+  styledHeader,
   // prompt,
-  // styledHeader,
   styledJSON,
   styledObject,
-  // table,
+  table,
   // wait,
 }
