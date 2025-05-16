@@ -64,6 +64,7 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rm -rf dist",
+    "example": "sh examples/run.sh",
     "lint": "eslint . --ext .ts --config .eslintrc.js",
     "prepare": "npm run build",
     "test": "nyc mocha  --forbid-only \"test/**/*.test.ts\"",
