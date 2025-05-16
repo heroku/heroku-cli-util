@@ -8,8 +8,8 @@ import getHost from './utils/pg/host.js'
 import {confirm} from './ux/confirm.js'
 import {styledHeader} from './ux/styled-header.js'
 // import {prompt} from './ux/prompt'
-import {styledJSON} from './ux/styled-json'
-import {styledObject} from './ux/styled-object'
+import {styledJSON} from './ux/styled-json.js'
+import {styledObject} from './ux/styled-object.js'
 import {table} from './ux/table.js'
 
 export const types = {
