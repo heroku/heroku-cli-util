@@ -1,8 +1,12 @@
-// import {ux} from '@oclif/core'
+import inquirer from 'inquirer'
 
-// export async function prompt(name: string, options?: ux.IPromptOptions): Promise<string> {
-//   return ux.prompt(name, options)
-// }
-
-// Temporarily disabled UX functions
-export const disabled = true
+export async function prompt(name: string, options?: {default?: string; required?: boolean; type?: string}): Promise<string> {
+  const {answer} = await (inquirer as any).prompt([{
+    default: options?.default,
+    message: name,
+    name: 'answer',
+    type: 'input',
+    validate: options?.required ? (input: string) => input.length > 0 || 'This field is required' : undefined,
+  }])
+  return answer
+}
