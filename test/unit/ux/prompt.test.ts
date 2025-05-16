@@ -1,31 +1,28 @@
-// import {expect} from 'chai'
-import * as sinon from 'sinon'
+import {expect} from 'chai'
+import {stdin as mockStdin} from 'mock-stdin'
+import {stdout} from 'stdout-stderr'
+import stripAnsi from 'strip-ansi'
 
-// import expectOutput from '../../../src/test-helpers/expect-output'
-// import {stderr} from '../../../src/test-helpers/stub-output'
-// import {prompt} from '../../../src/ux/prompt'
+import {prompt} from '../../../src/ux/prompt.js'
 
-// import stripAnsi = require('strip-ansi');
-
-describe.skip('prompt', function () {
-  let stdinStub: sinon.SinonStub
+describe('prompt', function () {
+  let stdin: ReturnType<typeof mockStdin>
 
   beforeEach(function () {
-    stdinStub = sinon.stub(process.stdin, 'once')
+    stdin = mockStdin()
   })
 
   afterEach(function () {
-    stdinStub.restore()
+    stdin.restore()
   })
 
   it('should print the prompt and return the entered value', async function () {
-    stdinStub.callsFake((event, cb) => {
-      if (event === 'data') cb('test-value\n')
-      return process.stdin
-    })
-    // const result = await prompt('Enter something')
-    // const output = stripAnsi(stderr())
-    // expectOutput(output, 'Enter something:')
-    // expect(result).to.equal('test-value')
+    setTimeout(() => {
+      stdin.send('test-value\n')
+    }, 10)
+    const result = await prompt('Enter something')
+    const output = stripAnsi(stdout.output)
+    expect(output).to.include('Enter something')
+    expect(result).to.equal('test-value')
   })
 })
