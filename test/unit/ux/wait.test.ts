@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 
-// import {wait} from '../../../src/ux/wait'
+// import {wait} from '../../../src/ux/wait.js'
 
 describe.skip('wait', function () {
   it('should actually wait for at least the specified period of time', async function () {

@@ -1,10 +1,10 @@
 import type {APIClient} from '@heroku-cli/command'
 import type {AddOnAttachment} from '@heroku-cli/schema'
 
-import type {AddOnAttachmentWithConfigVarsAndPlan} from '../../types/pg/data-api'
+import type {AddOnAttachmentWithConfigVarsAndPlan} from '../../types/pg/data-api.js'
 
-import {AmbiguousError} from '../../types/errors/ambiguous'
-import {NotFound} from '../../types/errors/not-found'
+import {AmbiguousError} from '../../types/errors/ambiguous.js'
+import {NotFound} from '../../types/errors/not-found.js'
 
 export const appAttachment = async (heroku: APIClient, app: string | undefined, id: string, options: {
   addon_service?: string,

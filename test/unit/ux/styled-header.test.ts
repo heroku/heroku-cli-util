@@ -1,15 +1,14 @@
-/* eslint-disable spaced-comment */
-// import expectOutput from '../../../src/test-helpers/expect-output'
-// import {stdout} from '../../../src/test-helpers/stub-output'
-// import {styledHeader} from '../../../src/ux/styled-header'
+import {expect} from 'chai'
+import {stdout} from 'stdout-stderr'
+import stripAnsi from 'strip-ansi'
 
-// import stripAnsi = require('strip-ansi');
+import {styledHeader} from '../../../src/ux/styled-header.js'
 
-describe.skip('styledHeader', function () {
+describe('styledHeader', function () {
   it('should print the correct styled header output', function () {
-    //const header = 'My Test Header'
-    //styledHeader(header)
-    // const actual = stripAnsi(stdout())
-    // expectOutput(actual, '=== My Test Header\n\n')
+    const header = 'My Test Header'
+    styledHeader(header)
+    const actual = stripAnsi(stdout.output)
+    expect(actual).to.equal('=== My Test Header\n\n')
   })
 })
