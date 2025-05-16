@@ -1,53 +1,101 @@
-// import type {APIClient} from '@heroku-cli/command'
+import type {AddOnAttachment} from '@heroku-cli/schema'
 
-// import {expect} from 'chai'
-// import * as sinon from 'sinon'
+import {APIClient} from '@heroku-cli/command'
+import {Config} from '@oclif/core'
+import {expect} from 'chai'
+import nock from 'nock'
 
-// import * as resolve from '../../../../src/utils/addons/resolve'
-// import * as configVars from '../../../../src/utils/pg/config-vars'
-// import {getDatabase} from '../../../../src/utils/pg/databases'
+import type {AddOnAttachmentWithConfigVarsAndPlan} from '../../../../src/types/pg/data-api.js'
 
-// const mockHeroku = {} as APIClient
-// const mockAttachment = {
-//   addon: {
-//     addon: {id: 'addon-id', plan: {name: 'heroku-postgresql:standard-0'}},
-//     config_vars: ['DATABASE_URL'],
-//     id: 'addon-id',
-//     plan: {name: 'heroku-postgresql:standard-0'},
-//   },
-//   app: {name: 'test-app'},
-//   config_vars: ['DATABASE_URL'],
-// }
-// const mockConfig = {
-//   DATABASE_URL: 'postgres://user:pass@localhost:5432/dbname',
-// }
+import {getDatabase} from '../../../../src/utils/pg/databases.js'
 
-// describe.skip('getDatabase', function () {
-//   let appAttachmentStub: sinon.SinonStub
-//   let getConfigStub: sinon.SinonStub
+const HEROKU_API = 'https://api.heroku.com'
+const plan = {
+  addon_service: {id: 'postgres', name: 'heroku-postgresql'},
+  created_at: '2024-01-01T00:00:00Z',
+  default: false,
+  description: 'Standard 0',
+  id: 'plan-id',
+  name: 'heroku-postgresql:standard-0',
+  price: {cents: 0, unit: 'month'},
+  space: null,
+  state: 'public',
+  updated_at: '2024-01-01T00:00:00Z',
+}
 
-//   before(function () {
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     appAttachmentStub = sinon.stub(resolve, 'appAttachment').resolves(mockAttachment as any)
-//     getConfigStub = sinon.stub(configVars, 'getConfig').resolves(mockConfig)
-//   })
+const mockAttachment = {
+  addon: {
+    addon: {
+      addon_service: {id: 'postgres', name: 'heroku-postgresql'},
+      app: {id: 'app-id', name: 'test-app'},
+      config_vars: ['DATABASE_URL'],
+      id: 'addon-id',
+      name: 'heroku-postgresql',
+      plan,
+    },
+    addon_service: {id: 'postgres', name: 'heroku-postgresql'},
+    app: {id: 'app-id', name: 'test-app'},
+    config_vars: ['DATABASE_URL'],
+    created_at: '2024-01-01T00:00:00Z',
+    id: 'addon-id',
+    log_input_url: 'https://log-input-url.com',
+    name: 'heroku-postgresql',
+    namespace: null,
+    plan,
+    updated_at: '2024-01-01T00:00:00Z',
+    web_url: 'https://web-url.com',
+  },
+  app: {id: 'app-id', name: 'test-app'},
+  config_vars: ['DATABASE_URL'],
+  created_at: '2024-01-01T00:00:00Z',
+  id: 'attachment-id',
+  name: 'DATABASE',
+  namespace: null,
+  plan,
+  updated_at: '2024-01-01T00:00:00Z',
+} as { addon: AddOnAttachmentWithConfigVarsAndPlan } & AddOnAttachment
 
-//   after(function () {
-//     appAttachmentStub.restore()
-//     getConfigStub.restore()
-//   })
+// Add a runtime assertion to ensure plan exists
+if (!mockAttachment.addon.addon?.plan) throw new Error('mockAttachment.addon.addon.plan is missing')
 
-//   it('returns connection details for a valid attachment', async function () {
-//     const result = await getDatabase(mockHeroku, 'test-app', 'DATABASE_URL')
-//     expect(result).to.deep.equal({
-//       attachment: mockAttachment,
-//       database: 'dbname',
-//       host: 'localhost',
-//       password: 'pass',
-//       pathname: '/dbname',
-//       port: '5432',
-//       url: 'postgres://user:pass@localhost:5432/dbname',
-//       user: 'user',
-//     })
-//   })
-// })
+const mockConfig = {
+  DATABASE_URL: 'postgres://user:pass@localhost:5432/dbname',
+}
+
+describe('getDatabase', function () {
+  let config: Config
+  let heroku: APIClient
+
+  beforeEach(async function () {
+    config = await Config.load()
+    heroku = new APIClient(config)
+  })
+
+  afterEach(function () {
+    nock.cleanAll()
+  })
+
+  it('returns connection details for a valid attachment', async function () {
+    nock(HEROKU_API)
+      .post('/actions/addon-attachments/resolve')
+      .reply(200, [mockAttachment])
+    nock(HEROKU_API)
+      .get('/apps/test-app/config-vars')
+      .reply(200, mockConfig)
+
+    // Debug log to inspect the object passed to bastionKeyPlan
+    console.log('DEBUG attached.addon:', mockAttachment.addon)
+
+    const result = await getDatabase(heroku, 'test-app', 'DATABASE_URL')
+    expect(result).to.deep.equal({
+      attachment: mockAttachment,
+      database: 'dbname',
+      host: 'localhost',
+      password: 'pass',
+      pathname: '/dbname',
+      port: '5432',
+      url: 'postgres://user:pass@localhost:5432/dbname',
+      user: 'user',
+    })
+  })
+})
