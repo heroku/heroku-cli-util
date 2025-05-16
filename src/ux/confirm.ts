@@ -15,25 +15,36 @@ export type PromptInputs<T> = {
 export const confirm = async (message: string, {
   defaultAnswer = false,
   ms = 10_000,
-}: PromptInputs<boolean> = {}): Promise<boolean> =>  {
+}: PromptInputs<boolean> = {}): Promise<boolean> => {
+  let timeoutId: NodeJS.Timeout | undefined
+
   const promptPromise = prompt([{
     default: defaultAnswer,
     message,
     name: 'answer',
     type: 'confirm',
-  }]).then(({answer}: {answer: boolean}) => answer)
+  }]).then(({answer}: {answer: boolean}) => {
+    if (timeoutId) clearTimeout(timeoutId)
+    return answer
+  })
 
   const timeoutPromise = new Promise<boolean>((resolve, reject) => {
-    setTimeout(() => {
+    timeoutId = setTimeout(() => {
       if (defaultAnswer === undefined) {
         reject(ux.error('Prompt timed out'))
       } else {
         // Force the process to continue with the default answer
         process.stdin.push(null)
+        // Clean up stdin
+        process.stdin.pause()
         resolve(defaultAnswer)
       }
     }, ms)
   })
 
-  return Promise.race([promptPromise, timeoutPromise])
+  try {
+    return await Promise.race([promptPromise, timeoutPromise])
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId)
+  }
 }
