@@ -1,7 +1,7 @@
 {
   "type": "commonjs",
   "name": "@heroku/heroku-cli-util",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "description": "Set of helpful CLI utilities",
   "author": "Heroku",
   "license": "ISC",
