@@ -11,7 +11,7 @@
     "dist"
   ],
   "devDependencies": {
-    "@heroku-cli/test-utils": "0.1.0",
+    "@heroku-cli/test-utils": "0.1.1",
     "@heroku-cli/schema": "^2.0.0",
     "@types/chai": "^4.3.13",
     "@types/chai-as-promised": "^8.0.2",
