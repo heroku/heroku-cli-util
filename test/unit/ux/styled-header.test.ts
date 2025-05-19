@@ -1,5 +1,5 @@
-import expectOutput from '../../../src/test-helpers/expect-output'
-import {stdout} from '../../../src/test-helpers/stub-output'
+import {expectOutput, stdout} from '@heroku-cli/test-utils'
+
 import {styledHeader} from '../../../src/ux/styled-header'
 
 import stripAnsi = require('strip-ansi');

@@ -1,12 +1,3 @@
-import expectOutput from './test-helpers/expect-output'
-import {initCliTest} from './test-helpers/init'
-import {runCommand} from './test-helpers/run-command'
-import {
-  restoreStdoutStderr,
-  setupStdoutStderr,
-  stderr,
-  stdout,
-} from './test-helpers/stub-output'
 import {AmbiguousError} from './types/errors/ambiguous'
 import {NotFound} from './types/errors/not-found'
 import {AddOnAttachmentWithConfigVarsAndPlan, AddOnWithRelatedData, Link} from './types/pg/data-api'
@@ -21,16 +12,6 @@ import {styledJSON} from './ux/styled-json'
 import {styledObject} from './ux/styled-object'
 import {table} from './ux/table'
 import {wait} from './ux/wait'
-
-export const testHelpers = {
-  expectOutput,
-  initCliTest,
-  restoreStdoutStderr,
-  runCommand,
-  setupStdoutStderr,
-  stderr,
-  stdout,
-}
 
 export const types = {
   errors: {
