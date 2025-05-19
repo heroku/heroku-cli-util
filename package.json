@@ -28,7 +28,7 @@
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-mocha": "^10.4.3",
     "mocha": "^10.8.2",
-    "nock": "^13.2.9",
+    "nock": "^14.0.4",
     "nyc": "^17.1.0",
     "sinon": "^18.0.1",
     "stdout-stderr": "^0.1.13",
