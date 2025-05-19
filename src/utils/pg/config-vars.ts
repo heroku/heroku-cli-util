@@ -2,10 +2,10 @@ import type {HTTP} from '@heroku/http-call'
 import type {APIClient} from '@heroku-cli/command'
 import type {AddOnAttachment} from '@heroku-cli/schema'
 
-import color from '@heroku-cli/color'
+import {color} from '@heroku-cli/color'
 import {ux} from '@oclif/core'
 
-import type {AddOnAttachmentWithConfigVarsAndPlan} from '../../types/pg/data-api'
+import type {AddOnAttachmentWithConfigVarsAndPlan} from '../../types/pg/data-api.js'
 
 const responseByAppId: Map<string, Promise<HTTP<Record<string, string>>>> = new Map()
 

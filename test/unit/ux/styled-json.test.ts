@@ -1,21 +1,26 @@
-import {expectOutput, stdout} from '@heroku-cli/test-utils'
-import heredoc from 'tsheredoc'
+import {stdout} from '@heroku-cli/test-utils'
+import {expect} from 'chai'
+import tsheredoc from 'tsheredoc'
+const heredoc = tsheredoc.default
 
-import {styledJSON} from '../../../src/ux/styled-json'
+import {styledJSON} from '../../../src/ux/styled-json.js'
 
-import stripAnsi = require('strip-ansi');
+import stripAnsi = require('strip-ansi')
 
-describe('styledObject', function () {
+describe('styledJSON', function () {
   it('should print the correct styled object output', function () {
-    const obj = {baz: 42, foo: 'bar'}
+    const obj = {baz: 42, foo: 'bar', test: {one: 'two'}}
     styledJSON(obj)
     const expected = heredoc(`
       {
         "baz": 42,
-        "foo": "bar"
+        "foo": "bar",
+        "test": {
+          "one": "two"
+        }
       }
     `)
     const actual = stripAnsi(stdout())
-    expectOutput(expected, actual)
+    expect(actual).to.equal(expected)
   })
 })

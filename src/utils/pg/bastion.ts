@@ -1,4 +1,3 @@
-
 import type {APIClient} from '@heroku-cli/command'
 
 import {ux} from '@oclif/core'
@@ -7,10 +6,10 @@ import * as EventEmitter from 'node:events'
 import {promisify} from 'node:util'
 import * as createTunnel from 'tunnel-ssh'
 
-import {AddOnAttachmentWithConfigVarsAndPlan} from '../../types/pg/data-api'
-import {ConnectionDetails} from '../../types/pg/tunnel'
-import {TunnelConfig} from '../../types/pg/tunnel'
-import host from './host'
+import {AddOnAttachmentWithConfigVarsAndPlan} from '../../types/pg/data-api.js'
+import {ConnectionDetails} from '../../types/pg/tunnel.js'
+import {TunnelConfig} from '../../types/pg/tunnel.js'
+import host from './host.js'
 const pgDebug = debug('pg')
 
 export const bastionKeyPlan = (a: AddOnAttachmentWithConfigVarsAndPlan) => Boolean(/private/.test(a.addon.plan.name))
@@ -86,7 +85,7 @@ export async function sshTunnel(db: ConnectionDetails, dbTunnelConfig: TunnelCon
   }
 
   const timeoutInstance = new Timeout(timeout, 'Establishing a secure tunnel timed out')
-  const createSSHTunnel = promisify(createTunnel)
+  const createSSHTunnel = promisify(createTunnel.default)
   try {
     return await Promise.race([
       timeoutInstance.promise(),
@@ -115,8 +114,7 @@ export function tunnelConfig(db: ConnectionDetails): TunnelConfig {
 }
 
 class Timeout {
-  // eslint-disable-next-line unicorn/prefer-event-target
-  private readonly events = new EventEmitter()
+  private readonly events = new EventEmitter.EventEmitter()
   private readonly message: string
   private readonly timeout: number
   private timer: NodeJS.Timeout | undefined
@@ -136,7 +134,9 @@ class Timeout {
     }, this.timeout)
 
     try {
-      await EventEmitter.once(this.events, 'cancelled')
+      await new Promise<void>(resolve => {
+        this.events.once('cancelled', () => resolve())
+      })
     } finally {
       clearTimeout(this.timer)
     }

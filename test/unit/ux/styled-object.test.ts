@@ -1,9 +1,10 @@
-import {expectOutput, stdout} from '@heroku-cli/test-utils'
-import heredoc from 'tsheredoc'
+import {stdout} from '@heroku-cli/test-utils'
+import {expect} from 'chai'
+import tsheredoc from 'tsheredoc'
+const heredoc = tsheredoc.default
+import {styledObject} from '../../../src/ux/styled-object.js'
 
-import {styledObject} from '../../../src/ux/styled-object'
-
-import stripAnsi = require('strip-ansi');
+import stripAnsi = require('strip-ansi')
 
 describe('styledObject', function () {
   it('should print the correct styled object output', function () {
@@ -14,7 +15,7 @@ describe('styledObject', function () {
       foo: bar
     `)
     const actual = stripAnsi(stdout())
-    expectOutput(expected, actual)
+    expect(actual).to.equal(expected)
   })
 })
 

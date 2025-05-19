@@ -1,5 +1,5 @@
 {
-  "type": "commonjs",
+  "type": "module",
   "name": "@heroku/heroku-cli-util",
   "version": "9.0.2",
   "description": "Set of helpful CLI utilities",
@@ -16,6 +16,7 @@
     "@types/chai": "^4.3.13",
     "@types/chai-as-promised": "^8.0.2",
     "@types/debug": "^4.1.12",
+    "@types/inquirer": "^9.0.8",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.15.3",
     "@types/sinon": "^17.0.4",
@@ -28,10 +29,10 @@
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-mocha": "^10.4.3",
     "mocha": "^10.8.2",
+    "mock-stdin": "^1.0.0",
     "nock": "^13.2.9",
     "nyc": "^17.1.0",
     "sinon": "^18.0.1",
-    "stdout-stderr": "^0.1.13",
     "strip-ansi": "^6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
@@ -40,32 +41,24 @@
   },
   "dependencies": {
     "@heroku-cli/color": "^2.0.4",
-    "@heroku-cli/command": "^11.5.0",
+    "@heroku-cli/command": "^12.0.0",
     "@heroku/http-call": "^5.4.0",
-    "@oclif/core": "^2.16.0",
+    "@oclif/core": "^4.3.0",
+    "@oclif/table": "0.4.8",
     "debug": "^4.4.0",
+    "inquirer": "^12.6.1",
     "tunnel-ssh": "4.1.6"
   },
   "engines": {
     "node": ">=20"
   },
-  "mocha": {
-    "require": [
-      "ts-node/register",
-      "source-map-support/register",
-      "test/hooks.ts"
-    ],
-    "watch-extensions": "ts",
-    "recursive": true,
-    "reporter": "spec",
-    "timeout": 360000
-  },
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rm -rf dist",
-    "lint": "eslint . --ext .ts --config .eslintrc.js",
+    "example": "sh examples/run.sh",
+    "lint": "eslint . --ext .ts --config .eslintrc.cjs",
     "prepare": "npm run build",
-    "test": "nyc mocha  --forbid-only \"test/**/*.test.ts\"",
-    "test:local": "mocha \"test/**/*.test.ts\""
+    "test": "nyc mocha --forbid-only \"test/**/*.test.ts\"",
+    "test:local": "nyc mocha \"${npm_config_file:-test/**/*.test.+(ts|tsx)}\""
   }
 }

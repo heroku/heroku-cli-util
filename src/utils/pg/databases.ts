@@ -1,18 +1,18 @@
 import type {AddOnAttachment} from '@heroku-cli/schema'
 
-import color from '@heroku-cli/color'
+import {color} from '@heroku-cli/color'
 import {APIClient} from '@heroku-cli/command'
-import {HerokuAPIError} from '@heroku-cli/command/lib/api-client'
+import {HerokuAPIError} from '@heroku-cli/command/lib/api-client.js'
 import debug from 'debug'
 import {env} from 'node:process'
 
-import type {AddOnAttachmentWithConfigVarsAndPlan} from '../../types/pg/data-api'
-import type {ConnectionDetails, ConnectionDetailsWithAttachment} from '../../types/pg/tunnel'
+import type {AddOnAttachmentWithConfigVarsAndPlan} from '../../types/pg/data-api.js'
+import type {ConnectionDetails, ConnectionDetailsWithAttachment} from '../../types/pg/tunnel.js'
 
-import {AmbiguousError} from '../../types/errors/ambiguous'
-import {appAttachment} from '../addons/resolve'
-import {bastionKeyPlan, fetchConfig, getBastion} from './bastion'
-import {getConfig, getConfigVarName, getConfigVarNameFromAttachment} from './config-vars'
+import {AmbiguousError} from '../../types/errors/ambiguous.js'
+import {appAttachment} from '../addons/resolve.js'
+import {bastionKeyPlan, fetchConfig, getBastion} from './bastion.js'
+import {getConfig, getConfigVarName, getConfigVarNameFromAttachment} from './config-vars.js'
 
 const pgDebug = debug('pg')
 

@@ -2,11 +2,11 @@ import {APIClient} from '@heroku-cli/command'
 import {Config} from '@oclif/core'
 import * as chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
-import * as nock from 'nock'
+import nock from 'nock'
 
-import {AmbiguousError} from '../../../../src/types/errors/ambiguous'
-import {NotFound} from '../../../../src/types/errors/not-found'
-import {appAttachment} from '../../../../src/utils/addons/resolve'
+import {AmbiguousError} from '../../../../src/types/errors/ambiguous.js'
+import {NotFound} from '../../../../src/types/errors/not-found.js'
+import {appAttachment} from '../../../../src/utils/addons/resolve.js'
 
 const {expect} = chai
 

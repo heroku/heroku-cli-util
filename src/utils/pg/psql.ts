@@ -10,8 +10,8 @@ import {Server} from 'node:net'
 import {Stream} from 'node:stream'
 import {finished} from 'node:stream/promises'
 
-import {ConnectionDetails, TunnelConfig} from '../../types/pg/tunnel'
-import {getConfigs, sshTunnel} from './bastion'
+import {ConnectionDetails, TunnelConfig} from '../../types/pg/tunnel.js'
+import {getConfigs, sshTunnel} from './bastion.js'
 
 const pgDebug = debug('pg')
 
