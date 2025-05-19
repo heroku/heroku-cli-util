@@ -33,7 +33,6 @@
     "nock": "^13.2.9",
     "nyc": "^17.1.0",
     "sinon": "^18.0.1",
-    "stdout-stderr": "^0.1.13",
     "strip-ansi": "^6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
@@ -42,7 +41,7 @@
   },
   "dependencies": {
     "@heroku-cli/color": "^2.0.4",
-    "@heroku-cli/command": "^11.5.0",
+    "@heroku-cli/command": "^12.0.0",
     "@heroku/http-call": "^5.4.0",
     "@oclif/core": "^4.3.0",
     "@oclif/table": "0.4.8",
@@ -59,7 +58,7 @@
     "example": "sh examples/run.sh",
     "lint": "eslint . --ext .ts --config .eslintrc.cjs",
     "prepare": "npm run build",
-    "test": "nyc mocha --forbid-only \"test/**/*.test.+(ts|tsx)\"",
-    "test:local": "nyc mocha \"test/**/*.test.ts\""
+    "test": "nyc mocha --forbid-only \"test/**/*.test.ts\"",
+    "test:local": "nyc mocha \"${npm_config_file:-test/**/*.test.+(ts|tsx)}\""
   }
 }

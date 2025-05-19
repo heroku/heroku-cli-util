@@ -56,7 +56,9 @@ export default class TableCommand extends Command {
 }
 
 // Execute the command
-TableCommand.run(process.argv.slice(2)).catch(error => {
+try {
+  await TableCommand.run(process.argv.slice(2))
+} catch (error) {
   console.error('Error:', error)
   throw error
-})
+}
