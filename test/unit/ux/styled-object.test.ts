@@ -1,5 +1,5 @@
+import {stdout} from '@heroku-cli/test-utils'
 import {expect} from 'chai'
-import {stdout} from 'stdout-stderr'
 import tsheredoc from 'tsheredoc'
 const heredoc = tsheredoc.default
 import {styledObject} from '../../../src/ux/styled-object.js'
@@ -14,7 +14,7 @@ describe('styledObject', function () {
       baz: 42
       foo: bar
     `)
-    const actual = stripAnsi(stdout.output)
+    const actual = stripAnsi(stdout())
     expect(actual).to.equal(expected)
   })
 })

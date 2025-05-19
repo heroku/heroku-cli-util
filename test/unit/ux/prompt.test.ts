@@ -1,6 +1,6 @@
+import {stdout} from '@heroku-cli/test-utils'
 import {expect} from 'chai'
 import {stdin as mockStdin} from 'mock-stdin'
-import {stdout} from 'stdout-stderr'
 import stripAnsi from 'strip-ansi'
 
 import {prompt} from '../../../src/ux/prompt.js'
@@ -21,7 +21,7 @@ describe('prompt', function () {
       stdin.send('test-value\n')
     }, 10)
     const result = await prompt('Enter something')
-    const output = stripAnsi(stdout.output)
+    const output = stripAnsi(stdout())
     expect(output).to.include('Enter something')
     expect(result).to.equal('test-value')
   })

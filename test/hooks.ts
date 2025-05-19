@@ -1,15 +1,14 @@
-import {stderr, stdout} from 'stdout-stderr'
+import {initCliTest, restoreStdoutStderr, setupStdoutStderr} from '@heroku-cli/test-utils'
 
 export const mochaHooks = {
   afterEach(done: () => void) {
-    stdout.stop()
-    stderr.stop()
+    restoreStdoutStderr()
     done()
   },
 
   beforeEach(done: () => void) {
-    stdout.start()
-    stderr.start()
+    initCliTest()
+    setupStdoutStderr()
     done()
   },
 }

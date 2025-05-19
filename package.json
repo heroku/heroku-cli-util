@@ -33,7 +33,6 @@
     "nock": "^13.2.9",
     "nyc": "^17.1.0",
     "sinon": "^18.0.1",
-    "stdout-stderr": "^0.1.13",
     "strip-ansi": "^6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",

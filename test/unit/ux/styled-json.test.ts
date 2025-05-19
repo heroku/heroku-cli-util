@@ -1,5 +1,5 @@
+import {stdout} from '@heroku-cli/test-utils'
 import {expect} from 'chai'
-import {stdout} from 'stdout-stderr'
 import tsheredoc from 'tsheredoc'
 const heredoc = tsheredoc.default
 
@@ -20,7 +20,7 @@ describe('styledJSON', function () {
         }
       }
     `)
-    const actual = stripAnsi(stdout.output)
+    const actual = stripAnsi(stdout())
     expect(actual).to.equal(expected)
   })
 })
