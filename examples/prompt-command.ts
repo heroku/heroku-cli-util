@@ -16,7 +16,10 @@ export default class PromptCommand extends Command {
   }
 }
 
-PromptCommand.run(process.argv.slice(2)).catch(error => {
+// Execute the command
+try {
+  await PromptCommand.run(process.argv.slice(2))
+} catch (error) {
   console.error('Error:', error)
   throw error
-})
+}

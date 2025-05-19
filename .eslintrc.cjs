@@ -1,27 +1,19 @@
 module.exports = {
-  extends: ['oclif', 'oclif-typescript'],
+  env: {
+    node: true,
+  },
+  extends: ['./node_modules/@heroku-cli/test-utils/dist/eslint-config.js'],
   overrides: [
     {
-      files: ['test/**/*.ts', 'test/**/*.js'],
+      files: ['src/**/*.ts'],
       rules: {
-        'prefer-arrow-callback': 'off',
-      },
-    },
-    {
-      files: ['examples/**/*.ts', 'examples/**/*.js'],
-      rules: {
-        'unicorn/prefer-module': 'off',
-        'unicorn/prefer-top-level-await': 'off',
+        '@typescript-eslint/no-explicit-any': 'warn',
       },
     },
   ],
-  rules: {
-    '@typescript-eslint/no-explicit-any': 'warn',
-    camelcase: 'warn',
-    'import/namespace': 'warn',
-    indent: ['error', 2, {MemberExpression: 1}],
-    'no-console': 'off',
-    'unicorn/no-empty-file': 'warn',
-    'unicorn/prefer-string-replace-all': 'warn',
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
   },
 }

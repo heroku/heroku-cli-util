@@ -22,5 +22,10 @@ export default class StyledObjectCommand extends Command {
   }
 }
 
-(StyledObjectCommand.run(process.argv.slice(2)) as any)
-  .catch(require('@oclif/core').Errors.handle)
+// Execute the command
+try {
+  await StyledObjectCommand.run(process.argv.slice(2))
+} catch (error) {
+  console.error('Error:', error)
+  throw error
+}

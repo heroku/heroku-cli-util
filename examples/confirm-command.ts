@@ -16,7 +16,9 @@ export default class ConfirmCommand extends Command {
   }
 }
 
-ConfirmCommand.run(process.argv.slice(2)).catch(error => {
+try {
+  await ConfirmCommand.run(process.argv.slice(2))
+} catch (error) {
   console.error('Error:', error)
   throw error
-})
+}
