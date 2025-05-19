@@ -1,7 +1,7 @@
-import heredoc from 'tsheredoc'
-
 import {expectOutput} from '@heroku-cli/test-utils'
 import {stdout} from '@heroku-cli/test-utils'
+import heredoc from 'tsheredoc'
+
 import {styledObject} from '../../../src/ux/styled-object'
 
 import stripAnsi = require('strip-ansi');
