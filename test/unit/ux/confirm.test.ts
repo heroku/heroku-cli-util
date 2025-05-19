@@ -1,5 +1,4 @@
-import {expectOutput} from '@heroku-cli/test-utils'
-import {stderr} from '@heroku-cli/test-utils'
+import {expectOutput, stderr} from '@heroku-cli/test-utils'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 

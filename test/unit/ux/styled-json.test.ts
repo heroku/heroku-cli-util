@@ -1,5 +1,4 @@
-import {expectOutput} from '@heroku-cli/test-utils'
-import {stdout} from '@heroku-cli/test-utils'
+import {expectOutput, stdout} from '@heroku-cli/test-utils'
 import heredoc from 'tsheredoc'
 
 import {styledJSON} from '../../../src/ux/styled-json'
