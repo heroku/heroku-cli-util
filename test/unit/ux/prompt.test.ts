@@ -1,8 +1,8 @@
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
-import expectOutput from '../../../src/test-helpers/expect-output'
-import {stderr} from '../../../src/test-helpers/stub-output'
+import {expectOutput} from '@heroku-cli/test-utils'
+import {stderr} from '@heroku-cli/test-utils'
 import {prompt} from '../../../src/ux/prompt'
 
 import stripAnsi = require('strip-ansi');

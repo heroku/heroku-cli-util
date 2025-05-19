@@ -1,7 +1,7 @@
 import heredoc from 'tsheredoc'
 
-import expectOutput from '../../../src/test-helpers/expect-output'
-import {stdout} from '../../../src/test-helpers/stub-output'
+import {expectOutput} from '@heroku-cli/test-utils'
+import {stdout} from '@heroku-cli/test-utils'
 import {table} from '../../../src/ux/table'
 
 import stripAnsi = require('strip-ansi')

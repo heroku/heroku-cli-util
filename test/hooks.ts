@@ -1,5 +1,5 @@
-import {initCliTest} from '../src/test-helpers/init'
-import {restoreStdoutStderr, setupStdoutStderr} from '../src/test-helpers/stub-output'
+import {initCliTest} from '@heroku-cli/test-utils'
+import {restoreStdoutStderr, setupStdoutStderr} from '@heroku-cli/test-utils'
 
 exports.mochaHooks = {
   afterEach(done: () => void) {

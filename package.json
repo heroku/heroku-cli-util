@@ -11,13 +11,16 @@
     "dist"
   ],
   "devDependencies": {
+    "@heroku-cli/test-utils": "0.1.0",
     "@heroku-cli/schema": "^2.0.0",
+    "@types/chai": "^4.3.13",
     "@types/chai-as-promised": "^8.0.2",
     "@types/debug": "^4.1.12",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.15.3",
     "@types/sinon": "^17.0.4",
     "@types/tunnel-ssh": "4.1.1",
+    "chai": "^4.4.1",
     "chai-as-promised": "^8.0.1",
     "eslint": "^8.57.0",
     "eslint-config-oclif": "^5.0.0",
@@ -25,8 +28,10 @@
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-mocha": "^10.4.3",
     "mocha": "^10.8.2",
+    "nock": "^13.2.9",
     "nyc": "^17.1.0",
     "sinon": "^18.0.1",
+    "stdout-stderr": "^0.1.13",
     "strip-ansi": "^6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
@@ -34,15 +39,11 @@
     "typescript": "^5.4.0"
   },
   "dependencies": {
-    "@types/chai": "^4.3.13",
     "@heroku-cli/color": "^2.0.4",
     "@heroku-cli/command": "^11.5.0",
     "@heroku/http-call": "^5.4.0",
     "@oclif/core": "^2.16.0",
-    "chai": "^4.4.1",
     "debug": "^4.4.0",
-    "nock": "^13.2.9",
-    "stdout-stderr": "^0.1.13",
     "tunnel-ssh": "4.1.6"
   },
   "engines": {
@@ -53,9 +54,6 @@
       "ts-node/register",
       "source-map-support/register",
       "test/hooks.ts"
-    ],
-    "file": [
-      "src/test-helpers/stub-output.ts"
     ],
     "watch-extensions": "ts",
     "recursive": true,
