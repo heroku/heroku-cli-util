@@ -1,6 +1,6 @@
 import {Command} from '@oclif/core'
 
-import {styledJSON} from '../src/ux/styled-json'
+import {styledJSON} from '../src/ux/styled-json.js'
 
 export default class StyledJSONCommand extends Command {
   static description = 'Example command demonstrating styledJSON usage'

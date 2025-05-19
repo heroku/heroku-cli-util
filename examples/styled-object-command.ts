@@ -1,6 +1,6 @@
 import {Command} from '@oclif/core'
 
-import {styledObject} from '../src/ux/styled-object'
+import {styledObject} from '../src/ux/styled-object.js'
 
 export default class StyledObjectCommand extends Command {
   static description = 'Example command demonstrating styledObject usage'
