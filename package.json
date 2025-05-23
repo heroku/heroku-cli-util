@@ -20,7 +20,7 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.15.3",
     "@types/sinon": "^17.0.4",
-    "@types/tunnel-ssh": "4.1.1",
+    "@types/tunnel-ssh": "5.0.4",
     "chai": "^4.4.1",
     "chai-as-promised": "^8.0.1",
     "eslint": "^8.57.0",
@@ -47,7 +47,7 @@
     "@oclif/table": "0.4.8",
     "debug": "^4.4.0",
     "inquirer": "^12.6.1",
-    "tunnel-ssh": "4.1.6"
+    "tunnel-ssh": "5.2.0"
   },
   "engines": {
     "node": ">=20"
