@@ -1,9 +1,8 @@
 import {stdout} from '@heroku-cli/test-utils'
 import {expect} from 'chai'
+import stripAnsi from 'strip-ansi'
 
 import {table} from '../../../src/ux/table.js'
-
-import stripAnsi = require('strip-ansi')
 
 const removeAllWhitespace = (str: string): string => stripAnsi(str).replace(/\s+/g, '')
 
