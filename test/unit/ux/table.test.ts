@@ -14,8 +14,7 @@ describe('table', function () {
       {baz: 7, foo: 'qux'},
     ]
     const columns = {baz: {header: 'Baz'}, foo: {header: 'Foo'}}
-    table(data, columns)
-
+    table(data, columns, {noStyle: true})
     expect(removeAllWhitespace(stdout())).to.include(removeAllWhitespace('Baz   Foo'))
     expect(removeAllWhitespace(stdout())).to.include(removeAllWhitespace('42    bar'))
     expect(removeAllWhitespace(stdout())).to.include(removeAllWhitespace('7     qux'))

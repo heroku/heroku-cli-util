@@ -27,7 +27,7 @@ export function styledObject(obj: unknown, keys?: string[]) {
   const maxKeyLength = Math.max(...keyLengths) + 2
 
   const logKeyValue = (key: string, value: unknown): string =>
-    `${color.cyan(key)}:` + ' '.repeat(maxKeyLength - key.length - 1) + prettyPrint(value)
+    `${color.rgb(147, 112, 219)(key)}:` + ' '.repeat(maxKeyLength - key.length - 1) + prettyPrint(value)
 
   for (const [key, value] of Object.entries(obj)) {
     if (keys && !keys.includes(key)) continue
