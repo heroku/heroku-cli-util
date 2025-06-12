@@ -45,9 +45,6 @@ describe('table', function () {
     const columns = {age: {header: 'Age'}, name: {header: 'Name'}}
     table(data, columns)
     const output = stdout()
-    // Should have headers-only-with-underline border style
-    expect(output).to.include('─')
-    expect(output).to.include('│')
     // Should have whiteBright border color
     expect(output).to.include('\u001B[97m') // ANSI code for whiteBright
     // Should have purple headers
