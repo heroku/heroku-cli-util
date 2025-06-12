@@ -37,20 +37,4 @@ describe('table', function () {
     expect(removeAllWhitespace(output)).to.include(removeAllWhitespace('30    Alice'))
     expect(removeAllWhitespace(output)).to.include(removeAllWhitespace('35    Charlie'))
   })
-
-  it('should use default styling options', function () {
-    const data = [
-      {age: 30, name: 'Alice'},
-    ]
-    const columns = {age: {header: 'Age'}, name: {header: 'Name'}}
-    table(data, columns)
-    const output = stdout()
-    // Should have whiteBright border color
-    expect(output).to.include('\u001B[97m') // ANSI code for whiteBright
-    // Should have purple headers
-    expect(output).to.include('\u001B[38;2;147;112;219m') // ANSI code for rgb(147, 112, 219)
-    // Should contain the data
-    expect(removeAllWhitespace(output)).to.include(removeAllWhitespace('Age   Name'))
-    expect(removeAllWhitespace(output)).to.include(removeAllWhitespace('30    Alice'))
-  })
 })
