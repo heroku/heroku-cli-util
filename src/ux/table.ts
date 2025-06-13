@@ -1,4 +1,4 @@
-import {printTable} from '@oclif/table'
+import {TableOptions, printTable} from '@oclif/table'
 
 type Column<T extends Record<string, unknown>> = {
   extended: boolean;
@@ -9,22 +9,10 @@ type Column<T extends Record<string, unknown>> = {
 
 type Columns<T extends Record<string, unknown>> = { [key: string]: Partial<Column<T>> };
 
-type Options = {
-  columns?: string;
-  extended?: boolean;
-  filter?: string;
-  'no-header'?: boolean;
-  'no-truncate'?: boolean;
-  printLine?(s: unknown): void;
-  rowStart?: string;
-  sort?: string;
-  title?: string;
-}
-
 export function table<T extends Record<string, unknown>>(
   data: T[],
   columns: Columns<T>,
-  options?: Options,
+  options?: { printLine?(s: unknown): void } & Omit<TableOptions<T>, 'columns' | 'data'>,
 ) {
   const cols = Object.entries(columns).map(([key, opts]) => {
     if (opts.header) return {key, name: opts.header}
@@ -34,10 +22,19 @@ export function table<T extends Record<string, unknown>>(
     Object.fromEntries(Object.entries(columns).map(([key, {get}]) => [key, get ? get(row) : row[key]])),
   ) as Array<Record<string, unknown>>
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const {printLine, ...tableOptions} = options || {}
+
   printTable({
-    borderStyle: 'headers-only-with-underline',
+    ...(tableOptions?.noStyle ? {} : {
+      borderColor: 'whiteBright',
+      borderStyle: 'headers-only-with-underline',
+      headerOptions: {
+        color: 'rgb(147, 112, 219)',
+      },
+    }),
+    ...tableOptions,
     columns: cols,
-    data: d,
-    title: options?.title,
+    data: d as T[],
   })
 }

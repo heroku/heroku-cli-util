@@ -1,10 +1,9 @@
 import {stdout} from '@heroku-cli/test-utils'
 import {expect} from 'chai'
+import stripAnsi from 'strip-ansi'
 import tsheredoc from 'tsheredoc'
 const heredoc = tsheredoc.default
 import {styledObject} from '../../../src/ux/styled-object.js'
-
-import stripAnsi = require('strip-ansi')
 
 describe('styledObject', function () {
   it('should print the correct styled object output', function () {
