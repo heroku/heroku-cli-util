@@ -12,7 +12,7 @@ type Columns<T extends Record<string, unknown>> = { [key: string]: Partial<Colum
 export function table<T extends Record<string, unknown>>(
   data: T[],
   columns: Columns<T>,
-  options?: { printLine?(s: unknown): void } & Omit<TableOptions<T>, 'columns' | 'data'>,
+  options?: { printLine?(s: unknown): void } & Omit<TableOptions<T>, 'data'>,
 ) {
   const cols = Object.entries(columns).map(([key, opts]) => {
     if (opts.header) return {key, name: opts.header}
