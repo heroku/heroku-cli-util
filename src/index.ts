@@ -1,6 +1,6 @@
 import {AmbiguousError} from './types/errors/ambiguous.js'
 import {NotFound} from './types/errors/not-found.js'
-import {AddOnAttachmentWithConfigVarsAndPlan, AddOnWithRelatedData, Link} from './types/pg/data-api.js'
+import {ExtendedAddonAttachment, AddOnWithRelatedData, Link} from './types/pg/data-api.js'
 import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from './types/pg/tunnel.js'
 import {getDatabase} from './utils/pg/databases.js'
 import getHost from './utils/pg/host.js'
@@ -18,7 +18,7 @@ export const types = {
     NotFound,
   },
   pg: {
-    AddOnAttachmentWithConfigVarsAndPlan: {} as AddOnAttachmentWithConfigVarsAndPlan,
+    ExtendedAddonAttachment: {} as ExtendedAddonAttachment,
     AddOnWithRelatedData: {} as AddOnWithRelatedData,
     ConnectionDetails: {} as ConnectionDetails,
     ConnectionDetailsWithAttachment: {} as ConnectionDetailsWithAttachment,
@@ -29,7 +29,7 @@ export const types = {
 
 export const utils = {
   pg: {
-    databases: getDatabase,
+    database: getDatabase,
     host: getHost,
     psql: {
       exec,
