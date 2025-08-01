@@ -6,13 +6,20 @@ import * as EventEmitter from 'node:events'
 import {promisify} from 'node:util'
 import * as createTunnel from 'tunnel-ssh'
 
-import {AddOnAttachmentWithConfigVarsAndPlan} from '../../types/pg/data-api.js'
-import {ConnectionDetails} from '../../types/pg/tunnel.js'
+import {ExtendedAddonAttachment} from '../../types/pg/data-api.js'
+import {BastionConfig, BastionConfigResponse, ConnectionDetails} from '../../types/pg/tunnel.js'
 import {TunnelConfig} from '../../types/pg/tunnel.js'
 import host from './host.js'
 const pgDebug = debug('pg')
 
-export const bastionKeyPlan = (a: AddOnAttachmentWithConfigVarsAndPlan) => Boolean(/private/.test(a.addon.plan.name))
+/**
+ * This function returns whether the attachment belongs to an add-on installed onto a non-shield Private Space or not.
+ * If true, the bastion information needs to be fetched from the Data API.
+ * For add-ons installed onto a Shield Private Space, the bastion information should be fetched from config vars.
+ */
+export function bastionKeyPlan(attachment: ExtendedAddonAttachment): boolean {
+  return Boolean(/private/.test(attachment.addon.plan.name))
+}
 
 export const env = (db: ConnectionDetails) => {
   const baseEnv = {
@@ -38,29 +45,53 @@ export const env = (db: ConnectionDetails) => {
   return baseEnv
 }
 
-export async function fetchConfig(heroku:APIClient, db: {id: string}) {
-  return heroku.get<{host: string, private_key:string}>(
-    `/client/v11/databases/${encodeURIComponent(db.id)}/bastion`,
-    {
-      hostname: host(),
-    },
+/**
+ * Fetches the bastion configuration from the Data API (only relevant for add-ons installed onto a
+ * non-shield Private Space).
+ * For add-ons installed onto a Shield Private Space, the bastion information is stored in the config vars.
+ */
+export async function fetchBastionConfig(
+  heroku: APIClient,
+  addon: ExtendedAddonAttachment['addon'],
+): Promise<BastionConfig> {
+  const {body: bastionConfig} = await heroku.get<BastionConfigResponse>(
+    `/client/v11/databases/${encodeURIComponent(addon.id)}/bastion`,
+    {hostname: host()},
   )
+
+  if (bastionConfig.host && bastionConfig.private_key) {
+    return {
+      bastionHost: bastionConfig.host,
+      bastionKey: bastionConfig.private_key
+    }
+  }
+
+  return {}
 }
 
-export const getBastion = function (config:Record<string, string>, baseName: string) {
-  // If there are bastions, extract a host and a key
-  // otherwise, return an empty Object
-
-  // If there are bastions:
-  // * there should be one *_BASTION_KEY
-  // * pick one host from the comma-separated list in *_BASTIONS
-  // We assert that _BASTIONS and _BASTION_KEY always exist together
-  // If either is falsy, pretend neither exist
-
+/**
+ * This function returns the bastion configuration from the config vars for add-ons installed onto Shield
+ * Private Spaces.
+ *
+ * If there are bastions, extracts a host and a key from the config vars.
+ * If there are no bastions, returns an empty Object.
+ *
+ * We assert that _BASTIONS and _BASTION_KEY always exist together.
+ * If either is falsy, pretend neither exist.
+ */
+export const getBastionConfig = function (config: Record<string, string>, baseName: string): BastionConfig {
+  // <BASE_NAME>_BASTION_KEY contains the private key for the bastion.
   const bastionKey = config[`${baseName}_BASTION_KEY`]
+
+  // <BASE_NAME>_BASTIONS contains a comma-separated list of hosts, select one at random.
   const bastions = (config[`${baseName}_BASTIONS`] || '').split(',')
   const bastionHost = bastions[Math.floor(Math.random() * bastions.length)]
-  return (bastionKey && bastionHost) ? {bastionHost, bastionKey} : {}
+
+  if (bastionKey && bastionHost) {
+    return {bastionHost, bastionKey}
+  }
+
+  return {}
 }
 
 export function getConfigs(db: ConnectionDetails) {
