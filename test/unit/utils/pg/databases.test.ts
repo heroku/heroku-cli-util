@@ -1,101 +1,275 @@
-import type {AddOnAttachment} from '@heroku-cli/schema'
-
+import {HTTPError} from '@heroku/http-call'
 import {APIClient} from '@heroku-cli/command'
+import {HerokuAPIError} from '@heroku-cli/command/lib/api-client.js'
 import {Config} from '@oclif/core'
-import {expect} from 'chai'
+import * as chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
 import nock from 'nock'
+import sinon from 'sinon'
 
-import type {AddOnAttachmentWithConfigVarsAndPlan} from '../../../../src/types/pg/data-api.js'
+import {NotFound} from '../../../../src/types/errors/not-found.js'
+import {getAttachment} from '../../../../src/utils/pg/databases.js'
+import AppAttachmentResolver from '../../../../src/utils/addons/resolve.js'
+import {
+  HEROKU_API,
+  defaultAttachment,
+  foreignAttachment,
+  credentialAttachment,
+  followerAttachment,
+  developerAddonAttachment,
+  equivalentAttachment,
+  foreignFollowerAttachment,
+} from '../../../fixtures/attachment-mocks.js'
+import { AmbiguousError } from '../../../../src/types/errors/ambiguous.js'
+import { myAppConfigVars, myOtherAppConfigVars } from '../../../fixtures/config-var-mocks.js'
+import { configVarsByAppIdCache } from '../../../../src/utils/pg/config-vars.js'
 
-import {getDatabase} from '../../../../src/utils/pg/databases.js'
+const {expect} = chai
 
-const HEROKU_API = 'https://api.heroku.com'
-const plan = {
-  addon_service: {id: 'postgres', name: 'heroku-postgresql'},
-  created_at: '2024-01-01T00:00:00Z',
-  default: false,
-  description: 'Standard 0',
-  id: 'plan-id',
-  name: 'heroku-postgresql:standard-0',
-  price: {cents: 0, unit: 'month'},
-  space: null,
-  state: 'public',
-  updated_at: '2024-01-01T00:00:00Z',
-}
+chai.use(chaiAsPromised)
 
-const mockAttachment = {
-  addon: {
-    addon: {
-      addon_service: {id: 'postgres', name: 'heroku-postgresql'},
-      app: {id: 'app-id', name: 'test-app'},
-      config_vars: ['DATABASE_URL'],
-      id: 'addon-id',
-      name: 'heroku-postgresql',
-      plan,
-    },
-    addon_service: {id: 'postgres', name: 'heroku-postgresql'},
-    app: {id: 'app-id', name: 'test-app'},
-    config_vars: ['DATABASE_URL'],
-    created_at: '2024-01-01T00:00:00Z',
-    id: 'addon-id',
-    log_input_url: 'https://log-input-url.com',
-    name: 'heroku-postgresql',
-    namespace: null,
-    plan,
-    updated_at: '2024-01-01T00:00:00Z',
-    web_url: 'https://web-url.com',
-  },
-  app: {id: 'app-id', name: 'test-app'},
-  config_vars: ['DATABASE_URL'],
-  created_at: '2024-01-01T00:00:00Z',
-  id: 'attachment-id',
-  name: 'DATABASE',
-  namespace: null,
-  plan,
-  updated_at: '2024-01-01T00:00:00Z',
-} as { addon: AddOnAttachmentWithConfigVarsAndPlan } & AddOnAttachment
+describe('databases', function () {
+  describe('getAttachment', function () {
+    let config: Config
+    let heroku: APIClient
+    let appAttachmentStub: sinon.SinonStub
+    let env: typeof process.env
 
-// Add a runtime assertion to ensure plan exists
-if (!mockAttachment.addon.addon?.plan) throw new Error('mockAttachment.addon.addon.plan is missing')
+    beforeEach(async function () {
+      config = await Config.load()
+      heroku = new APIClient(config)
+      appAttachmentStub = sinon.stub(AppAttachmentResolver.prototype, 'resolve')
+      env = process.env
+    })
 
-const mockConfig = {
-  DATABASE_URL: 'postgres://user:pass@localhost:5432/dbname',
-}
+    afterEach(function () {
+      process.env = env
+      sinon.restore()
+      nock.cleanAll()
+    })
 
-describe('getDatabase', function () {
-  let config: Config
-  let heroku: APIClient
+    describe('when matchesHelper returns a single match', function () {
+      it('returns the single attachment when matchesHelper finds exactly one match', async function () {
+        appAttachmentStub.resolves(defaultAttachment)
 
-  beforeEach(async function () {
-    config = await Config.load()
-    heroku = new APIClient(config)
-  })
+        const result = await getAttachment(heroku, 'my-app', 'MAIN_DATABASE')
 
-  afterEach(function () {
-    nock.cleanAll()
-  })
+        expect(result).to.deep.equal(defaultAttachment)
+        sinon.assert.calledWith(
+          appAttachmentStub, 'my-app', 'MAIN_DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
+        )
+      })
 
-  it('returns connection details for a valid attachment', async function () {
-    nock(HEROKU_API)
-      .post('/actions/addon-attachments/resolve')
-      .reply(200, [mockAttachment])
-    nock(HEROKU_API)
-      .get('/apps/test-app/config-vars')
-      .reply(200, mockConfig)
+      it('parses app name from database argument when using \'app::attachment\' format', async function () {
+        appAttachmentStub.resolves(foreignAttachment)
 
-    // Debug log to inspect the object passed to bastionKeyPlan
-    console.log('DEBUG attached.addon:', mockAttachment.addon)
+        const result = await getAttachment(heroku, 'my-app', 'my-other-app::MAIN_DATABASE')
 
-    const result = await getDatabase(heroku, 'test-app', 'DATABASE_URL')
-    expect(result).to.deep.equal({
-      attachment: mockAttachment,
-      database: 'dbname',
-      host: 'localhost',
-      password: 'pass',
-      pathname: '/dbname',
-      port: '5432',
-      url: 'postgres://user:pass@localhost:5432/dbname',
-      user: 'user',
+        expect(result).to.deep.equal(foreignAttachment)
+        sinon.assert.calledWith(
+          appAttachmentStub, 'my-other-app', 'MAIN_DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
+        )
+      })
+
+      it('handles existing namespace', async function () {
+        appAttachmentStub.resolves(credentialAttachment)
+
+        const result = await getAttachment(heroku, 'my-app', 'DATABASE', 'read-only')
+
+        expect(result).to.deep.equal(credentialAttachment)
+        sinon.assert.calledWith(
+          appAttachmentStub, 'my-app', 'DATABASE', {addon_service: 'heroku-postgresql', namespace: 'read-only'}
+        )
+      })
+
+      it('respects value of HEROKU_POSTGRESQL_ADDON_NAME', async function () {
+        process.env = {
+          HEROKU_POSTGRESQL_ADDON_NAME: 'heroku-postgresql-devname'
+        }
+        appAttachmentStub.resolves(developerAddonAttachment)
+
+        const result = await getAttachment(heroku, 'my-app', 'DEV_ADDON_DATABASE')
+
+        expect(result).to.deep.equal(developerAddonAttachment)
+        sinon.assert.calledWith(
+          appAttachmentStub, 'my-app', 'DEV_ADDON_DATABASE', {addon_service: 'heroku-postgresql-devname', namespace: undefined}
+        )
+      })
+    })
+
+    describe('when matchesHelper returns no matches', function () {
+      // Simulate a 404 error from the resolver (no matches found)
+      const httpError = {
+        body: {id: 'not_found', message: 'Couldn\'t find that add on attachment.', resource: 'addon-attachment'},
+        statusCode: 404,
+      } as HTTPError
+      const notFoundError = new HerokuAPIError(httpError)
+
+      it('throws error when app has no databases', async function () {
+        appAttachmentStub.rejects(notFoundError)
+        
+        // Mock the Heroku API to return empty array (no attachments)
+        const api = nock(HEROKU_API)
+          .get('/apps/app-no-addons/addon-attachments')
+          .reply(200, [])
+
+        try {
+          await getAttachment(heroku, 'app-no-addons', 'MAIN_DATABASE')
+        } catch (error: unknown) {
+          sinon.assert.calledWith(
+            appAttachmentStub, 'app-no-addons', 'MAIN_DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
+          )
+          api.done()
+          expect((error as Error).message).to.equal('app-no-addons has no databases')
+        }
+      })
+
+      it('throws error when app has databases but requested database does not exist', async function () {
+        appAttachmentStub.rejects(notFoundError)
+
+        // Mock the Heroku API to return available attachments
+        const api = nock(HEROKU_API)
+          .get('/apps/my-app/addon-attachments')
+          .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
+
+        try {
+          await getAttachment(heroku, 'my-app', 'NONEXISTENT_DB')
+        } catch (error: unknown) {
+          sinon.assert.calledWith(
+            appAttachmentStub, 'my-app', 'NONEXISTENT_DB', {addon_service: 'heroku-postgresql', namespace: undefined}
+          )
+          api.done()
+          expect((error as Error).message).to.equal(
+            'Unknown database: NONEXISTENT_DB. Valid options are: MAIN_DATABASE_URL, MAIN_RO_DATABASE_URL, FOLLOWER_DATABASE_URL'
+          )
+        }
+      })
+
+      it('handles app::database format when no matches found', async function () {
+        appAttachmentStub.rejects(notFoundError)
+        
+        // Mock the Heroku API to return available attachments
+        const api = nock(HEROKU_API)
+          .get('/apps/app-no-addons/addon-attachments')
+          .reply(200, [])
+
+        try {
+          await getAttachment(heroku, 'my-app', 'app-no-addons::MAIN_DATABASE')
+        } catch (error: unknown) {
+          sinon.assert.calledWith(
+            appAttachmentStub, 'app-no-addons', 'MAIN_DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
+          )
+          api.done()
+          expect((error as Error).message).to.equal('app-no-addons has no databases')
+        }
+      })
+
+      it('handles non-existent namespace', async function () {
+        appAttachmentStub.rejects(new NotFound())
+
+        // In this case, there's no fetching app add-on attachments from Platform API, because the matchesHelper
+        // function re-throws the NotFound error received from the resolver.
+        try {
+          await getAttachment(heroku, 'my-app', 'DATABASE', 'missing-namespace')
+        } catch (error: unknown) {
+          sinon.assert.calledWith(
+            appAttachmentStub, 'my-app', 'DATABASE', {addon_service: 'heroku-postgresql', namespace: 'missing-namespace'}
+          )
+          expect((error as Error).message).to.equal('Couldn\'t find that addon.')
+        }
+      })
+
+      it('respects value of HEROKU_POSTGRESQL_ADDON_NAME env var', async function () {
+        process.env = {
+          HEROKU_POSTGRESQL_ADDON_NAME: 'heroku-postgresql-devname'
+        }
+        appAttachmentStub.rejects(notFoundError)
+
+        // Mock the Heroku API to return available attachments for the specified addon service
+        nock(HEROKU_API)
+          .get('/apps/my-app/addon-attachments')
+          .reply(200, [developerAddonAttachment])
+
+        await expect(getAttachment(heroku, 'my-app', 'FOLLOWER'))
+          .to.be.rejectedWith('Unknown database: FOLLOWER. Valid options are: DEV_ADDON_DATABASE_URL')
+        sinon.assert.calledWith(
+          appAttachmentStub, 'my-app', 'FOLLOWER', {addon_service: 'heroku-postgresql-devname', namespace: undefined}
+        )
+      })
+    })
+
+    describe('when matchesHelper returns multiple matches', function () {
+      beforeEach(function () {
+        configVarsByAppIdCache.clear()
+      })
+
+      it('throws AmbiguousError when multiple matches are found and they are different add-ons', async function () {
+        appAttachmentStub.rejects(
+          new AmbiguousError(
+            [defaultAttachment, credentialAttachment, followerAttachment],
+            'addon_attachment',
+          )
+        )
+
+        try {
+          await getAttachment(heroku, 'my-app', 'DATABASE')
+        } catch (error: unknown) {
+          sinon.assert.calledWith(
+            appAttachmentStub, 'my-app', 'DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
+          )
+          expect((error as Error).message).to.equal(
+            'Ambiguous identifier; multiple matching add-ons found: MAIN_DATABASE, MAIN_RO_DATABASE, FOLLOWER_DATABASE.'
+          )
+        }
+      })
+
+      it('throws AmbiguousError when multiple matches are found and they are non equivalent attachments (different namespaces)', async function () {
+        appAttachmentStub.rejects(
+          new AmbiguousError(
+            [defaultAttachment, credentialAttachment],
+            'addon_attachment',
+          )
+        )
+
+        // Mock the Heroku API to return config vars for the app (to check if the attachments are equivalent)
+        const api = nock(HEROKU_API)
+          .get('/apps/my-app/config-vars')
+          .reply(200, myAppConfigVars)
+
+        try {
+          await getAttachment(heroku, 'my-app', 'MAIN')
+        } catch (error: unknown) {
+          api.done()
+          sinon.assert.calledWith(
+            appAttachmentStub, 'my-app', 'MAIN', {addon_service: 'heroku-postgresql', namespace: undefined}
+          )
+          expect((error as Error).message).to.equal(
+            'Ambiguous identifier; multiple matching add-ons found: MAIN_DATABASE, MAIN_RO_DATABASE.'
+          )
+        }
+      })
+
+      it('returns the first match when multiple matches are found but they are equivalent', async function () {
+        appAttachmentStub.rejects(
+          new AmbiguousError(
+            [foreignFollowerAttachment, equivalentAttachment],
+            'addon_attachment',
+          )
+        )
+
+        // Mock the Heroku API to return config vars for the app (to check if the attachments are equivalent)
+        const api = nock(HEROKU_API)
+          .get('/apps/my-other-app/config-vars')
+          .reply(200, myOtherAppConfigVars)
+
+        const result = await getAttachment(heroku, 'my-other-app', 'FOLLOWER')
+
+        expect(result).to.deep.equal(foreignFollowerAttachment)
+        api.done()
+        sinon.assert.calledWith(
+          appAttachmentStub, 'my-other-app', 'FOLLOWER', {addon_service: 'heroku-postgresql', namespace: undefined}
+        )
+      })
     })
   })
 })
