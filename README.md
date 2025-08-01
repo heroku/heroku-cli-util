@@ -102,7 +102,7 @@ try {
 
 // PG types (for TypeScript)
 /**
- * types.pg.AddOnAttachmentWithConfigVarsAndPlan
+ * types.pg.ExtendedAddonAttachment
  * types.pg.AddOnWithRelatedData
  * types.pg.ConnectionDetails
  * types.pg.ConnectionDetailsWithAttachment
