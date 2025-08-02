@@ -9,12 +9,12 @@ export interface AddonAttachmentResolverOptions {
   namespace?: string
 }
 export default class AddonAttachmentResolver {
-  constructor(private readonly heroku: APIClient) {}
-
   private readonly attachmentHeaders: Readonly<{ Accept: string, 'Accept-Inclusion': string }> = {
     Accept: 'application/vnd.heroku+json; version=3.sdk',
     'Accept-Inclusion': 'addon:plan,config_vars',
   }
+
+  constructor(private readonly heroku: APIClient) {}
 
   async resolve(
     appId: string | undefined,

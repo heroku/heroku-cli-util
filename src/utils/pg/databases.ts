@@ -2,7 +2,6 @@ import {color} from '@heroku-cli/color'
 import {APIClient} from '@heroku-cli/command'
 import {HerokuAPIError} from '@heroku-cli/command/lib/api-client.js'
 import debug from 'debug'
-import {env} from 'node:process'
 
 import {AmbiguousError} from '../../errors/ambiguous.js'
 import type {ExtendedAddonAttachment} from '../../types/pg/data-api.js'
@@ -15,6 +14,10 @@ const pgDebug = debug('pg')
 
 export default class DatabaseResolver {
   private readonly addonAttachmentResolver: AddonAttachmentResolver
+  private readonly attachmentHeaders: Readonly<{ Accept: string, 'Accept-Inclusion': string }> = {
+    Accept: 'application/vnd.heroku+json; version=3.sdk',
+    'Accept-Inclusion': 'addon:plan,config_vars',
+  }
 
   constructor(
     private readonly heroku: APIClient,
@@ -63,7 +66,7 @@ export default class DatabaseResolver {
 
     // return the first attachment when all ambiguous attachments are equivalent (basically target the same database)
     if (matches.every(match => first.addon.id === match.addon.id && first.app.id === match.app.id)) {
-      const config = await this.getConfigFn(this.heroku, first.app.name) ?? {}
+      const config = await this.getConfigFn(this.heroku, first.app.name)
       if (matches.every(
         match => config[getConfigVarName(first.config_vars)] === config[getConfigVarName(match.config_vars)]
       )) {
@@ -97,6 +100,25 @@ export default class DatabaseResolver {
   }
 
   /**
+   * This function parses a PostgreSQL connection string (or a local database name) into a ConnectionDetails object.
+   */
+  public parsePostgresConnectionString(connStringOrDbName: string): ConnectionDetails {
+    const dbPath = /:\/\//.test(connStringOrDbName) ? connStringOrDbName : `postgres:///${connStringOrDbName}`
+    const url = new URL(dbPath)
+    const {hostname, password, pathname, port, username} = url
+
+    return {
+      database: pathname.slice(1), // remove the leading slash from the pathname
+      host: hostname,
+      password,
+      pathname,
+      port: port || process.env.PGPORT || (hostname && '5432'),
+      url: dbPath,
+      user: username,
+    }
+  }
+
+  /**
    * Fetches all Heroku PostgreSQL add-on attachments for a given app.
    * 
    * This is used internally by the `getAttachment` function to get all valid Heroku PostgreSQL add-on attachments
@@ -106,10 +128,7 @@ export default class DatabaseResolver {
   private async allPostgresAttachments(appId: string): Promise<ExtendedAddonAttachment[]> {
     const addonService = process.env.HEROKU_POSTGRESQL_ADDON_NAME || 'heroku-postgresql'
     const {body: attachments} = await this.heroku.get<ExtendedAddonAttachment[]>(`/apps/${appId}/addon-attachments`, {
-      headers: {
-        Accept: 'application/vnd.heroku+json; version=3.sdk',
-        'Accept-Inclusion': 'addon:plan,config_vars',
-      },
+      headers: this.attachmentHeaders,
     })
     return attachments.filter(a => a.addon.plan.name.split(':', 2)[0] === addonService)
   }
@@ -159,19 +178,19 @@ export default class DatabaseResolver {
   /**
    * This function returns the connection details for a database attachment according to the app config vars.
    * @param attachment - The attachment to get the connection details for.
-   * @param configVars - The app config vars.
+   * @param config - The record of app config vars with their values.
    * @returns The connection details for the database attachment.
    */
   private getConnectionDetails(
     attachment: ExtendedAddonAttachment,
-    configVars: Record<string, string> = {},
+    config: Record<string, string> = {},
   ): ConnectionDetailsWithAttachment {
-    const connStringVar = getConfigVarNameFromAttachment(attachment, configVars)
+    const connStringVar = getConfigVarNameFromAttachment(attachment, config)
 
     // build the default payload for non-bastion dbs
     pgDebug(`Using "${connStringVar}" to connect to your database…`)
 
-    const conn = this.parsePostgresConnectionString(configVars[connStringVar])
+    const conn = this.parsePostgresConnectionString(config[connStringVar])
 
     const payload: ConnectionDetailsWithAttachment = {
       attachment,
@@ -186,27 +205,11 @@ export default class DatabaseResolver {
 
     // This handles injection of bastion creds into the payload if they exist as config vars (Shield-tier databases).
     const baseName = connStringVar.slice(0, -4)
-    const bastion = getBastionConfig(configVars, baseName)
+    const bastion = getBastionConfig(config, baseName)
     if (bastion) {
       Object.assign(payload, bastion)
     }
 
     return payload
-  }
-
-  private parsePostgresConnectionString(db: string): ConnectionDetails {
-    const dbPath = /:\/\//.test(db) ? db : `postgres:///${db}`
-    const url = new URL(dbPath)
-    const {hostname, password, pathname, port, username} = url
-
-    return {
-      database: pathname.charAt(0) === '/' ? pathname.slice(1) : pathname,
-      host: hostname,
-      password,
-      pathname,
-      port: port || env.PGPORT || (hostname && '5432'),
-      url: dbPath,
-      user: username,
-    }
   }
 }

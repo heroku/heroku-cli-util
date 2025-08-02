@@ -138,6 +138,16 @@ describe('config-vars', function () {
   })
 
   describe('getConfigVarNameFromAttachment', function () {
+    it('throws error when defaultAttachment doesn\'t have config var names', function () {
+      const attachmentWithoutConfigVars = {
+        ...defaultAttachment,
+        config_vars: []
+      }
+
+      expect(() => getConfigVarNameFromAttachment(attachmentWithoutConfigVars, myAppConfigVars))
+        .to.throw('No config vars found for MAIN_DATABASE; perhaps they were removed')
+    })
+
     it('throws error when defaultAttachment config var is missing from config', function () {
       // Create config without MAIN_DATABASE_URL (which defaultAttachment should've set)
       const { MAIN_DATABASE_URL, ...configWithoutMainDatabase } = myAppConfigVars

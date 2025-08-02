@@ -39,10 +39,15 @@ export function getConfigVarName(configVarNames: ExtendedAddonAttachment['config
  * This function returns the config var name that contains the database URL connection string for the given
  * attachment, based on the contents of the app's config vars.
  */
-export function getConfigVarNameFromAttachment(attachment: ExtendedAddonAttachment, config: Record<string, string> = {}): string {
+export function getConfigVarNameFromAttachment(
+  attachment: ExtendedAddonAttachment,
+  config: Record<string, string> = {},
+): string {
   // Handle the case where no attachment config var names remain after filtering out those that don't contain a
   // database URL connection string in the app's config vars.
-  const connStringConfigVarNames = attachment.config_vars.filter((cvn: string) => config[cvn]?.startsWith('postgres://')) ?? []
+  const connStringConfigVarNames = attachment.config_vars
+    .filter(cvn => config[cvn]?.startsWith('postgres://'))
+
   if (connStringConfigVarNames.length === 0) {
     throw new Error(
       `No config vars found for ${attachment.name}; perhaps they were removed as a side effect of` +
