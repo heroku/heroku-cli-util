@@ -20,30 +20,6 @@ export function bastionKeyPlan(attachment: ExtendedAddonAttachment): boolean {
   return Boolean(/private/.test(attachment.addon.plan.name.split(':', 2)[1]))
 }
 
-export const env = (db: ConnectionDetails) => {
-  const baseEnv = {
-    PGAPPNAME: 'psql non-interactive',
-    PGSSLMODE: (!db.host || db.host === 'localhost') ? 'prefer' : 'require',
-    ...process.env,
-  }
-
-  const mapping: Record<string, keyof Omit<typeof db, '_tunnel' | 'bastionHost' | 'bastionKey' | 'pathname' | 'url'>> = {
-    PGDATABASE: 'database',
-    PGHOST: 'host',
-    PGPASSWORD: 'password',
-    PGPORT: 'port',
-    PGUSER: 'user',
-  }
-  for (const envVar of Object.keys(mapping)) {
-    const val = db[mapping[envVar]]
-    if (val) {
-      baseEnv[envVar as keyof typeof baseEnv] = val as string
-    }
-  }
-
-  return baseEnv
-}
-
 /**
  * Fetches the bastion configuration from the Data API (only relevant for add-ons installed onto a
  * non-shield Private Space).
@@ -93,10 +69,16 @@ export const getBastionConfig = function (config: Record<string, string>, baseNa
   return {}
 }
 
-export function getConfigs(db: ConnectionDetails) {
-  const dbEnv: NodeJS.ProcessEnv = env(db)
-  const dbTunnelConfig = tunnelConfig(db)
-  if (db.bastionKey) {
+/**
+ * This function returns both the required environment variables to effect the psql command execution and the tunnel
+ * configuration according to the database connection details.
+ */
+export function getPsqlConfigs(connectionDetails: ConnectionDetails) {
+  const dbEnv: NodeJS.ProcessEnv = baseEnv(connectionDetails)
+  const dbTunnelConfig = tunnelConfig(connectionDetails)
+
+  // If a tunnel is required, we need to adjust the environment variables for psql to use the tunnel host and port.
+  if (connectionDetails.bastionKey) {
     Object.assign(dbEnv, {
       PGHOST: dbTunnelConfig.localHost,
       PGPORT: dbTunnelConfig.localPort,
@@ -107,6 +89,38 @@ export function getConfigs(db: ConnectionDetails) {
     dbEnv,
     dbTunnelConfig,
   }
+}
+
+/**
+ * This function returns the base environment variables for the database connection based on the connection details
+ * only, without taking into account if a tunnel is required for connecting to the database through a bastion host.
+ */
+function baseEnv(connectionDetails: ConnectionDetails): NodeJS.ProcessEnv {
+  // Mapping of environment variables to ConnectionDetails properties
+  const mapping: Record<string, keyof ConnectionDetails> = {
+    PGDATABASE: 'database',
+    PGHOST: 'host',
+    PGPASSWORD: 'password',
+    PGPORT: 'port',
+    PGUSER: 'user',
+  }
+
+  const baseEnv = {
+    PGAPPNAME: 'psql non-interactive',
+    PGSSLMODE: (
+      !connectionDetails.host || connectionDetails.host === 'localhost'
+    ) ? 'prefer' : 'require',
+    ...process.env,
+  }
+
+  for (const envVar of Object.keys(mapping)) {
+    const val = connectionDetails[mapping[envVar]]
+    if (val) {
+      baseEnv[envVar as keyof typeof baseEnv] = val as string
+    }
+  }
+
+  return baseEnv
 }
 
 export async function sshTunnel(db: ConnectionDetails, dbTunnelConfig: TunnelConfig, timeout = 10_000) {

@@ -79,7 +79,7 @@ export default class DatabaseResolver {
 
   /**
    * This function returns the connection details for a database attachment resolved through the identifiers passed as
-   * arguments: app, attachment and credential (namespace).
+   * arguments: appId, attachmentId and namespace (credential).
    */
   public async getDatabase(
     appId: string,

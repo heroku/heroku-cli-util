@@ -1,5 +1,3 @@
-import type {AddOnAttachment} from '@heroku-cli/schema'
-
 import {Server} from 'node:net'
 import * as createTunnel from 'tunnel-ssh'
 
