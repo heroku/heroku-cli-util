@@ -1,5 +1,4 @@
 import type {APIClient} from '@heroku-cli/command'
-
 import {ux} from '@oclif/core'
 import debug from 'debug'
 import * as EventEmitter from 'node:events'
@@ -7,9 +6,9 @@ import {promisify} from 'node:util'
 import * as createTunnel from 'tunnel-ssh'
 
 import {ExtendedAddonAttachment} from '../../types/pg/data-api.js'
-import {BastionConfig, BastionConfigResponse, ConnectionDetails} from '../../types/pg/tunnel.js'
-import {TunnelConfig} from '../../types/pg/tunnel.js'
+import {BastionConfig, BastionConfigResponse, ConnectionDetails, TunnelConfig} from '../../types/pg/tunnel.js'
 import host from './host.js'
+
 const pgDebug = debug('pg')
 
 /**
@@ -18,7 +17,7 @@ const pgDebug = debug('pg')
  * For add-ons installed onto a Shield Private Space, the bastion information should be fetched from config vars.
  */
 export function bastionKeyPlan(attachment: ExtendedAddonAttachment): boolean {
-  return Boolean(/private/.test(attachment.addon.plan.name))
+  return Boolean(/private/.test(attachment.addon.plan.name.split(':', 2)[1]))
 }
 
 export const env = (db: ConnectionDetails) => {
