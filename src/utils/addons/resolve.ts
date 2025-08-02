@@ -1,15 +1,14 @@
 import type {APIClient} from '@heroku-cli/command'
 
+import {AmbiguousError} from '../../errors/ambiguous.js'
+import {NotFound} from '../../errors/not-found.js'
 import type {ExtendedAddonAttachment} from '../../types/pg/data-api.js'
 
-import {AmbiguousError} from '../../types/errors/ambiguous.js'
-import {NotFound} from '../../types/errors/not-found.js'
-
-export interface AppAttachmentResolverOptions {
+export interface AddonAttachmentResolverOptions {
   addon_service?: string
   namespace?: string
 }
-export default class AppAttachmentResolver {
+export default class AddonAttachmentResolver {
   constructor(private readonly heroku: APIClient) {}
 
   private readonly attachmentHeaders: Readonly<{ Accept: string, 'Accept-Inclusion': string }> = {
@@ -18,14 +17,17 @@ export default class AppAttachmentResolver {
   }
 
   async resolve(
-    app: string | undefined,
-    id: string,
-    options: AppAttachmentResolverOptions = {}
+    appId: string | undefined,
+    attachmentId: string,
+    options: AddonAttachmentResolverOptions = {}
   ): Promise<ExtendedAddonAttachment>  {
-    const {body: attachments} = await this.heroku.post<ExtendedAddonAttachment[]>('/actions/addon-attachments/resolve', {
-      // eslint-disable-next-line camelcase
-      body: {addon_attachment: id, addon_service: options.addon_service, app}, headers: this.attachmentHeaders,
-    })
+    const {body: attachments} = await this.heroku.post<ExtendedAddonAttachment[]>(
+      '/actions/addon-attachments/resolve', {
+        // eslint-disable-next-line camelcase
+        body: {addon_attachment: attachmentId, addon_service: options.addon_service, appId},
+        headers: this.attachmentHeaders,
+      }
+    )
     return this.singularize(attachments, options.namespace)
   }
 

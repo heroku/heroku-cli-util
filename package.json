@@ -21,6 +21,7 @@
     "@types/node": "^22.15.3",
     "@types/sinon": "^17.0.4",
     "@types/tunnel-ssh": "4.1.1",
+    "c8": "^7.7.0",
     "chai": "^4.4.1",
     "chai-as-promised": "^8.0.1",
     "eslint": "^8.57.0",
@@ -31,7 +32,6 @@
     "mocha": "^10.8.2",
     "mock-stdin": "^1.0.0",
     "nock": "^13.2.9",
-    "nyc": "^17.1.0",
     "sinon": "^18.0.1",
     "strip-ansi": "^6",
     "ts-node": "^10.9.2",
@@ -58,7 +58,7 @@
     "example": "sh examples/run.sh",
     "lint": "eslint . --ext .ts --config .eslintrc.cjs",
     "prepare": "npm run build",
-    "test": "nyc mocha --forbid-only \"test/**/*.test.ts\"",
-    "test:local": "nyc mocha \"${npm_config_file:-test/**/*.test.+(ts|tsx)}\""
+    "test": "c8 mocha --forbid-only \"test/**/*.test.ts\"",
+    "test:local": "c8 mocha \"${npm_config_file:-test/**/*.test.+(ts|tsx)}\""
   }
 }

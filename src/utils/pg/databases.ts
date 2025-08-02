@@ -4,24 +4,24 @@ import {HerokuAPIError} from '@heroku-cli/command/lib/api-client.js'
 import debug from 'debug'
 import {env} from 'node:process'
 
-import {AmbiguousError} from '../../types/errors/ambiguous.js'
+import {AmbiguousError} from '../../errors/ambiguous.js'
 import type {ExtendedAddonAttachment} from '../../types/pg/data-api.js'
 import type {ConnectionDetails, ConnectionDetailsWithAttachment} from '../../types/pg/tunnel.js'
-import AppAttachmentResolver from '../addons/resolve.js'
+import AddonAttachmentResolver from '../addons/resolve.js'
 import {bastionKeyPlan, fetchBastionConfig, getBastionConfig} from './bastion.js'
 import {getConfig, getConfigVarName, getConfigVarNameFromAttachment} from './config-vars.js'
 
 const pgDebug = debug('pg')
 
 export default class DatabaseResolver {
-  private readonly appAttachmentResolver: AppAttachmentResolver
+  private readonly addonAttachmentResolver: AddonAttachmentResolver
 
   constructor(
     private readonly heroku: APIClient,
     private readonly getConfigFn = getConfig,
     private readonly fetchBastionConfigFn = fetchBastionConfig,
   ) {
-    this.appAttachmentResolver = new AppAttachmentResolver(this.heroku)
+    this.addonAttachmentResolver = new AddonAttachmentResolver(this.heroku)
   }
 
   /**
@@ -121,7 +121,7 @@ export default class DatabaseResolver {
    * This is used internally by the `getAttachment` function to handle the lookup of addon attachments.
    * It returns either a single match, multiple matches (for ambiguous cases), or null if no matches are found.
    * 
-   * The AppAttachmentResolver uses the Platform API add-on attachment resolver endpoint to get the attachment.
+   * The AddonAttachmentResolver uses the Platform API add-on attachment resolver endpoint to get the attachment.
    */
   private async matchesHelper(app: string, db: string, namespace?: string): Promise<
     {error: undefined, matches: ExtendedAddonAttachment[]} |
@@ -134,7 +134,7 @@ export default class DatabaseResolver {
     debug(`addon service: ${addonService}`)
 
     try {
-      const attached = await this.appAttachmentResolver.resolve(app, db, {addon_service: addonService, namespace})
+      const attached = await this.addonAttachmentResolver.resolve(app, db, {addon_service: addonService, namespace})
       return {matches: [attached], error: undefined}
     } catch (error: unknown) {
       if (error instanceof AmbiguousError && error.body.id === 'multiple_matches' && error.matches) {

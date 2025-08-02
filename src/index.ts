@@ -1,8 +1,10 @@
-import {AmbiguousError} from './types/errors/ambiguous.js'
-import {NotFound} from './types/errors/not-found.js'
+import {APIClient} from '@heroku-cli/command'
+
+import {AmbiguousError} from './errors/ambiguous.js'
+import {NotFound} from './errors/not-found.js'
 import {ExtendedAddonAttachment, AddOnWithRelatedData, Link} from './types/pg/data-api.js'
 import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from './types/pg/tunnel.js'
-import {getDatabase} from './utils/pg/databases.js'
+import DatabaseResolver from './utils/pg/databases.js'
 import getHost from './utils/pg/host.js'
 import {exec} from './utils/pg/psql.js'
 import {confirm} from './ux/confirm.js'
@@ -12,6 +14,7 @@ import {styledJSON} from './ux/styled-json.js'
 import {styledObject} from './ux/styled-object.js'
 import {table} from './ux/table.js'
 import {wait} from './ux/wait.js'
+
 export const types = {
   errors: {
     AmbiguousError,
@@ -29,7 +32,10 @@ export const types = {
 
 export const utils = {
   pg: {
-    database: getDatabase,
+    database: (heroku: APIClient, appId: string, attachmentId?: string, namespace?: string) => {
+      const databaseResolver = new DatabaseResolver(heroku)
+      return databaseResolver.getDatabase(appId, attachmentId, namespace)
+    },
     host: getHost,
     psql: {
       exec,
