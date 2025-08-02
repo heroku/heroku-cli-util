@@ -8,7 +8,7 @@ import nock from 'nock'
 import sinon from 'sinon'
 
 import {NotFound} from '../../../../src/types/errors/not-found.js'
-import {getAttachment} from '../../../../src/utils/pg/databases.js'
+import DatabaseResolver from '../../../../src/utils/pg/databases.js'
 import AppAttachmentResolver from '../../../../src/utils/addons/resolve.js'
 import {
   HEROKU_API,
@@ -19,26 +19,28 @@ import {
   developerAddonAttachment,
   equivalentAttachment,
   foreignFollowerAttachment,
+  shieldDatabaseAttachment,
+  privateDatabaseAttachment,
 } from '../../../fixtures/attachment-mocks.js'
 import { AmbiguousError } from '../../../../src/types/errors/ambiguous.js'
-import { myAppConfigVars, myOtherAppConfigVars } from '../../../fixtures/config-var-mocks.js'
+import { myAppConfigVars, myOtherAppConfigVars, privateDatabaseConfigVars, shieldDatabaseConfigVars } from '../../../fixtures/config-var-mocks.js'
 import { configVarsByAppIdCache } from '../../../../src/utils/pg/config-vars.js'
 
 const {expect} = chai
 
 chai.use(chaiAsPromised)
 
-describe('databases', function () {
+describe('DatabaseResolver', function () {
   describe('getAttachment', function () {
     let config: Config
     let heroku: APIClient
-    let appAttachmentStub: sinon.SinonStub
+    let appAttachmentResolveStub: sinon.SinonStub
     let env: typeof process.env
 
     beforeEach(async function () {
       config = await Config.load()
       heroku = new APIClient(config)
-      appAttachmentStub = sinon.stub(AppAttachmentResolver.prototype, 'resolve')
+      appAttachmentResolveStub = sinon.stub(AppAttachmentResolver.prototype, 'resolve')
       env = process.env
     })
 
@@ -50,35 +52,35 @@ describe('databases', function () {
 
     describe('when matchesHelper returns a single match', function () {
       it('returns the single attachment when matchesHelper finds exactly one match', async function () {
-        appAttachmentStub.resolves(defaultAttachment)
+        appAttachmentResolveStub.resolves(defaultAttachment)
 
-        const result = await getAttachment(heroku, 'my-app', 'MAIN_DATABASE')
+        const result = await new DatabaseResolver(heroku).getAttachment('my-app', 'MAIN_DATABASE')
 
         expect(result).to.deep.equal(defaultAttachment)
         sinon.assert.calledWith(
-          appAttachmentStub, 'my-app', 'MAIN_DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
+          appAttachmentResolveStub, 'my-app', 'MAIN_DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
         )
       })
 
       it('parses app name from database argument when using \'app::attachment\' format', async function () {
-        appAttachmentStub.resolves(foreignAttachment)
+        appAttachmentResolveStub.resolves(foreignAttachment)
 
-        const result = await getAttachment(heroku, 'my-app', 'my-other-app::MAIN_DATABASE')
+        const result = await new DatabaseResolver(heroku).getAttachment('my-app', 'my-other-app::MAIN_DATABASE')
 
         expect(result).to.deep.equal(foreignAttachment)
         sinon.assert.calledWith(
-          appAttachmentStub, 'my-other-app', 'MAIN_DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
+          appAttachmentResolveStub, 'my-other-app', 'MAIN_DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
         )
       })
 
       it('handles existing namespace', async function () {
-        appAttachmentStub.resolves(credentialAttachment)
+        appAttachmentResolveStub.resolves(credentialAttachment)
 
-        const result = await getAttachment(heroku, 'my-app', 'DATABASE', 'read-only')
+        const result = await new DatabaseResolver(heroku).getAttachment('my-app', 'DATABASE', 'read-only')
 
         expect(result).to.deep.equal(credentialAttachment)
         sinon.assert.calledWith(
-          appAttachmentStub, 'my-app', 'DATABASE', {addon_service: 'heroku-postgresql', namespace: 'read-only'}
+          appAttachmentResolveStub, 'my-app', 'DATABASE', {addon_service: 'heroku-postgresql', namespace: 'read-only'}
         )
       })
 
@@ -86,13 +88,13 @@ describe('databases', function () {
         process.env = {
           HEROKU_POSTGRESQL_ADDON_NAME: 'heroku-postgresql-devname'
         }
-        appAttachmentStub.resolves(developerAddonAttachment)
+        appAttachmentResolveStub.resolves(developerAddonAttachment)
 
-        const result = await getAttachment(heroku, 'my-app', 'DEV_ADDON_DATABASE')
+        const result = await new DatabaseResolver(heroku).getAttachment('my-app', 'DEV_ADDON_DATABASE')
 
         expect(result).to.deep.equal(developerAddonAttachment)
         sinon.assert.calledWith(
-          appAttachmentStub, 'my-app', 'DEV_ADDON_DATABASE', {addon_service: 'heroku-postgresql-devname', namespace: undefined}
+          appAttachmentResolveStub, 'my-app', 'DEV_ADDON_DATABASE', {addon_service: 'heroku-postgresql-devname', namespace: undefined}
         )
       })
     })
@@ -106,7 +108,7 @@ describe('databases', function () {
       const notFoundError = new HerokuAPIError(httpError)
 
       it('throws error when app has no databases', async function () {
-        appAttachmentStub.rejects(notFoundError)
+        appAttachmentResolveStub.rejects(notFoundError)
         
         // Mock the Heroku API to return empty array (no attachments)
         const api = nock(HEROKU_API)
@@ -114,10 +116,10 @@ describe('databases', function () {
           .reply(200, [])
 
         try {
-          await getAttachment(heroku, 'app-no-addons', 'MAIN_DATABASE')
+          await new DatabaseResolver(heroku).getAttachment('app-no-addons', 'MAIN_DATABASE')
         } catch (error: unknown) {
           sinon.assert.calledWith(
-            appAttachmentStub, 'app-no-addons', 'MAIN_DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
+            appAttachmentResolveStub, 'app-no-addons', 'MAIN_DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
           )
           api.done()
           expect((error as Error).message).to.equal('app-no-addons has no databases')
@@ -125,7 +127,7 @@ describe('databases', function () {
       })
 
       it('throws error when app has databases but requested database does not exist', async function () {
-        appAttachmentStub.rejects(notFoundError)
+        appAttachmentResolveStub.rejects(notFoundError)
 
         // Mock the Heroku API to return available attachments
         const api = nock(HEROKU_API)
@@ -133,10 +135,10 @@ describe('databases', function () {
           .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
 
         try {
-          await getAttachment(heroku, 'my-app', 'NONEXISTENT_DB')
+          await new DatabaseResolver(heroku).getAttachment('my-app', 'NONEXISTENT_DB')
         } catch (error: unknown) {
           sinon.assert.calledWith(
-            appAttachmentStub, 'my-app', 'NONEXISTENT_DB', {addon_service: 'heroku-postgresql', namespace: undefined}
+            appAttachmentResolveStub, 'my-app', 'NONEXISTENT_DB', {addon_service: 'heroku-postgresql', namespace: undefined}
           )
           api.done()
           expect((error as Error).message).to.equal(
@@ -146,7 +148,7 @@ describe('databases', function () {
       })
 
       it('handles app::database format when no matches found', async function () {
-        appAttachmentStub.rejects(notFoundError)
+        appAttachmentResolveStub.rejects(notFoundError)
         
         // Mock the Heroku API to return available attachments
         const api = nock(HEROKU_API)
@@ -154,10 +156,10 @@ describe('databases', function () {
           .reply(200, [])
 
         try {
-          await getAttachment(heroku, 'my-app', 'app-no-addons::MAIN_DATABASE')
+          await new DatabaseResolver(heroku).getAttachment('my-app', 'app-no-addons::MAIN_DATABASE')
         } catch (error: unknown) {
           sinon.assert.calledWith(
-            appAttachmentStub, 'app-no-addons', 'MAIN_DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
+            appAttachmentResolveStub, 'app-no-addons', 'MAIN_DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
           )
           api.done()
           expect((error as Error).message).to.equal('app-no-addons has no databases')
@@ -165,15 +167,15 @@ describe('databases', function () {
       })
 
       it('handles non-existent namespace', async function () {
-        appAttachmentStub.rejects(new NotFound())
+        appAttachmentResolveStub.rejects(new NotFound())
 
         // In this case, there's no fetching app add-on attachments from Platform API, because the matchesHelper
         // function re-throws the NotFound error received from the resolver.
         try {
-          await getAttachment(heroku, 'my-app', 'DATABASE', 'missing-namespace')
+          await new DatabaseResolver(heroku).getAttachment('my-app', 'DATABASE', 'missing-namespace')
         } catch (error: unknown) {
           sinon.assert.calledWith(
-            appAttachmentStub, 'my-app', 'DATABASE', {addon_service: 'heroku-postgresql', namespace: 'missing-namespace'}
+            appAttachmentResolveStub, 'my-app', 'DATABASE', {addon_service: 'heroku-postgresql', namespace: 'missing-namespace'}
           )
           expect((error as Error).message).to.equal('Couldn\'t find that addon.')
         }
@@ -183,17 +185,17 @@ describe('databases', function () {
         process.env = {
           HEROKU_POSTGRESQL_ADDON_NAME: 'heroku-postgresql-devname'
         }
-        appAttachmentStub.rejects(notFoundError)
+        appAttachmentResolveStub.rejects(notFoundError)
 
         // Mock the Heroku API to return available attachments for the specified addon service
         nock(HEROKU_API)
           .get('/apps/my-app/addon-attachments')
           .reply(200, [developerAddonAttachment])
 
-        await expect(getAttachment(heroku, 'my-app', 'FOLLOWER'))
+        await expect(new DatabaseResolver(heroku).getAttachment('my-app', 'FOLLOWER'))
           .to.be.rejectedWith('Unknown database: FOLLOWER. Valid options are: DEV_ADDON_DATABASE_URL')
         sinon.assert.calledWith(
-          appAttachmentStub, 'my-app', 'FOLLOWER', {addon_service: 'heroku-postgresql-devname', namespace: undefined}
+          appAttachmentResolveStub, 'my-app', 'FOLLOWER', {addon_service: 'heroku-postgresql-devname', namespace: undefined}
         )
       })
     })
@@ -204,7 +206,7 @@ describe('databases', function () {
       })
 
       it('throws AmbiguousError when multiple matches are found and they are different add-ons', async function () {
-        appAttachmentStub.rejects(
+        appAttachmentResolveStub.rejects(
           new AmbiguousError(
             [defaultAttachment, credentialAttachment, followerAttachment],
             'addon_attachment',
@@ -212,10 +214,10 @@ describe('databases', function () {
         )
 
         try {
-          await getAttachment(heroku, 'my-app', 'DATABASE')
+          await new DatabaseResolver(heroku).getAttachment('my-app', 'DATABASE')
         } catch (error: unknown) {
           sinon.assert.calledWith(
-            appAttachmentStub, 'my-app', 'DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
+            appAttachmentResolveStub, 'my-app', 'DATABASE', {addon_service: 'heroku-postgresql', namespace: undefined}
           )
           expect((error as Error).message).to.equal(
             'Ambiguous identifier; multiple matching add-ons found: MAIN_DATABASE, MAIN_RO_DATABASE, FOLLOWER_DATABASE.'
@@ -224,7 +226,7 @@ describe('databases', function () {
       })
 
       it('throws AmbiguousError when multiple matches are found and they are non equivalent attachments (different namespaces)', async function () {
-        appAttachmentStub.rejects(
+        appAttachmentResolveStub.rejects(
           new AmbiguousError(
             [defaultAttachment, credentialAttachment],
             'addon_attachment',
@@ -237,11 +239,11 @@ describe('databases', function () {
           .reply(200, myAppConfigVars)
 
         try {
-          await getAttachment(heroku, 'my-app', 'MAIN')
+          await new DatabaseResolver(heroku).getAttachment('my-app', 'MAIN')
         } catch (error: unknown) {
           api.done()
           sinon.assert.calledWith(
-            appAttachmentStub, 'my-app', 'MAIN', {addon_service: 'heroku-postgresql', namespace: undefined}
+            appAttachmentResolveStub, 'my-app', 'MAIN', {addon_service: 'heroku-postgresql', namespace: undefined}
           )
           expect((error as Error).message).to.equal(
             'Ambiguous identifier; multiple matching add-ons found: MAIN_DATABASE, MAIN_RO_DATABASE.'
@@ -250,7 +252,7 @@ describe('databases', function () {
       })
 
       it('returns the first match when multiple matches are found but they are equivalent', async function () {
-        appAttachmentStub.rejects(
+        appAttachmentResolveStub.rejects(
           new AmbiguousError(
             [foreignFollowerAttachment, equivalentAttachment],
             'addon_attachment',
@@ -262,13 +264,183 @@ describe('databases', function () {
           .get('/apps/my-other-app/config-vars')
           .reply(200, myOtherAppConfigVars)
 
-        const result = await getAttachment(heroku, 'my-other-app', 'FOLLOWER')
+        const result = await new DatabaseResolver(heroku).getAttachment('my-other-app', 'FOLLOWER')
 
         expect(result).to.deep.equal(foreignFollowerAttachment)
         api.done()
         sinon.assert.calledWith(
-          appAttachmentStub, 'my-other-app', 'FOLLOWER', {addon_service: 'heroku-postgresql', namespace: undefined}
+          appAttachmentResolveStub, 'my-other-app', 'FOLLOWER', {addon_service: 'heroku-postgresql', namespace: undefined}
         )
+      })
+    })
+  })
+
+  describe('getDatabase', function () {
+    let config: Config
+    let heroku: APIClient
+    let getAttachmentStub: sinon.SinonStub
+    let getConfigStub: sinon.SinonStub
+    let fetchBastionConfigStub: sinon.SinonStub
+
+    beforeEach(async function () {
+      config = await Config.load()
+      heroku = new APIClient(config)
+      getAttachmentStub = sinon.stub()
+      getConfigStub = sinon.stub()
+      fetchBastionConfigStub = sinon.stub()
+    })
+
+    afterEach(function () {
+      sinon.restore()
+    })
+
+    describe('when the attachment resolution step throws an error', function () {
+      it('lets the error bubble up', async function () {
+        // Setup stubs
+        const errorMessage = 'Database not found'
+        getAttachmentStub.rejects(new Error(errorMessage))
+        getConfigStub.resolves(myAppConfigVars)
+        const databaseResolver = new DatabaseResolver(heroku, getConfigStub)
+        sinon.stub(databaseResolver, 'getAttachment').callsFake(getAttachmentStub)
+
+        await expect(databaseResolver.getDatabase('my-app', 'NONEXISTENT_DATABASE'))
+          .to.be.rejectedWith(errorMessage)
+
+        sinon.assert.calledWith(getAttachmentStub, 'my-app', 'NONEXISTENT_DATABASE', undefined)
+      })
+    })
+
+    describe('when the get config step throws an error', function () {
+      it('lets the error bubble up', async function () {
+        // Setup stubs
+        const errorMessage = 'Database not found'
+        getAttachmentStub.resolves(defaultAttachment)
+        getConfigStub.rejects(new Error(errorMessage))
+        const databaseResolver = new DatabaseResolver(heroku, getConfigStub)
+        sinon.stub(databaseResolver, 'getAttachment').callsFake(getAttachmentStub)
+
+        await expect(databaseResolver.getDatabase('my-app', 'MAIN_DATABASE'))
+          .to.be.rejectedWith(errorMessage)
+
+        sinon.assert.calledWith(getAttachmentStub, 'my-app', 'MAIN_DATABASE', undefined)
+      })
+    })
+
+    describe('when fetching the bastion config is required but throws an error', function () {
+      it('lets the error bubble up', async function () {
+        // Setup stubs
+        const errorMessage = 'Database not found'
+        getAttachmentStub.resolves(privateDatabaseAttachment)
+        getConfigStub.resolves(privateDatabaseConfigVars)
+        fetchBastionConfigStub.rejects(new Error(errorMessage))
+        const databaseResolver = new DatabaseResolver(heroku, getConfigStub, fetchBastionConfigStub)
+        sinon.stub(databaseResolver, 'getAttachment').callsFake(getAttachmentStub)
+
+        await expect(databaseResolver.getDatabase('my-private-app', 'DATABASE'))
+          .to.be.rejectedWith(errorMessage)
+
+        sinon.assert.calledWith(getAttachmentStub, 'my-private-app', 'DATABASE', undefined)
+      })
+    })
+
+    describe('when arguments resolve to a single attachment with valid config vars', function () {
+      it('returns correct connection details for an add-on in the Common Runtime', async function () {
+        // Setup stubs
+        getAttachmentStub.resolves(defaultAttachment)
+        getConfigStub.resolves(myAppConfigVars)
+        const databaseResolver = new DatabaseResolver(heroku, getConfigStub)
+        sinon.stub(databaseResolver, 'getAttachment').callsFake(getAttachmentStub)
+
+        const result = await databaseResolver.getDatabase('my-app', 'MAIN_DATABASE')
+
+        sinon.assert.calledWith(getAttachmentStub, 'my-app', 'MAIN_DATABASE', undefined)
+        sinon.assert.calledWith(getConfigStub, heroku, 'my-app')
+        expect(result).to.have.property('attachment', defaultAttachment)
+        expect(result).to.have.property('host', 'main-database.example.com')
+        expect(result).to.have.property('port', '5432')
+        expect(result).to.have.property('database', 'db1')
+        expect(result).to.have.property('user', 'user1')
+        expect(result).to.have.property('password', 'password1')
+        expect(result).to.have.property('url', 'postgres://user1:password1@main-database.example.com:5432/db1')
+      })
+
+      it('returns correct connection details for a database add-on in a Shield Private Space', async function () {
+        // Setup stubs
+        getAttachmentStub.resolves(shieldDatabaseAttachment)
+        getConfigStub.resolves(shieldDatabaseConfigVars)
+        const databaseResolver = new DatabaseResolver(heroku, getConfigStub)
+        sinon.stub(databaseResolver, 'getAttachment').callsFake(getAttachmentStub)
+
+        const result = await databaseResolver.getDatabase('my-shield-app', 'DATABASE')
+
+        sinon.assert.calledWith(getAttachmentStub, 'my-shield-app', 'DATABASE', undefined)
+        sinon.assert.calledWith(getConfigStub, heroku, 'my-shield-app')
+        expect(result).to.have.property('attachment', shieldDatabaseAttachment)
+        expect(result).to.have.property('host', 'shield-database.example.com')
+        expect(result).to.have.property('port', '5432')
+        expect(result).to.have.property('database', 'db1')
+        expect(result).to.have.property('user', 'user7')
+        expect(result).to.have.property('password', 'password7')
+        expect(result).to.have.property('bastionHost', '10.7.0.1')
+        expect(result).to.have.property('bastionKey', '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----')
+      })
+
+      it('returns correct connection details for a database add-on in a non-Shield Private Space', async function () {
+        // Setup stubs
+        getAttachmentStub.resolves(privateDatabaseAttachment)
+        getConfigStub.resolves(privateDatabaseConfigVars)
+        fetchBastionConfigStub.resolves({
+          bastionHost: '10.7.0.2',
+          bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
+        })
+        const databaseResolver = new DatabaseResolver(heroku, getConfigStub, fetchBastionConfigStub)
+        sinon.stub(databaseResolver, 'getAttachment').callsFake(getAttachmentStub)
+
+        const result = await databaseResolver.getDatabase('my-private-app', 'DATABASE')
+
+        sinon.assert.calledWith(getAttachmentStub, 'my-private-app', 'DATABASE', undefined)
+        sinon.assert.calledWith(getConfigStub, heroku, 'my-private-app')
+        expect(result).to.have.property('attachment', privateDatabaseAttachment)
+        expect(result).to.have.property('host', 'private-database.example.com')
+        expect(result).to.have.property('port', '5432')
+        expect(result).to.have.property('database', 'db1')
+        expect(result).to.have.property('user', 'user8')
+        expect(result).to.have.property('password', 'password8')
+        expect(result).to.have.property('bastionHost', '10.7.0.2')
+        expect(result).to.have.property('bastionKey', '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----')
+      })
+    })
+
+    describe('when arguments resolve to a single attachment with invalid config vars', function () {
+      it('throws when the expected config var is missing', async function () {
+        // Setup stubs
+        const { MAIN_DATABASE_URL, ...configWithoutMainDatabase } = myAppConfigVars
+        getAttachmentStub.resolves(defaultAttachment)
+        getConfigStub.resolves(configWithoutMainDatabase)
+        const databaseResolver = new DatabaseResolver(heroku, getConfigStub)
+        sinon.stub(databaseResolver, 'getAttachment').callsFake(getAttachmentStub)
+
+        await expect(databaseResolver.getDatabase('my-app', 'MAIN_DATABASE'))
+          .to.be.rejectedWith('No config vars found for MAIN_DATABASE; perhaps they were removed')
+
+        sinon.assert.calledWith(getAttachmentStub, 'my-app', 'MAIN_DATABASE', undefined)
+      })
+
+      it('throws when the expected config var does not contain a valid PostgreSQL connection string', async function () {
+        // Setup stubs
+        const configWithTamperedValue = {
+          ...myAppConfigVars,
+          MAIN_DATABASE_URL: 'tampered-value-assigned-by-user'
+        }
+        getAttachmentStub.resolves(defaultAttachment)
+        getConfigStub.resolves(configWithTamperedValue)
+        const databaseResolver = new DatabaseResolver(heroku, getConfigStub)
+        sinon.stub(databaseResolver, 'getAttachment').callsFake(getAttachmentStub)
+
+        await expect(databaseResolver.getDatabase('my-app', 'MAIN_DATABASE'))
+          .to.be.rejectedWith('No config vars found for MAIN_DATABASE; perhaps they were removed')
+
+        sinon.assert.calledWith(getAttachmentStub, 'my-app', 'MAIN_DATABASE', undefined)
       })
     })
   })

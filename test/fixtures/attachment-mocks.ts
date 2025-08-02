@@ -145,3 +145,28 @@ export const shieldDatabaseAttachment = {
     'DATABASE_URL',
   ],
 } as ExtendedAddonAttachment
+
+export const privateDatabaseAttachment = {
+  addon: {
+    id: 'addon-5',
+    name: 'postgresql-vertical-12345',
+    app: {
+      id: 'app-4',
+      name: 'my-private-app',
+    },
+    plan: {
+      id: 'private-0',
+      name: 'heroku-postgresql:private-0',
+    },
+  },
+  app: {
+    id: 'app-4',
+    name: 'my-private-app',
+  },
+  id: 'attachment-9',
+  name: 'DATABASE',
+  namespace: null,
+  config_vars: [
+    'DATABASE_URL',
+  ],
+} as ExtendedAddonAttachment

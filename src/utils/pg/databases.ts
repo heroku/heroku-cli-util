@@ -1,203 +1,212 @@
-import type {AddOnAttachment} from '@heroku-cli/schema'
-
 import {color} from '@heroku-cli/color'
 import {APIClient} from '@heroku-cli/command'
 import {HerokuAPIError} from '@heroku-cli/command/lib/api-client.js'
 import debug from 'debug'
 import {env} from 'node:process'
 
+import {AmbiguousError} from '../../types/errors/ambiguous.js'
 import type {ExtendedAddonAttachment} from '../../types/pg/data-api.js'
 import type {ConnectionDetails, ConnectionDetailsWithAttachment} from '../../types/pg/tunnel.js'
-
-import {AmbiguousError} from '../../types/errors/ambiguous.js'
 import AppAttachmentResolver from '../addons/resolve.js'
 import {bastionKeyPlan, fetchBastionConfig, getBastionConfig} from './bastion.js'
 import {getConfig, getConfigVarName, getConfigVarNameFromAttachment} from './config-vars.js'
 
 const pgDebug = debug('pg')
 
-/**
- * Fetches all Heroku PostgreSQL add-on attachments for a given app.
- * 
- * This is used internally by the `getAttachment` function to get all valid Heroku PostgreSQL add-on attachments
- * to generate a list of possible valid attachments when the user passes a database name that doesn't match any
- * attachments.
- */
-async function allPostgresAttachments(heroku: APIClient, appId: string): Promise<ExtendedAddonAttachment[]> {
-  const addonService = process.env.HEROKU_POSTGRESQL_ADDON_NAME || 'heroku-postgresql'
-  const {body: attachments} = await heroku.get<ExtendedAddonAttachment[]>(`/apps/${appId}/addon-attachments`, {
-    headers: {
-      Accept: 'application/vnd.heroku+json; version=3.sdk',
-      'Accept-Inclusion': 'addon:plan,config_vars',
-    },
-  })
-  return attachments.filter(a => a.addon.plan.name.split(':', 2)[0] === addonService)
-}
+export default class DatabaseResolver {
+  private readonly appAttachmentResolver: AppAttachmentResolver
 
-/**
- * Helper function that attempts to find a single addon attachment matching the given database identifier
- * (attachment name, id, or config var name).
- * 
- * This is used internally by the `getAttachment` function to handle the lookup of addon attachments.
- * It returns either a single match, multiple matches (for ambiguous cases), or null if no matches are found.
- * 
- * The AppAttachmentResolver uses the Platform API add-on attachment resolver endpoint to get the attachment.
- */
-async function matchesHelper(heroku: APIClient, app: string, db: string, namespace?: string): Promise<
-  {error: undefined, matches: ExtendedAddonAttachment[]} |
-  {error: AmbiguousError, matches: ExtendedAddonAttachment[]} |
-  {error: HerokuAPIError, matches: null}
-> {
-  debug(`fetching ${db} on ${app}`)
+  constructor(
+    private readonly heroku: APIClient,
+    private readonly getConfigFn = getConfig,
+    private readonly fetchBastionConfigFn = fetchBastionConfig,
+  ) {
+    this.appAttachmentResolver = new AppAttachmentResolver(this.heroku)
+  }
 
-  const addonService = process.env.HEROKU_POSTGRESQL_ADDON_NAME || 'heroku-postgresql'
-  debug(`addon service: ${addonService}`)
-
-  try {
-    const resolver = new AppAttachmentResolver(heroku)
-    const attached = await resolver.resolve(app, db, {addon_service: addonService, namespace})
-    return {matches: [attached], error: undefined}
-  } catch (error: unknown) {
-    if (error instanceof AmbiguousError && error.body.id === 'multiple_matches' && error.matches) {
-      return {error, matches: error.matches}
+  /**
+   * This function resolves a database attachment based on the provided database identifier
+   * (attachment name, id, or config var name) and namespace (credential). 
+   */
+  public async getAttachment(
+    appId: string,
+    attachmentId = 'DATABASE_URL',
+    namespace?: string
+  ): Promise<ExtendedAddonAttachment> {
+    // handle the case where the user passes an app::database format, overriding any app name option values.
+    const appConfigMatch = /^(.+?)::(.+)/.exec(attachmentId)
+    if (appConfigMatch) {
+      appId = appConfigMatch[1]
+      attachmentId = appConfigMatch[2]
     }
 
-    // This handles the case where the resolver returns a 404 error when making the request, but not the case
-    // where it returns a NotFound error because there were no matches after filtering by namespace.
-    if (
-      error instanceof HerokuAPIError
-      && error.http.statusCode === 404
-      && error.body && error.body.id === 'not_found'
-    ) {
-      return {error, matches: null}
+    const {matches, error} = await this.matchesHelper(appId, attachmentId, namespace)
+
+    // happy path where the resolver matches just one
+    if (matches && matches.length === 1) {
+      return matches[0]
     }
 
-    // This re-throws a NotFound error or any other HerokuAPIError except for the 404 case which is handled above.
+    // handle the case where the resolver didn't find any matches for the given database and show valid options.
+    if (!matches) {
+      const attachments = await this.allPostgresAttachments(appId)
+      if (attachments.length === 0) {
+        throw new Error(`${color.app(appId)} has no databases`)
+      } else {
+        const validOptions = attachments.map(attachment => getConfigVarName(attachment.config_vars))
+        throw new Error(`Unknown database: ${attachmentId}. Valid options are: ${validOptions.join(', ')}`)
+      }  
+    }
+
+    // handle the case where the resolver found multiple matches for the given database.
+    const first = matches[0]
+
+    // return the first attachment when all ambiguous attachments are equivalent (basically target the same database)
+    if (matches.every(match => first.addon.id === match.addon.id && first.app.id === match.app.id)) {
+      const config = await this.getConfigFn(this.heroku, first.app.name) ?? {}
+      if (matches.every(
+        match => config[getConfigVarName(first.config_vars)] === config[getConfigVarName(match.config_vars)]
+      )) {
+        return first
+      }
+    }
+
     throw error
   }
-}
 
-/**
- * Main function that resolves a database attachment based on the provided database identifier
- * (attachment name, id, or config var name) and namespace (credential). 
- */
-export async function getAttachment(
-  heroku: APIClient, appId: string, attachmentId = 'DATABASE_URL', namespace?: string
-): Promise<ExtendedAddonAttachment> {
-  // handle the case where the user passes an app::database format, overriding any app name option values.
-  const appConfigMatch = /^(.+?)::(.+)/.exec(attachmentId)
-  if (appConfigMatch) {
-    appId = appConfigMatch[1]
-    attachmentId = appConfigMatch[2]
+  /**
+   * This function returns the connection details for a database attachment resolved through the identifiers passed as
+   * arguments: app, attachment and credential (namespace).
+   */
+  public async getDatabase(
+    appId: string,
+    attachmentId?: string,
+    namespace?: string,
+  ): Promise<ConnectionDetailsWithAttachment> {
+    const attached = await this.getAttachment(appId, attachmentId, namespace)
+    const config = await this.getConfigFn(this.heroku, attached.app.name)
+    const database = this.getConnectionDetails(attached, config)
+
+    // Add bastion configuration if it's a non-shielded Private Space add-on and we still don't have the config.
+    if (bastionKeyPlan(attached) && !database.bastionKey) {
+      const bastionConfig = await this.fetchBastionConfigFn(this.heroku, attached.addon)
+      Object.assign(database, bastionConfig)
+    }
+
+    return database
   }
 
-  const {matches, error} = await matchesHelper(heroku, appId, attachmentId, namespace)
-
-  // happy path where the resolver matches just one
-  if (matches && matches.length === 1) {
-    return matches[0]
+  /**
+   * Fetches all Heroku PostgreSQL add-on attachments for a given app.
+   * 
+   * This is used internally by the `getAttachment` function to get all valid Heroku PostgreSQL add-on attachments
+   * to generate a list of possible valid attachments when the user passes a database name that doesn't match any
+   * attachments.
+   */
+  private async allPostgresAttachments(appId: string): Promise<ExtendedAddonAttachment[]> {
+    const addonService = process.env.HEROKU_POSTGRESQL_ADDON_NAME || 'heroku-postgresql'
+    const {body: attachments} = await this.heroku.get<ExtendedAddonAttachment[]>(`/apps/${appId}/addon-attachments`, {
+      headers: {
+        Accept: 'application/vnd.heroku+json; version=3.sdk',
+        'Accept-Inclusion': 'addon:plan,config_vars',
+      },
+    })
+    return attachments.filter(a => a.addon.plan.name.split(':', 2)[0] === addonService)
   }
 
-  // handle the case where the resolver didn't find any matches for the given database and show valid options.
-  if (!matches) {
-    const attachments = await allPostgresAttachments(heroku, appId)
-    if (attachments.length === 0) {
-      throw new Error(`${color.app(appId)} has no databases`)
-    } else {
-      const validOptions = attachments.map(attachment => getConfigVarName(attachment.config_vars))
-      throw new Error(`Unknown database: ${attachmentId}. Valid options are: ${validOptions.join(', ')}`)
-    }  
-  }
+  /**
+   * Helper function that attempts to find a single addon attachment matching the given database identifier
+   * (attachment name, id, or config var name).
+   * 
+   * This is used internally by the `getAttachment` function to handle the lookup of addon attachments.
+   * It returns either a single match, multiple matches (for ambiguous cases), or null if no matches are found.
+   * 
+   * The AppAttachmentResolver uses the Platform API add-on attachment resolver endpoint to get the attachment.
+   */
+  private async matchesHelper(app: string, db: string, namespace?: string): Promise<
+    {error: undefined, matches: ExtendedAddonAttachment[]} |
+    {error: AmbiguousError, matches: ExtendedAddonAttachment[]} |
+    {error: HerokuAPIError, matches: null}
+  > {
+    debug(`fetching ${db} on ${app}`)
 
-  // handle the case where the resolver found multiple matches for the given database.
-  const first = matches[0]
+    const addonService = process.env.HEROKU_POSTGRESQL_ADDON_NAME || 'heroku-postgresql'
+    debug(`addon service: ${addonService}`)
 
-  // return the first attachment when all ambiguous attachments are equivalent (basically target the same database)
-  if (matches.every(match => first.addon.id === match.addon.id && first.app.id === match.app.id)) {
-    const config = await getConfig(heroku, first.app.name!) ?? {}
-    if (matches.every(
-      match => config[getConfigVarName(first.config_vars)] === config[getConfigVarName(match.config_vars)]
-    )) {
-      return first
+    try {
+      const attached = await this.appAttachmentResolver.resolve(app, db, {addon_service: addonService, namespace})
+      return {matches: [attached], error: undefined}
+    } catch (error: unknown) {
+      if (error instanceof AmbiguousError && error.body.id === 'multiple_matches' && error.matches) {
+        return {error, matches: error.matches}
+      }
+
+      // This handles the case where the resolver returns a 404 error when making the request, but not the case
+      // where it returns a NotFound error because there were no matches after filtering by namespace.
+      if (
+        error instanceof HerokuAPIError
+        && error.http.statusCode === 404
+        && error.body && error.body.id === 'not_found'
+      ) {
+        return {error, matches: null}
+      }
+
+      // This re-throws a NotFound error or any other HerokuAPIError except for the 404 case which is handled above.
+      throw error
     }
   }
 
-  throw error
-}
+  /**
+   * This function returns the connection details for a database attachment according to the app config vars.
+   * @param attachment - The attachment to get the connection details for.
+   * @param configVars - The app config vars.
+   * @returns The connection details for the database attachment.
+   */
+  private getConnectionDetails(
+    attachment: ExtendedAddonAttachment,
+    configVars: Record<string, string> = {},
+  ): ConnectionDetailsWithAttachment {
+    const connStringVar = getConfigVarNameFromAttachment(attachment, configVars)
 
-/**
- * This function returns the connection details for a database attachment according to the app config vars.
- * @param attachment - The attachment to get the connection details for.
- * @param configVars - The app config vars.
- * @returns The connection details for the database attachment.
- */
-function getConnectionDetails(
-  attachment: ExtendedAddonAttachment,
-  configVars: Record<string, string> = {},
-): ConnectionDetailsWithAttachment {
-  const connStringVar = getConfigVarNameFromAttachment(attachment, configVars)
+    // build the default payload for non-bastion dbs
+    pgDebug(`Using "${connStringVar}" to connect to your database…`)
 
-  // build the default payload for non-bastion dbs
-  pgDebug(`Using "${connStringVar}" to connect to your database…`)
+    const conn = this.parsePostgresConnectionString(configVars[connStringVar])
 
-  const conn = parsePostgresConnectionString(configVars[connStringVar])
+    const payload: ConnectionDetailsWithAttachment = {
+      attachment,
+      database: conn.database,
+      host: conn.host,
+      password: conn.password,
+      pathname: conn.pathname,
+      port: conn.port,
+      url: conn.url,
+      user: conn.user,
+    }
 
-  const payload: ConnectionDetailsWithAttachment = {
-    attachment,
-    database: conn.database,
-    host: conn.host,
-    password: conn.password,
-    pathname: conn.pathname,
-    port: conn.port,
-    url: conn.url,
-    user: conn.user,
+    // This handles injection of bastion creds into the payload if they exist as config vars (Shield-tier databases).
+    const baseName = connStringVar.slice(0, -4)
+    const bastion = getBastionConfig(configVars, baseName)
+    if (bastion) {
+      Object.assign(payload, bastion)
+    }
+
+    return payload
   }
 
-  // This handles injection of bastion creds into the payload if they exist as config vars (Shield-tier databases).
-  const baseName = connStringVar.slice(0, -4)
-  const bastion = getBastionConfig(configVars, baseName)
-  if (bastion) {
-    Object.assign(payload, bastion)
-  }
+  private parsePostgresConnectionString(db: string): ConnectionDetails {
+    const dbPath = /:\/\//.test(db) ? db : `postgres:///${db}`
+    const url = new URL(dbPath)
+    const {hostname, password, pathname, port, username} = url
 
-  return payload
-}
-
-/**
- * This function returns the connection details for a database attachment resolved through the identifiers passed as
- * arguments: app, attachment and credential (namespace).
- */
-export async function getDatabase(
-  heroku: APIClient,
-  appId: string,
-  attachmentId?: string,
-  namespace?: string,
-): Promise<ConnectionDetailsWithAttachment> {
-  const attached = await getAttachment(heroku, appId, attachmentId, namespace)
-  const config = await getConfig(heroku, attached.app.name)
-  const database = getConnectionDetails(attached, config)
-
-  // Add bastion configuration if it's a non-shielded Private Space add-on and we still don't have the config.
-  if (bastionKeyPlan(attached) && !database.bastionKey) {
-    const bastionConfig = await fetchBastionConfig(heroku, attached.addon)
-    Object.assign(database, bastionConfig)
-  }
-
-  return database
-}
-
-export const parsePostgresConnectionString = (db: string): ConnectionDetails => {
-  const dbPath = /:\/\//.test(db) ? db : `postgres:///${db}`
-  const url = new URL(dbPath)
-  const {hostname, password, pathname, port, username} = url
-
-  return {
-    database: pathname.charAt(0) === '/' ? pathname.slice(1) : pathname,
-    host: hostname,
-    password,
-    pathname,
-    port: port || env.PGPORT || (hostname && '5432'),
-    url: dbPath,
-    user: username,
+    return {
+      database: pathname.charAt(0) === '/' ? pathname.slice(1) : pathname,
+      host: hostname,
+      password,
+      pathname,
+      port: port || env.PGPORT || (hostname && '5432'),
+      url: dbPath,
+      user: username,
+    }
   }
 }
