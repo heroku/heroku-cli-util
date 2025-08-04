@@ -46,7 +46,7 @@ export const utils = {
     host: getHost,
     psql: {
       exec: (
-        connectionDetails: ConnectionDetails,
+        connectionDetails: ConnectionDetailsWithAttachment,
         query: string,
         psqlCmdArgs: string[] = [],
       ): Promise<string> => {

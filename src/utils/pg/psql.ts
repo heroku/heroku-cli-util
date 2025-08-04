@@ -10,7 +10,7 @@ import {Server} from 'node:net'
 import {Stream} from 'node:stream'
 import {finished} from 'node:stream/promises'
 
-import {ConnectionDetails, TunnelConfig} from '../../types/pg/tunnel.js'
+import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from '../../types/pg/tunnel.js'
 import {getPsqlConfigs, sshTunnel} from './bastion.js'
 
 const pgDebug = debug('pg')
@@ -18,18 +18,18 @@ const pgDebug = debug('pg')
 /**
  * A small wrapper around tunnel-ssh so that other code doesn't have to worry about whether there is or is not a tunnel
  */
-class Tunnel {
-  private readonly bastionTunnel: Server
+export class Tunnel {
+  private readonly bastionTunnel: Server | null
   private readonly events: EventEmitter
-  constructor(bastionTunnel: Server) {
+  constructor(bastionTunnel: Server | null) {
     this.bastionTunnel = bastionTunnel
     // eslint-disable-next-line unicorn/prefer-event-target
     this.events = new EventEmitter()
   }
 
-  static async connect(db: ConnectionDetails, tunnelConfig: TunnelConfig) {
-    const tunnel = await sshTunnel(db, tunnelConfig)
-    return new Tunnel(tunnel as Server)
+  static async connect(connectionDetails: ConnectionDetailsWithAttachment, tunnelConfig: TunnelConfig) {
+    const tunnel = await sshTunnel(connectionDetails, tunnelConfig)
+    return new Tunnel(tunnel)
   }
 
   close() {
@@ -53,16 +53,23 @@ class Tunnel {
         throw new Error('Secure tunnel to your database failed')
       }
     } else {
-      pgDebug('no bastion required; waiting for fake close event')
+      pgDebug('no tunnel required; waiting for fake close event')
       await once(this.events, 'close')
     }
   }
 }
 
+type SpawnPsqlOptions = {
+  childProcessOptions: SpawnOptions,
+  dbEnv: NodeJS.ProcessEnv,
+  psqlArgs: string[],
+}
+
 export default class PsqlService {
   constructor(
-    private readonly connectionDetails: ConnectionDetails,
+    private readonly connectionDetails: ConnectionDetailsWithAttachment,
     private readonly getPsqlConfigsFn = getPsqlConfigs,
+    private readonly spawnFn = spawn,
   ) {}
 
   /**
@@ -132,7 +139,7 @@ export default class PsqlService {
     return stdoutPromise as Promise<string>
   }
 
-  private spawnPsql(options: {childProcessOptions: SpawnOptions, dbEnv: NodeJS.ProcessEnv, psqlArgs: string[]}) {
+  private spawnPsql(options: SpawnPsqlOptions) {
     const {childProcessOptions, dbEnv, psqlArgs} = options
     const spawnOptions = {
       env: dbEnv,
@@ -140,7 +147,7 @@ export default class PsqlService {
     }
   
     pgDebug('opening psql process')
-    const psql = spawn('psql', psqlArgs, spawnOptions)
+    const psql = this.spawnFn('psql', psqlArgs, spawnOptions)
     psql.once('spawn', () => pgDebug('psql process spawned'))
   
     return psql
