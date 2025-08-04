@@ -6,11 +6,11 @@ import {Readable} from 'node:stream'
 import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
 
-import {ConnectionDetailsWithAttachment, TunnelConfig} from '../../../../src/types/pg/tunnel.js'
+import {ConnectionDetailsWithAttachment} from '../../../../src/types/pg/tunnel.js'
 import {PsqlConfigs} from '../../../../src/utils/pg/bastion.js'
 import PsqlService from '../../../../src/utils/pg/psql.js'
 import {defaultConnectionDetails} from '../../../fixtures/bastion-mocks.js'
-import { defaultPsqlConfigs } from '../../../fixtures/psql-mocks.js'
+import {defaultPsqlConfigs} from '../../../fixtures/psql-mocks.js'
 
 const {expect} = chai
 
@@ -27,9 +27,10 @@ describe('PsqlService', function () {
 
   // Helper function to create a mock child process
   function createMockChildProcess() {
+    // eslint-disable-next-line unicorn/prefer-event-target
     const childProcess = new EventEmitter() as ChildProcess
     childProcess.stdout = new Readable({
-      read: () => {}
+      read() {},
     })
     childProcess.stderr = null
     childProcess.kill = sinon.stub()
@@ -55,7 +56,7 @@ describe('PsqlService', function () {
         mockGetPsqlConfigs.returns(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
       })
-  
+
       it('executes a query successfully', async function () {
         // Setup query and expected result
         const query = 'SELECT \'t\'::boolean AS it_works;'
@@ -83,8 +84,10 @@ describe('PsqlService', function () {
 
         // Verify spawn was called with correct parameters
         expect(mockSpawn).to.have.been.calledOnceWith('psql', [
-          '-c', query,
-          '--set', 'sslmode=require'
+          '-c',
+          query,
+          '--set',
+          'sslmode=require',
         ], {
           env: defaultPsqlConfigs.dbEnv,
           stdio: ['ignore', 'pipe', 'inherit'],
@@ -115,10 +118,12 @@ describe('PsqlService', function () {
 
         // Verify spawn was called with correct parameters including additional args
         expect(mockSpawn).to.have.been.calledOnceWith('psql', [
-          '-c', query,
-          '--set', 'sslmode=require',
+          '-c',
+          query,
+          '--set',
+          'sslmode=require',
           '--tuples-only',
-          '--no-align'
+          '--no-align',
         ], {
           env: defaultPsqlConfigs.dbEnv,
           stdio: ['ignore', 'pipe', 'inherit'],
@@ -148,8 +153,10 @@ describe('PsqlService', function () {
 
         // Verify spawn was called
         expect(mockSpawn).to.have.been.calledOnceWithExactly('psql', [
-          '-c', query,
-          '--set', 'sslmode=require',
+          '-c',
+          query,
+          '--set',
+          'sslmode=require',
           '-q',
         ], {
           env: defaultPsqlConfigs.dbEnv,
@@ -168,10 +175,6 @@ describe('PsqlService', function () {
 
       it('throws error when psql process exits with non-zero code', async function () {
         const query = 'SELECT * FROM non_existent_table;'
-        const expectedError =
-          'ERROR:  relation "non_existent_table" does not exist\n' +
-          'LINE 1: SELECT * FROM non_existent_table;\n' +
-          '                      ^\n'
 
         // Start the query execution
         const queryPromise = psqlService.execQuery(query)
@@ -201,8 +204,8 @@ describe('PsqlService', function () {
         // Execute the query and expect it to throw
         await expect(queryPromise)
           .to.be.rejectedWith(
-            'The local psql command could not be located. For help installing psql, see ' +
-            'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup'
+            'The local psql command could not be located. For help installing psql, see '
+            + 'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup',
           )
       })
     })

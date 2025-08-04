@@ -10,10 +10,10 @@ import {NotFound} from '../../../../src/errors/not-found.js'
 import AddonAttachmentResolver from '../../../../src/utils/addons/resolve.js'
 import {
   HEROKU_API,
-  defaultAttachment,
-  foreignAttachment,
   credentialAttachment,
+  defaultAttachment,
   followerAttachment,
+  foreignAttachment,
 } from '../../../fixtures/attachment-mocks.js'
 
 const {expect} = chai
@@ -30,10 +30,11 @@ describe('addonAttachment', function () {
   })
 
   afterEach(function () {
+    // eslint-disable-next-line import/no-named-as-default-member
     nock.cleanAll()
   })
 
-  describe('when the app isn\'t specified', async function () {
+  describe('when the app isn\'t specified', function () {
     it('returns the resolved addon attachment if one matches by attachment id', async function () {
       nock(HEROKU_API)
         .post('/actions/addon-attachments/resolve')
@@ -67,7 +68,7 @@ describe('addonAttachment', function () {
     it('throws a not found error when trying to resolve only by attachment name', async function () {
       nock(HEROKU_API)
         .post('/actions/addon-attachments/resolve')
-        .reply(404, {resource: 'add_on attachment', id: 'not_found', message: 'Couldn\'t find that add on attachment.'})
+        .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on attachment.', resource: 'add_on attachment'})
 
       try {
         await new AddonAttachmentResolver(heroku).resolve(undefined, 'DATABASE')
@@ -82,7 +83,7 @@ describe('addonAttachment', function () {
     it('throws a not found error when trying to resolve only by config var name', async function () {
       nock(HEROKU_API)
         .post('/actions/addon-attachments/resolve')
-        .reply(404, {resource: 'add_on attachment', id: 'not_found', message: 'Couldn\'t find that add on attachment.'})
+        .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on attachment.', resource: 'add_on attachment'})
 
       try {
         await new AddonAttachmentResolver(heroku).resolve(undefined, 'DATABASE_URL')
@@ -111,11 +112,11 @@ describe('addonAttachment', function () {
     })
   })
 
-  describe('when the app is specified', async function () {
+  describe('when the app is specified', function () {
     it('throws an app not found error when trying to resolve by whatever identifier but the app doesn\'t exist', async function () {
       nock(HEROKU_API)
         .post('/actions/addon-attachments/resolve')
-        .reply(404, {resource: 'app', id: 'not_found', message: 'Couldn\'t find that app.'})
+        .reply(404, {id: 'not_found', message: 'Couldn\'t find that app.', resource: 'app'})
 
       try {
         await new AddonAttachmentResolver(heroku).resolve('missing-app', 'whatever')
@@ -130,7 +131,7 @@ describe('addonAttachment', function () {
     it('throws an attachment not found error when trying to resolve by an attachment id for a different app', async function () {
       nock(HEROKU_API)
         .post('/actions/addon-attachments/resolve')
-        .reply(404, {resource: 'add_on attachment', id: 'not_found', message: 'Couldn\'t find that add on attachment.'})
+        .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on attachment.', resource: 'add_on attachment'})
 
       try {
         await new AddonAttachmentResolver(heroku).resolve('my-app', foreignAttachment.id)
@@ -145,7 +146,7 @@ describe('addonAttachment', function () {
     it('throws an attachment not found error when trying to resolve by a non-existent attachment name', async function () {
       nock(HEROKU_API)
         .post('/actions/addon-attachments/resolve')
-        .reply(404, {resource: 'add_on attachment', id: 'not_found', message: 'Couldn\'t find that add on attachment.'})
+        .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on attachment.', resource: 'add_on attachment'})
 
       try {
         await new AddonAttachmentResolver(heroku).resolve('my-app', 'PRIMARY_DB')
@@ -163,7 +164,7 @@ describe('addonAttachment', function () {
     it('throws an attachment not found error when trying to resolve for a different app and attachment names', async function () {
       nock(HEROKU_API)
         .post('/actions/addon-attachments/resolve')
-        .reply(404, {resource: 'add_on attachment', id: 'not_found', message: 'Couldn\'t find that add on attachment.'})
+        .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on attachment.', resource: 'add_on attachment'})
 
       try {
         await new AddonAttachmentResolver(heroku).resolve('my-app', 'my-other-app::DATABASE')
@@ -212,7 +213,7 @@ describe('addonAttachment', function () {
     })
   })
 
-  describe('when the namespace option is provided', async function () {
+  describe('when the namespace option is provided', function () {
     it('throws a NotFound error when no attachment matches the given namespace', async function () {
       nock(HEROKU_API)
         .post('/actions/addon-attachments/resolve')
@@ -239,14 +240,14 @@ describe('addonAttachment', function () {
     })
   })
 
-  describe('when the addon_service option is provided', async function () {
+  describe('when the addon_service option is provided', function () {
     it('throws an attachment not found error when the matching attachment is for a different addon service', async function () {
       nock(HEROKU_API)
         .post('/actions/addon-attachments/resolve')
-        .reply(404, {resource: 'add_on attachment', id: 'not_found', message: 'Couldn\'t find that add on attachment.'})
+        .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on attachment.', resource: 'add_on attachment'})
 
       try {
-        await new AddonAttachmentResolver(heroku).resolve('my-app', 'DATABASE', {addon_service: 'heroku-redis'})
+        await new AddonAttachmentResolver(heroku).resolve('my-app', 'DATABASE', {addonService: 'heroku-redis'})
       } catch (error: unknown) {
         const apiError = error as HerokuAPIError
         expect(apiError.body.id).to.equal('not_found')
@@ -260,7 +261,7 @@ describe('addonAttachment', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(200, [defaultAttachment])
 
-      const result = await new AddonAttachmentResolver(heroku).resolve('my-app', 'DATABASE_URL', {addon_service: 'heroku-postgresql'})
+      const result = await new AddonAttachmentResolver(heroku).resolve('my-app', 'DATABASE_URL', {addonService: 'heroku-postgresql'})
 
       expect(result).to.deep.equal(defaultAttachment)
     })
@@ -270,7 +271,7 @@ describe('addonAttachment', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
 
-      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'BASE_URL', {addon_service: 'heroku-postgresql'})).to.be.rejectedWith(AmbiguousError)
+      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'BASE_URL', {addonService: 'heroku-postgresql'})).to.be.rejectedWith(AmbiguousError)
     })
   })
 })

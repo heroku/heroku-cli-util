@@ -1,15 +1,16 @@
+/* eslint-disable camelcase */
 import type {ExtendedAddonAttachment} from '../../src/types/pg/data-api.js'
 
 export const HEROKU_API = 'https://api.heroku.com'
 
 export const defaultAttachment = {
   addon: {
-    id: 'addon-1',
-    name: 'postgresql-clean-12345',
     app: {
       id: 'app-1',
       name: 'my-app',
     },
+    id: 'addon-1',
+    name: 'postgresql-clean-12345',
     plan: {
       id: 'essential-1',
       name: 'heroku-postgresql:essential-1',
@@ -19,12 +20,12 @@ export const defaultAttachment = {
     id: 'app-1',
     name: 'my-app',
   },
-  id: 'attachment-1',
-  name: 'MAIN_DATABASE',
-  namespace: null,
   config_vars: [
     'MAIN_DATABASE_URL',
   ],
+  id: 'attachment-1',
+  name: 'MAIN_DATABASE',
+  namespace: null,
 } as ExtendedAddonAttachment
 
 export const foreignAttachment: ExtendedAddonAttachment = {
@@ -38,22 +39,22 @@ export const foreignAttachment: ExtendedAddonAttachment = {
 
 export const credentialAttachment: ExtendedAddonAttachment = {
   ...defaultAttachment,
-  id: 'attachment-3',
-  name: 'MAIN_RO_DATABASE',
-  namespace: 'read-only',
   config_vars: [
     'MAIN_RO_DATABASE_URL',
   ],
+  id: 'attachment-3',
+  name: 'MAIN_RO_DATABASE',
+  namespace: 'read-only',
 }
 
 export const followerAttachment = {
   addon: {
-    id: 'addon-2',
-    name: 'postgresql-regular-12345',
     app: {
       id: 'app-1',
       name: 'my-app',
     },
+    id: 'addon-2',
+    name: 'postgresql-regular-12345',
     plan: {
       id: 'essential-1',
       name: 'heroku-postgresql:essential-1',
@@ -63,22 +64,22 @@ export const followerAttachment = {
     id: 'app-1',
     name: 'my-app',
   },
-  id: 'attachment-4',
-  name: 'FOLLOWER_DATABASE',
-  namespace: null,
   config_vars: [
     'FOLLOWER_DATABASE_URL',
   ],
+  id: 'attachment-4',
+  name: 'FOLLOWER_DATABASE',
+  namespace: null,
 } as ExtendedAddonAttachment
 
 export const developerAddonAttachment = {
   addon: {
-    id: 'addon-3',
-    name: 'postgresql-devname-regular-12345',
     app: {
       id: 'app-1',
       name: 'my-app',
     },
+    id: 'addon-3',
+    name: 'postgresql-devname-regular-12345',
     plan: {
       id: 'essential-1',
       name: 'heroku-postgresql-devname:essential-1',
@@ -88,12 +89,12 @@ export const developerAddonAttachment = {
     id: 'app-1',
     name: 'my-app',
   },
-  id: 'attachment-5',
-  name: 'DEV_ADDON_DATABASE',
-  namespace: null,
   config_vars: [
     'DEV_ADDON_DATABASE_URL',
   ],
+  id: 'attachment-5',
+  name: 'DEV_ADDON_DATABASE',
+  namespace: null,
 } as ExtendedAddonAttachment
 
 export const foreignFollowerAttachment: ExtendedAddonAttachment = {
@@ -102,30 +103,30 @@ export const foreignFollowerAttachment: ExtendedAddonAttachment = {
     id: 'app-2',
     name: 'my-other-app',
   },
-  id: 'attachment-6',
-  name: 'MY_APP_FOLLOWER',
   config_vars: [
     'MY_APP_FOLLOWER_URL',
   ],
+  id: 'attachment-6',
+  name: 'MY_APP_FOLLOWER',
 }
 
 export const equivalentAttachment: ExtendedAddonAttachment = {
   ...foreignFollowerAttachment,
-  id: 'attachment-7',
-  name: 'MY_APP_FOLLOWER_ALT',
   config_vars: [
     'MY_APP_FOLLOWER_ALT_URL',
   ],
+  id: 'attachment-7',
+  name: 'MY_APP_FOLLOWER_ALT',
 }
 
 export const shieldDatabaseAttachment = {
   addon: {
-    id: 'addon-4',
-    name: 'postgresql-vertical-12345',
     app: {
       id: 'app-3',
       name: 'my-shield-app',
     },
+    id: 'addon-4',
+    name: 'postgresql-vertical-12345',
     plan: {
       id: 'shield-0',
       name: 'heroku-postgresql:shield-0',
@@ -135,25 +136,25 @@ export const shieldDatabaseAttachment = {
     id: 'app-3',
     name: 'my-shield-app',
   },
-  id: 'attachment-8',
-  name: 'DATABASE',
-  namespace: null,
   config_vars: [
     'DATABASE_BASTION_KEY',
     'DATABASE_BASTION_REKEYS_AFTER',
     'DATABASE_BASTIONS',
     'DATABASE_URL',
   ],
+  id: 'attachment-8',
+  name: 'DATABASE',
+  namespace: null,
 } as ExtendedAddonAttachment
 
 export const privateDatabaseAttachment = {
   addon: {
-    id: 'addon-5',
-    name: 'postgresql-vertical-12345',
     app: {
       id: 'app-4',
       name: 'my-private-app',
     },
+    id: 'addon-5',
+    name: 'postgresql-vertical-12345',
     plan: {
       id: 'private-0',
       name: 'heroku-postgresql:private-0',
@@ -163,10 +164,10 @@ export const privateDatabaseAttachment = {
     id: 'app-4',
     name: 'my-private-app',
   },
-  id: 'attachment-9',
-  name: 'DATABASE',
-  namespace: null,
   config_vars: [
     'DATABASE_URL',
   ],
+  id: 'attachment-9',
+  name: 'DATABASE',
+  namespace: null,
 } as ExtendedAddonAttachment

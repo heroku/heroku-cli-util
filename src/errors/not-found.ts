@@ -1,7 +1,7 @@
 /**
  * This error is used only when the Platform API add-on attachment resolver resolves to one or more matches, but
  * a namespace (credential name) was provided and none of them had that exact namespace.
- * 
+ *
  * We would've expected this to use the same error message the resolver returns when it throws a Not Found error:
  * `"Couldn't find that add on attachment."`, because it's attachments and not add-ons that are being resolved.
  *

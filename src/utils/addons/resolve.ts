@@ -1,11 +1,12 @@
 import type {APIClient} from '@heroku-cli/command'
 
-import {AmbiguousError} from '../../errors/ambiguous.js'
-import {NotFound} from '../../errors/not-found.js'
 import type {ExtendedAddonAttachment} from '../../types/pg/data-api.js'
 
+import {AmbiguousError} from '../../errors/ambiguous.js'
+import {NotFound} from '../../errors/not-found.js'
+
 export interface AddonAttachmentResolverOptions {
-  addon_service?: string
+  addonService?: string
   namespace?: string
 }
 export default class AddonAttachmentResolver {
@@ -19,14 +20,14 @@ export default class AddonAttachmentResolver {
   async resolve(
     appId: string | undefined,
     attachmentId: string,
-    options: AddonAttachmentResolverOptions = {}
+    options: AddonAttachmentResolverOptions = {},
   ): Promise<ExtendedAddonAttachment>  {
     const {body: attachments} = await this.heroku.post<ExtendedAddonAttachment[]>(
       '/actions/addon-attachments/resolve', {
         // eslint-disable-next-line camelcase
-        body: {addon_attachment: attachmentId, addon_service: options.addon_service, appId},
+        body: {addon_attachment: attachmentId, addon_service: options.addonService, appId},
         headers: this.attachmentHeaders,
-      }
+      },
     )
     return this.singularize(attachments, options.namespace)
   }
@@ -44,17 +45,17 @@ export default class AddonAttachmentResolver {
     }
 
     switch (matches.length) {
-      case 0: {
-        throw new NotFound()
-      }
-
-      case 1: {
-        return matches[0]
-      }
-
-      default: {
-        throw new AmbiguousError(matches, 'addon_attachment')
-      }
+    case 0: {
+      throw new NotFound()
     }
-  }  
+
+    case 1: {
+      return matches[0]
+    }
+
+    default: {
+      throw new AmbiguousError(matches, 'addon_attachment')
+    }
+    }
+  }
 }

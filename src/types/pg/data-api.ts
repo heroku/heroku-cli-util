@@ -16,29 +16,29 @@ type AddonDescriptor = DeepRequired<Heroku.AddOnAttachment>['addon']
  * This is the modified type for the `addon` property when the request to Platform API includes the value `addon:plan`
  * in the `Accept-Inclusion` header.
  */
-type AddonDescriptorWithPlanInclusion = AddonDescriptor & {
+type AddonDescriptorWithPlanInclusion = {
   plan: {
     id: string,
     name: string,
   }
-}
+} & AddonDescriptor
 
 /**
  * This is the modified type for the `AddOnAttachment` type when the request to Platform API includes the value
  * `config_vars` in the `Accept-Inclusion` header.
  */
-type AddonAttachmentWithConfigVarsInclusion = DeepRequired<Heroku.AddOnAttachment> & {
+type AddonAttachmentWithConfigVarsInclusion = {
   config_vars: string[]
-}
+} & DeepRequired<Heroku.AddOnAttachment>
 
 /**
  * This is the modified type for the `AddOnAttachment` we use on these lib functions because all requests made to
  * Platform API to get add-on attachments, either through the Add-on Attachment List endpoint or the
  * add-on attachment resolver action endpoint, include the header `Accept-Inclusion: addon:plan,config_vars`.
  */
-export type ExtendedAddonAttachment = AddonAttachmentWithConfigVarsInclusion & {
+export type ExtendedAddonAttachment = {
   addon: AddonDescriptorWithPlanInclusion
-}
+} & AddonAttachmentWithConfigVarsInclusion
 
 export type AddOnWithRelatedData = {
   attachment_names?: string[],

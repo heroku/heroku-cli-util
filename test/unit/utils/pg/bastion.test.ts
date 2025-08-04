@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 import {APIClient} from '@heroku-cli/command'
 import {Config} from '@oclif/core'
 import * as chai from 'chai'
@@ -5,28 +7,28 @@ import chaiAsPromised from 'chai-as-promised'
 import nock from 'nock'
 import sinon from 'sinon'
 
-import {bastionKeyPlan, fetchBastionConfig, getBastionConfig, getPsqlConfigs} from '../../../../src/utils/pg/bastion.js'
+import {
+  bastionKeyPlan,
+  fetchBastionConfig,
+  getBastionConfig,
+  getPsqlConfigs,
+} from '../../../../src/utils/pg/bastion.js'
 import {
   defaultAttachment,
+  developerAddonAttachment,
   privateDatabaseAttachment,
   shieldDatabaseAttachment,
-  developerAddonAttachment,
 } from '../../../fixtures/attachment-mocks.js'
-import {
-  shieldDatabaseConfigVars,
-  myAppConfigVars,
-  emptyAppConfigVars,
-} from '../../../fixtures/config-var-mocks.js'
 import {
   defaultConnectionDetails,
   privateDatabaseConnectionDetails,
   shieldDatabaseConnectionDetails,
 } from '../../../fixtures/bastion-mocks.js'
 import {
-  defaultPsqlConfigs,
-  privateDatabasePsqlConfigs,
-  shieldDatabasePsqlConfigs,
-} from '../../../fixtures/psql-mocks.js'
+  emptyAppConfigVars,
+  myAppConfigVars,
+  shieldDatabaseConfigVars,
+} from '../../../fixtures/config-var-mocks.js'
 
 const {expect} = chai
 
@@ -61,9 +63,9 @@ describe('bastion', function () {
           ...defaultAttachment.addon,
           plan: {
             ...defaultAttachment.addon.plan,
-            name: 'private-postgresql:essential-1'
-          }
-        }
+            name: 'private-postgresql:essential-1',
+          },
+        },
       }
 
       const attachmentWithPrivateAtEnd = {
@@ -72,9 +74,9 @@ describe('bastion', function () {
           ...defaultAttachment.addon,
           plan: {
             ...defaultAttachment.addon.plan,
-            name: 'heroku-postgresql:other-private-plan'
-          }
-        }
+            name: 'heroku-postgresql:other-private-plan',
+          },
+        },
       }
 
       expect(bastionKeyPlan(attachmentWithPrivateInAddonServiceSlug)).to.be.false
@@ -96,15 +98,16 @@ describe('bastion', function () {
     afterEach(function () {
       process.env = env
       sinon.restore()
+      // eslint-disable-next-line import/no-named-as-default-member
       nock.cleanAll()
     })
 
     it('returns bastion config when API returns valid host and private_key', async function () {
       process.env = {}
-      
+
       const bastionConfigResponse = {
         host: '10.7.0.1',
-        private_key: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----'
+        private_key: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       }
 
       const api = nock('https://api.data.heroku.com')
@@ -115,7 +118,7 @@ describe('bastion', function () {
 
       expect(result).to.deep.equal({
         bastionHost: '10.7.0.1',
-        bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----'
+        bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       })
 
       api.done()
@@ -123,9 +126,9 @@ describe('bastion', function () {
 
     it('returns empty object when API returns response without host', async function () {
       process.env = {}
-      
+
       const bastionConfigResponse = {
-        private_key: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----'
+        private_key: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       }
 
       const api = nock('https://api.data.heroku.com')
@@ -141,9 +144,9 @@ describe('bastion', function () {
 
     it('returns empty object when API returns response without private_key', async function () {
       process.env = {}
-      
+
       const bastionConfigResponse = {
-        host: '10.7.0.1'
+        host: '10.7.0.1',
       }
 
       const api = nock('https://api.data.heroku.com')
@@ -159,7 +162,7 @@ describe('bastion', function () {
 
     it('returns empty object when API returns empty response', async function () {
       process.env = {}
-      
+
       const bastionConfigResponse = {}
 
       const api = nock('https://api.data.heroku.com')
@@ -175,10 +178,10 @@ describe('bastion', function () {
 
     it('returns empty object when API returns response with empty host and private_key', async function () {
       process.env = {}
-      
+
       const bastionConfigResponse = {
         host: '',
-        private_key: ''
+        private_key: '',
       }
 
       const api = nock('https://api.data.heroku.com')
@@ -194,12 +197,12 @@ describe('bastion', function () {
 
     it('uses custom hostname when HEROKU_DATA_HOST environment variable is set', async function () {
       process.env = {
-        HEROKU_DATA_HOST: 'custom-data-api.heroku.com'
+        HEROKU_DATA_HOST: 'custom-data-api.heroku.com',
       }
 
       const bastionConfigResponse = {
         host: '10.7.0.1',
-        private_key: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----'
+        private_key: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       }
 
       const api = nock('https://custom-data-api.heroku.com')
@@ -210,7 +213,7 @@ describe('bastion', function () {
 
       expect(result).to.deep.equal({
         bastionHost: '10.7.0.1',
-        bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----'
+        bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       })
 
       api.done()
@@ -218,12 +221,12 @@ describe('bastion', function () {
 
     it('uses custom hostname when HEROKU_POSTGRESQL_HOST environment variable is set', async function () {
       process.env = {
-        HEROKU_POSTGRESQL_HOST: 'custom-postgresql-api.heroku.com'
+        HEROKU_POSTGRESQL_HOST: 'custom-postgresql-api.heroku.com',
       }
 
       const bastionConfigResponse = {
         host: '10.7.0.1',
-        private_key: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----'
+        private_key: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       }
 
       const api = nock('https://custom-postgresql-api.heroku.com')
@@ -234,7 +237,7 @@ describe('bastion', function () {
 
       expect(result).to.deep.equal({
         bastionHost: '10.7.0.1',
-        bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----'
+        bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       })
 
       api.done()
@@ -243,12 +246,12 @@ describe('bastion', function () {
     it('prioritizes HEROKU_DATA_HOST over HEROKU_POSTGRESQL_HOST', async function () {
       process.env = {
         HEROKU_DATA_HOST: 'data-api.heroku.com',
-        HEROKU_POSTGRESQL_HOST: 'postgresql-api.heroku.com'
+        HEROKU_POSTGRESQL_HOST: 'postgresql-api.heroku.com',
       }
 
       const bastionConfigResponse = {
         host: '10.7.0.1',
-        private_key: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----'
+        private_key: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       }
 
       const api = nock('https://data-api.heroku.com')
@@ -259,7 +262,7 @@ describe('bastion', function () {
 
       expect(result).to.deep.equal({
         bastionHost: '10.7.0.1',
-        bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----'
+        bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       })
 
       api.done()
@@ -267,7 +270,7 @@ describe('bastion', function () {
 
     it('handles API errors gracefully', async function () {
       process.env = {}
-      
+
       const api = nock('https://api.data.heroku.com')
         .get('/client/v11/databases/addon-5/bastion')
         .reply(404, {id: 'not_found', message: 'Couldn\'t find that database.', resource: 'database'})
@@ -285,12 +288,13 @@ describe('bastion', function () {
 
       expect(result).to.deep.equal({
         bastionHost: '10.7.0.1',
-        bastionKey: '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----'
+        bastionKey: '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----',
       })
     })
 
     it('returns empty object when BASTION_KEY is missing', function () {
-      const { DATABASE_BASTION_KEY, ...configWithoutKey } = shieldDatabaseConfigVars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const {DATABASE_BASTION_KEY, ...configWithoutKey} = shieldDatabaseConfigVars
 
       const result = getBastionConfig(configWithoutKey, 'DATABASE')
 
@@ -298,7 +302,8 @@ describe('bastion', function () {
     })
 
     it('returns empty object when BASTIONS is missing', function () {
-      const { DATABASE_BASTIONS, ...configWithoutBastions } = shieldDatabaseConfigVars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const {DATABASE_BASTIONS, ...configWithoutBastions} = shieldDatabaseConfigVars
 
       const result = getBastionConfig(configWithoutBastions, 'DATABASE')
 
@@ -308,7 +313,7 @@ describe('bastion', function () {
     it('returns empty object when BASTIONS is empty string', function () {
       const configWithEmptyBastions = {
         ...shieldDatabaseConfigVars,
-        DATABASE_BASTIONS: ''
+        DATABASE_BASTIONS: '',
       }
 
       const result = getBastionConfig(configWithEmptyBastions, 'DATABASE')
@@ -319,7 +324,7 @@ describe('bastion', function () {
     it('returns empty object when BASTION_KEY is empty string', function () {
       const configWithEmptyKey = {
         ...shieldDatabaseConfigVars,
-        DATABASE_BASTION_KEY: ''
+        DATABASE_BASTION_KEY: '',
       }
 
       const result = getBastionConfig(configWithEmptyKey, 'DATABASE')
@@ -331,7 +336,7 @@ describe('bastion', function () {
       const configWithEmptyValues = {
         ...shieldDatabaseConfigVars,
         DATABASE_BASTION_KEY: '',
-        DATABASE_BASTIONS: ''
+        DATABASE_BASTIONS: '',
       }
 
       const result = getBastionConfig(configWithEmptyValues, 'DATABASE')
@@ -354,7 +359,7 @@ describe('bastion', function () {
     it('handles multiple bastion hosts and selects one randomly', function () {
       const configWithMultipleBastions = {
         ...shieldDatabaseConfigVars,
-        DATABASE_BASTIONS: '10.7.0.1,10.7.0.2,10.7.0.3'
+        DATABASE_BASTIONS: '10.7.0.1,10.7.0.2,10.7.0.3',
       }
 
       const result = getBastionConfig(configWithMultipleBastions, 'DATABASE')
@@ -366,14 +371,14 @@ describe('bastion', function () {
     it('handles single bastion host without commas', function () {
       const configWithSingleBastion = {
         ...shieldDatabaseConfigVars,
-        DATABASE_BASTIONS: '10.7.0.1'
+        DATABASE_BASTIONS: '10.7.0.1',
       }
 
       const result = getBastionConfig(configWithSingleBastion, 'DATABASE')
 
       expect(result).to.deep.equal({
         bastionHost: '10.7.0.1',
-        bastionKey: '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----'
+        bastionKey: '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----',
       })
     })
   })
@@ -409,8 +414,8 @@ describe('bastion', function () {
         expect(result.dbTunnelConfig).to.have.property('host', undefined)
         expect(result.dbTunnelConfig).to.have.property('localHost', '127.0.0.1')
         expect(result.dbTunnelConfig).to.have.property('localPort').that.is.a('number')
-        expect(result.dbTunnelConfig.localPort).to.be.at.least(49152)
-        expect(result.dbTunnelConfig.localPort).to.be.at.most(65535)
+        expect(result.dbTunnelConfig.localPort).to.be.at.least(49_152)
+        expect(result.dbTunnelConfig.localPort).to.be.at.most(65_535)
         expect(result.dbTunnelConfig).to.have.property('privateKey', undefined)
         expect(result.dbTunnelConfig).to.have.property('username', 'bastion')
       })
@@ -425,9 +430,9 @@ describe('bastion', function () {
         expect(result.dbEnv).to.have.property('PGHOST', '127.0.0.1') // Adjusted to tunnel local host
         expect(result.dbEnv).to.have.property('PGPASSWORD', 'password7')
         expect(result.dbEnv).to.have.property('PGPORT').that.is.a('string')
-        const pgPort = parseInt(result.dbEnv.PGPORT!, 10)
-        expect(pgPort).to.be.at.least(49152)
-        expect(pgPort).to.be.at.most(65535)
+        const pgPort = Number.parseInt(result.dbEnv.PGPORT!, 10)
+        expect(pgPort).to.be.at.least(49_152)
+        expect(pgPort).to.be.at.most(65_535)
         expect(result.dbEnv).to.have.property('PGUSER', 'user7')
         expect(result.dbEnv).to.have.property('PGAPPNAME', 'psql non-interactive')
         expect(result.dbEnv).to.have.property('PGSSLMODE', 'require')
@@ -438,8 +443,8 @@ describe('bastion', function () {
         expect(result.dbTunnelConfig).to.have.property('host', '10.7.0.1')
         expect(result.dbTunnelConfig).to.have.property('localHost', '127.0.0.1')
         expect(result.dbTunnelConfig).to.have.property('localPort').that.is.a('number')
-        expect(result.dbTunnelConfig.localPort).to.be.at.least(49152)
-        expect(result.dbTunnelConfig.localPort).to.be.at.most(65535)
+        expect(result.dbTunnelConfig.localPort).to.be.at.least(49_152)
+        expect(result.dbTunnelConfig.localPort).to.be.at.most(65_535)
         expect(result.dbTunnelConfig).to.have.property('privateKey', '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----')
         expect(result.dbTunnelConfig).to.have.property('username', 'bastion')
 
@@ -457,9 +462,9 @@ describe('bastion', function () {
         expect(result.dbEnv).to.have.property('PGHOST', '127.0.0.1') // Adjusted to tunnel local host
         expect(result.dbEnv).to.have.property('PGPASSWORD', 'password8')
         expect(result.dbEnv).to.have.property('PGPORT').that.is.a('string')
-        const pgPort = parseInt(result.dbEnv.PGPORT!, 10)
-        expect(pgPort).to.be.at.least(49152)
-        expect(pgPort).to.be.at.most(65535)
+        const pgPort = Number.parseInt(result.dbEnv.PGPORT!, 10)
+        expect(pgPort).to.be.at.least(49_152)
+        expect(pgPort).to.be.at.most(65_535)
         expect(result.dbEnv).to.have.property('PGUSER', 'user8')
         expect(result.dbEnv).to.have.property('PGAPPNAME', 'psql non-interactive')
         expect(result.dbEnv).to.have.property('PGSSLMODE', 'require')
@@ -470,8 +475,8 @@ describe('bastion', function () {
         expect(result.dbTunnelConfig).to.have.property('host', '10.7.0.2')
         expect(result.dbTunnelConfig).to.have.property('localHost', '127.0.0.1')
         expect(result.dbTunnelConfig).to.have.property('localPort').that.is.a('number')
-        expect(result.dbTunnelConfig.localPort).to.be.at.least(49152)
-        expect(result.dbTunnelConfig.localPort).to.be.at.most(65535)
+        expect(result.dbTunnelConfig.localPort).to.be.at.least(49_152)
+        expect(result.dbTunnelConfig.localPort).to.be.at.most(65_535)
         expect(result.dbTunnelConfig).to.have.property('privateKey', '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----')
         expect(result.dbTunnelConfig).to.have.property('username', 'bastion')
 
