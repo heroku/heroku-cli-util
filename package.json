@@ -11,8 +11,8 @@
     "dist"
   ],
   "devDependencies": {
-    "@heroku-cli/test-utils": "0.1.1",
     "@heroku-cli/schema": "^2.0.0",
+    "@heroku-cli/test-utils": "0.1.1",
     "@types/chai": "^4.3.13",
     "@types/chai-as-promised": "^8.0.2",
     "@types/debug": "^4.1.12",
@@ -20,6 +20,7 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.15.3",
     "@types/sinon": "^17.0.4",
+    "@types/sinon-chai": "^4.0.0",
     "@types/tunnel-ssh": "4.1.1",
     "c8": "^7.7.0",
     "chai": "^4.4.1",
@@ -33,6 +34,7 @@
     "mock-stdin": "^1.0.0",
     "nock": "^13.2.9",
     "sinon": "^18.0.1",
+    "sinon-chai": "^3.7.0",
     "strip-ansi": "^6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",

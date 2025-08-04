@@ -6,7 +6,7 @@ import {promisify} from 'node:util'
 import * as createTunnel from 'tunnel-ssh'
 
 import {ExtendedAddonAttachment} from '../../types/pg/data-api.js'
-import {BastionConfig, BastionConfigResponse, ConnectionDetails, TunnelConfig} from '../../types/pg/tunnel.js'
+import {BastionConfig, BastionConfigResponse, ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from '../../types/pg/tunnel.js'
 import host from './host.js'
 
 const pgDebug = debug('pg')
@@ -73,15 +73,15 @@ export const getBastionConfig = function (config: Record<string, string>, baseNa
  * This function returns both the required environment variables to effect the psql command execution and the tunnel
  * configuration according to the database connection details.
  */
-export function getPsqlConfigs(connectionDetails: ConnectionDetails) {
+export function getPsqlConfigs(connectionDetails: ConnectionDetailsWithAttachment) {
   const dbEnv: NodeJS.ProcessEnv = baseEnv(connectionDetails)
   const dbTunnelConfig = tunnelConfig(connectionDetails)
 
   // If a tunnel is required, we need to adjust the environment variables for psql to use the tunnel host and port.
   if (connectionDetails.bastionKey) {
     Object.assign(dbEnv, {
-      PGHOST: dbTunnelConfig.localHost,
-      PGPORT: dbTunnelConfig.localPort,
+      PGHOST: dbTunnelConfig.localHost!,
+      PGPORT: dbTunnelConfig.localPort!.toString(),
     })
   }
 
@@ -90,6 +90,8 @@ export function getPsqlConfigs(connectionDetails: ConnectionDetails) {
     dbTunnelConfig,
   }
 }
+
+export type PsqlConfigs = ReturnType<typeof getPsqlConfigs>
 
 /**
  * This function returns the base environment variables for the database connection based on the connection details
@@ -123,8 +125,22 @@ function baseEnv(connectionDetails: ConnectionDetails): NodeJS.ProcessEnv {
   return baseEnv
 }
 
-export async function sshTunnel(db: ConnectionDetails, dbTunnelConfig: TunnelConfig, timeout = 10_000) {
-  if (!db.bastionKey) {
+function tunnelConfig(connectionDetails: ConnectionDetailsWithAttachment): TunnelConfig {
+  const localHost = '127.0.0.1'
+  const localPort = Math.floor((Math.random() * (65_535 - 49_152)) + 49_152)
+  return {
+    dstHost: connectionDetails.host || undefined,
+    dstPort: (connectionDetails.port && Number.parseInt(connectionDetails.port, 10)) || undefined,
+    host: connectionDetails.bastionHost,
+    localHost,
+    localPort,
+    privateKey: connectionDetails.bastionKey,
+    username: 'bastion',
+  }
+}
+
+export async function sshTunnel(connectionDetails: ConnectionDetailsWithAttachment, dbTunnelConfig: TunnelConfig, timeout = 10_000) {
+  if (!connectionDetails.bastionKey) {
     return null
   }
 
@@ -140,20 +156,6 @@ export async function sshTunnel(db: ConnectionDetails, dbTunnelConfig: TunnelCon
     ux.error('Unable to establish a secure tunnel to your database.')
   } finally {
     timeoutInstance.cancel()
-  }
-}
-
-export function tunnelConfig(db: ConnectionDetails): TunnelConfig {
-  const localHost = '127.0.0.1'
-  const localPort = Math.floor((Math.random() * (65_535 - 49_152)) + 49_152)
-  return {
-    dstHost: db.host || undefined,
-    dstPort: (db.port && Number.parseInt(db.port as string, 10)) || undefined,
-    host: db.bastionHost,
-    localHost,
-    localPort,
-    privateKey: db.bastionKey,
-    username: 'bastion',
   }
 }
 
@@ -178,11 +180,12 @@ class Timeout {
     }, this.timeout)
 
     try {
-      await new Promise<void>(resolve => {
-        this.events.once('cancelled', () => resolve())
+      await new Promise<null>(resolve => {
+        this.events.once('cancelled', () => resolve(null))
       })
     } finally {
       clearTimeout(this.timer)
+      return null
     }
   }
 }
