@@ -19,14 +19,14 @@ const pgDebug = debug('pg')
  * A small wrapper around tunnel-ssh so that other code doesn't have to worry about whether there is or is not a tunnel.
  */
 export class Tunnel {
-  private readonly bastionTunnel: Server | null
+  private readonly bastionTunnel: Server | void
   private readonly events: EventEmitter
   /**
    * Creates a new Tunnel instance.
    *
-   * @param bastionTunnel - The SSH tunnel server or null if no tunnel is needed
+   * @param bastionTunnel - The SSH tunnel server or void if no tunnel is needed
    */
-  constructor(bastionTunnel: Server | null) {
+  constructor(bastionTunnel: Server | void) {
     this.bastionTunnel = bastionTunnel
     // eslint-disable-next-line unicorn/prefer-event-target
     this.events = new EventEmitter()

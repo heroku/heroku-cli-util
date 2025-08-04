@@ -1,7 +1,8 @@
 import type {APIClient} from '@heroku-cli/command'
 
 import debug from 'debug'
-import * as EventEmitter from 'node:events'
+import {EventEmitter} from 'node:events'
+import {Server} from 'node:net'
 import {promisify} from 'node:util'
 import * as createTunnel from 'tunnel-ssh'
 
@@ -158,8 +159,8 @@ function tunnelConfig(connectionDetails: ConnectionDetailsWithAttachment): Tunne
   const localHost = '127.0.0.1'
   const localPort = Math.floor((Math.random() * (65_535 - 49_152)) + 49_152)
   return {
-    dstHost: connectionDetails.host || undefined,
-    dstPort: (connectionDetails.port && Number.parseInt(connectionDetails.port, 10)) || undefined,
+    dstHost: connectionDetails.host,
+    dstPort: Number.parseInt(connectionDetails.port, 10),
     host: connectionDetails.bastionHost,
     localHost,
     localPort,
@@ -174,24 +175,31 @@ function tunnelConfig(connectionDetails: ConnectionDetailsWithAttachment): Tunne
  * @param connectionDetails - The database connection details with attachment information
  * @param dbTunnelConfig - The tunnel configuration object
  * @param timeout - The timeout in milliseconds (default: 10000)
+ * @param createSSHTunnel - The function to create the SSH tunnel (default: promisified createTunnel.default)
  * @returns Promise that resolves to the tunnel server or null if no bastion key is provided
  * @throws Error if unable to establish the tunnel
  */
-export async function sshTunnel(connectionDetails: ConnectionDetailsWithAttachment, dbTunnelConfig: TunnelConfig, timeout = 10_000) {
+export async function sshTunnel(
+  connectionDetails: ConnectionDetailsWithAttachment,
+  dbTunnelConfig: TunnelConfig,
+  timeout = 10_000,
+  createSSHTunnel = promisify(createTunnel.default),
+): Promise<Server | void> {
   if (!connectionDetails.bastionKey) {
-    return null
+    return
   }
 
   const timeoutInstance = new Timeout(timeout, 'Establishing a secure tunnel timed out')
-  const createSSHTunnel = promisify(createTunnel.default)
   try {
     return await Promise.race([
       timeoutInstance.promise(),
       createSSHTunnel(dbTunnelConfig),
-    ]) ?? null
-  } catch (error) {
+    ])
+  } catch (error: unknown) {
     pgDebug(error)
-    throw new Error('Unable to establish a secure tunnel to your database.')
+    throw new Error(
+      `Unable to establish a secure tunnel to your database: ${(error as Error).message}.`,
+    )
   } finally {
     timeoutInstance.cancel()
   }
@@ -201,7 +209,8 @@ export async function sshTunnel(connectionDetails: ConnectionDetailsWithAttachme
  * A timeout utility class that can be cancelled.
  */
 class Timeout {
-  private readonly events = new EventEmitter.EventEmitter()
+  // eslint-disable-next-line unicorn/prefer-event-target
+  private readonly events = new EventEmitter()
   private readonly message: string
   private readonly timeout: number
   private timer: NodeJS.Timeout | undefined
@@ -231,14 +240,13 @@ class Timeout {
    *
    * @returns Promise that resolves to void when cancelled or rejects with an error when timeout occurs
    */
-  async promise(): Promise<void> {
-    this.timer = setTimeout(() => {
-      this.events.emit('error', new Error(this.message))
-    }, this.timeout)
+  async promise(): Promise<void> | never {
+    this.timer = setTimeout(() => this.events.emit('timeout'), this.timeout)
 
     try {
-      await new Promise<void>(resolve => {
+      await new Promise<void>((resolve, reject) => {
         this.events.once('cancelled', () => resolve())
+        this.events.once('timeout', () => reject(new Error(this.message)))
       })
     } finally {
       clearTimeout(this.timer)

@@ -5,13 +5,17 @@ import {Config} from '@oclif/core'
 import * as chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import nock from 'nock'
+import {Server} from 'node:net'
+import {promisify} from 'node:util'
 import sinon from 'sinon'
+import * as createTunnel from 'tunnel-ssh'
 
 import {
   bastionKeyPlan,
   fetchBastionConfig,
   getBastionConfig,
   getPsqlConfigs,
+  sshTunnel,
 } from '../../../../src/utils/pg/bastion.js'
 import {
   defaultAttachment,
@@ -29,6 +33,7 @@ import {
   myAppConfigVars,
   shieldDatabaseConfigVars,
 } from '../../../fixtures/config-var-mocks.js'
+import {defaultPsqlConfigs, privateDatabasePsqlConfigs, shieldDatabasePsqlConfigs} from '../../../fixtures/psql-mocks.js'
 
 const {expect} = chai
 
@@ -544,6 +549,116 @@ describe('bastion', function () {
         const result = getPsqlConfigs(defaultConnectionDetails)
 
         expect(result.dbEnv).to.have.property('PGSSLMODE', 'require')
+      })
+    })
+  })
+
+  describe('sshTunnel', function () {
+    let createTunnelStub: sinon.SinonStub<
+      Parameters<typeof createTunnel.default>,
+      Promise<ReturnType<typeof createTunnel.default>>
+    >
+    let clock: sinon.SinonFakeTimers
+
+    beforeEach(function () {
+      // Stub the createTunnel.default function
+      createTunnelStub = sinon.stub()
+      clock = sinon.useFakeTimers()
+    })
+
+    afterEach(function () {
+      sinon.restore()
+      clock.restore()
+    })
+
+    describe('when no bastion key is provided', function () {
+      it('returns undefined immediately', async function () {
+        const connectionDetails = defaultConnectionDetails
+        const {dbTunnelConfig} = defaultPsqlConfigs
+
+        const result = await sshTunnel(connectionDetails, dbTunnelConfig, 1000, promisify(createTunnelStub))
+
+        expect(result).to.be.undefined
+        expect(createTunnelStub).to.not.have.been.called
+      })
+    })
+
+    describe('when bastion key is provided', function () {
+      it('successfully creates an SSH tunnel', async function () {
+        const mockTunnelServer = {} as unknown as Server
+        createTunnelStub.resolves(mockTunnelServer)
+
+        const connectionDetails = privateDatabaseConnectionDetails
+        const {dbTunnelConfig} = privateDatabasePsqlConfigs
+
+        const tunnelPromise = sshTunnel(connectionDetails, dbTunnelConfig, 100, createTunnelStub)
+
+        expect(await tunnelPromise).to.equal(mockTunnelServer)
+        expect(createTunnelStub).to.have.been.calledOnceWith(dbTunnelConfig)
+      })
+
+      it('handles tunnel creation timeout', async function () {
+        // Resolves to a promise that hangs forever
+        createTunnelStub.resolves(new Promise(() => {}) as unknown as Server)
+
+        const connectionDetails = privateDatabaseConnectionDetails
+        const {dbTunnelConfig} = privateDatabasePsqlConfigs
+
+        const tunnelPromise = sshTunnel(connectionDetails, dbTunnelConfig, 100, createTunnelStub)
+
+        // Advance time to trigger timeout
+        clock.tick(100)
+
+        await expect(tunnelPromise).to.be.rejectedWith(
+          'Unable to establish a secure tunnel to your database: Establishing a secure tunnel timed out.',
+        )
+        expect(createTunnelStub).to.have.been.calledOnce
+      })
+
+      it('handles tunnel creation error', async function () {
+        const tunnelError = new Error('SSH connection failed')
+        createTunnelStub.rejects(tunnelError)
+        const connectionDetails = privateDatabaseConnectionDetails
+        const {dbTunnelConfig} = privateDatabasePsqlConfigs
+
+        const tunnelPromise = sshTunnel(connectionDetails, dbTunnelConfig, 100, createTunnelStub)
+
+        // Advance time without triggering timeout
+        clock.tick(10)
+
+        await expect(tunnelPromise).to.be.rejectedWith(
+          'Unable to establish a secure tunnel to your database: SSH connection failed.',
+        )
+        expect(createTunnelStub).to.have.been.calledOnceWith(dbTunnelConfig)
+      })
+
+      it('handles tunnel creation error with unknown error', async function () {
+        createTunnelStub.rejects()
+        const connectionDetails = privateDatabaseConnectionDetails
+        const {dbTunnelConfig} = privateDatabasePsqlConfigs
+
+        const tunnelPromise = sshTunnel(connectionDetails, dbTunnelConfig, 100, createTunnelStub)
+
+        // Advance time without triggering timeout
+        clock.tick(10)
+
+        await expect(tunnelPromise).to.be.rejectedWith(
+          'Unable to establish a secure tunnel to your database: Error.',
+        )
+        expect(createTunnelStub).to.have.been.calledOnceWith(dbTunnelConfig)
+      })
+
+      it('works with shield database connection details', async function () {
+        const mockTunnelServer = {} as unknown as Server
+        createTunnelStub.resolves(mockTunnelServer)
+
+        const connectionDetails = shieldDatabaseConnectionDetails
+        const {dbTunnelConfig} = shieldDatabasePsqlConfigs
+
+        const result = await sshTunnel(connectionDetails, dbTunnelConfig, 100, createTunnelStub)
+
+        expect(result).to.equal(mockTunnelServer)
+        expect(createTunnelStub).to.have.been.calledOnceWith(dbTunnelConfig)
       })
     })
   })
