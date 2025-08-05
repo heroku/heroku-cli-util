@@ -25,7 +25,7 @@ export default class AddonAttachmentResolver {
     const {body: attachments} = await this.heroku.post<ExtendedAddonAttachment[]>(
       '/actions/addon-attachments/resolve', {
         // eslint-disable-next-line camelcase
-        body: {addon_attachment: attachmentId, addon_service: options.addonService, appId},
+        body: {addon_attachment: attachmentId, addon_service: options.addonService, app: appId},
         headers: this.attachmentHeaders,
       },
     )

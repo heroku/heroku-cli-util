@@ -2,6 +2,7 @@ import * as chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import {ChildProcess} from 'node:child_process'
 import {EventEmitter} from 'node:events'
+import {Server} from 'node:net'
 import {Readable} from 'node:stream'
 import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
@@ -9,32 +10,44 @@ import sinonChai from 'sinon-chai'
 import {ConnectionDetailsWithAttachment} from '../../../../src/types/pg/tunnel.js'
 import {PsqlConfigs} from '../../../../src/utils/pg/bastion.js'
 import PsqlService from '../../../../src/utils/pg/psql.js'
-import {defaultConnectionDetails} from '../../../fixtures/bastion-mocks.js'
-import {defaultPsqlConfigs} from '../../../fixtures/psql-mocks.js'
+import {defaultConnectionDetails, privateDatabaseConnectionDetails} from '../../../fixtures/bastion-mocks.js'
+import {defaultPsqlConfigs, privateDatabasePsqlConfigs} from '../../../fixtures/psql-mocks.js'
 
 const {expect} = chai
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
 
+// Helper function to create a mock tunnel server
 describe('PsqlService', function () {
   let psqlService: PsqlService
   let connectionDetails: ConnectionDetailsWithAttachment
   let mockGetPsqlConfigs: sinon.SinonStub
   let mockSpawn: sinon.SinonStub
-  let mockChildProcess: ChildProcess
+  let mockChildProcess: {killed: boolean} & ChildProcess
   let psqlConfigs: PsqlConfigs
 
   // Helper function to create a mock child process
   function createMockChildProcess() {
     // eslint-disable-next-line unicorn/prefer-event-target
-    const childProcess = new EventEmitter() as ChildProcess
+    const childProcess = new EventEmitter() as {killed: boolean} & ChildProcess
     childProcess.stdout = new Readable({
       read() {},
     })
     childProcess.stderr = null
-    childProcess.kill = sinon.stub()
+    childProcess.kill = sinon.stub().callsFake(() => {
+      childProcess.killed = true
+    })
+    childProcess.killed = false
     return childProcess
+  }
+
+  function createMockTunnelServer() {
+    // eslint-disable-next-line unicorn/prefer-event-target
+    const server = new EventEmitter() as Server
+    server.close = sinon.stub().callsFake(() => server.emit('close'))
+    server.listen = sinon.stub() as sinon.SinonStub
+    return server
   }
 
   beforeEach(function () {
@@ -71,6 +84,7 @@ describe('PsqlService', function () {
           mockChildProcess.stdout!.emit('data', Buffer.from(expectedResult))
           mockChildProcess.stdout!.emit('end')
           mockChildProcess.emit('close', 0)
+          mockChildProcess.killed = true
         }, 10)
 
         // Wait for the query to complete
@@ -108,6 +122,7 @@ describe('PsqlService', function () {
           mockChildProcess.stdout!.emit('data', Buffer.from(expectedResult))
           mockChildProcess.stdout!.emit('end')
           mockChildProcess.emit('close', 0)
+          mockChildProcess.killed = true
         }, 10)
 
         // Wait for the query to complete
@@ -143,6 +158,7 @@ describe('PsqlService', function () {
           mockChildProcess.emit('spawn')
           mockChildProcess.stdout!.emit('end')
           mockChildProcess.emit('close', 0)
+          mockChildProcess.killed = true
         }, 10)
 
         // Wait for the query to complete
@@ -165,6 +181,136 @@ describe('PsqlService', function () {
       })
     })
 
+    describe('for private, non-shielded add-on plans (tunnel required)', function () {
+      let mockTunnelServer: Server
+      let mockTunnelFn: sinon.SinonStub
+
+      beforeEach(function () {
+        connectionDetails = privateDatabaseConnectionDetails
+        psqlConfigs = privateDatabasePsqlConfigs
+        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockTunnelServer = createMockTunnelServer()
+      })
+
+      it('executes a query successfully with SSH tunnel', async function () {
+        // Setup query and expected result
+        const query = 'SELECT \'t\'::boolean AS it_works;'
+        const expectedResult = ' it_works\n----------\n t\n(1 row)\n'
+        mockTunnelFn = sinon.stub().resolves(mockTunnelServer)
+        psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
+
+        // Start the query execution
+        const queryPromise = psqlService.execQuery(query)
+
+        // Simulate tunnel creation and psql process completion
+        setTimeout(() => {
+          // Simulate tunnel server ready
+          mockTunnelServer.emit('listening')
+
+          // Simulate psql process completion
+          mockChildProcess.emit('spawn')
+          mockChildProcess.stdout!.emit('data', Buffer.from(expectedResult))
+          mockChildProcess.stdout!.emit('end')
+          mockChildProcess.emit('close', 0)
+          mockChildProcess.killed = true
+        }, 10)
+
+        // Wait for the query to complete
+        const result = await queryPromise
+
+        // Verify the result
+        expect(result).to.equal(expectedResult)
+
+        // Verify getPsqlConfigs was called with correct parameters
+        expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
+
+        // Verify spawn was called with tunnel-adjusted environment
+        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+          '-c',
+          query,
+          '--set',
+          'sslmode=require',
+        ], {
+          env: privateDatabasePsqlConfigs.dbEnv, // Should use tunnel-adjusted env
+          stdio: ['ignore', 'pipe', 'inherit'],
+        })
+
+        // Verify tunnel server was closed
+        expect(mockTunnelServer.close).to.have.been.calledOnce
+      })
+
+      it('handles tunnel creation failure', async function () {
+        const query = 'SELECT 1;'
+        const tunnelError = new Error(
+          'Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.',
+        )
+        mockTunnelFn = sinon.stub().rejects(tunnelError)
+        psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
+
+        // Start the query execution
+        const queryPromise = psqlService.execQuery(query)
+
+        // Execute the query and expect it to throw
+        await expect(queryPromise)
+          .to.be.rejectedWith(
+            'Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.',
+          )
+      })
+
+      it('handles psql failure while tunnel is active', async function () {
+        const query = 'SELECT * FROM non_existent_table;'
+        mockTunnelFn = sinon.stub().resolves(mockTunnelServer)
+        psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
+
+        // Start the query execution
+        const queryPromise = psqlService.execQuery(query)
+
+        // Simulate tunnel creation and psql process failure
+        setTimeout(() => {
+          // Simulate tunnel server ready
+          mockTunnelServer.emit('listening')
+
+          // Simulate psql process failure
+          mockChildProcess.emit('spawn')
+          mockChildProcess.stdout!.emit('end')
+          mockChildProcess.emit('close', 1)
+          mockChildProcess.killed = true
+        }, 10)
+
+        // Execute the query and expect it to throw
+        await expect(queryPromise)
+          .to.be.rejectedWith('psql exited with code 1')
+
+        // Verify tunnel server was closed even after psql failure
+        expect(mockTunnelServer.close).to.have.been.calledOnce
+      })
+
+      it('handles tunnel close before psql completion', async function () {
+        const query = 'SELECT 1;'
+        mockTunnelFn = sinon.stub().resolves(mockTunnelServer)
+        psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
+
+        // Start the query execution
+        const queryPromise = psqlService.execQuery(query)
+
+        // Simulate tunnel creation and tunnel close before psql completes
+        setTimeout(() => {
+          // Simulate tunnel server ready
+          mockTunnelServer.emit('listening')
+
+          // Simulate psql process starting
+          mockChildProcess.emit('spawn')
+
+          // Simulate tunnel close before psql completes
+          mockTunnelServer.emit('error', new Error('Connection closed'))
+        }, 10)
+
+        // Execute the query and expect it to throw
+        await expect(queryPromise)
+          .to.be.rejectedWith('Secure tunnel to your database failed')
+      })
+    })
+
     describe('error handling', function () {
       beforeEach(function () {
         connectionDetails = defaultConnectionDetails
@@ -182,7 +328,9 @@ describe('PsqlService', function () {
         // Simulate psql process failure
         setTimeout(() => {
           mockChildProcess.emit('spawn')
+          mockChildProcess.stdout!.emit('end')
           mockChildProcess.emit('close', 1)
+          mockChildProcess.killed = true
         }, 10)
 
         // Execute the query and expect it to throw
@@ -199,6 +347,7 @@ describe('PsqlService', function () {
         // Simulate ENOENT error
         setTimeout(() => {
           mockChildProcess.emit('error', {code: 'ENOENT'})
+          mockChildProcess.killed = true
         }, 10)
 
         // Execute the query and expect it to throw

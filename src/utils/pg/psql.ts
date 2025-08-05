@@ -19,15 +19,13 @@ const pgDebug = debug('pg')
  * A small wrapper around tunnel-ssh so that other code doesn't have to worry about whether there is or is not a tunnel.
  */
 export class Tunnel {
-  private readonly bastionTunnel: Server | void
   private readonly events: EventEmitter
   /**
    * Creates a new Tunnel instance.
    *
    * @param bastionTunnel - The SSH tunnel server or void if no tunnel is needed
    */
-  constructor(bastionTunnel: Server | void) {
-    this.bastionTunnel = bastionTunnel
+  constructor(private readonly bastionTunnel: Server | void) {
     // eslint-disable-next-line unicorn/prefer-event-target
     this.events = new EventEmitter()
   }
@@ -37,10 +35,15 @@ export class Tunnel {
    *
    * @param connectionDetails - The database connection details with attachment information
    * @param tunnelConfig - The tunnel configuration object
+   * @param tunnelFn - The function to create the SSH tunnel (default: sshTunnel)
    * @returns Promise that resolves to a new Tunnel instance
    */
-  static async connect(connectionDetails: ConnectionDetailsWithAttachment, tunnelConfig: TunnelConfig) {
-    const tunnel = await sshTunnel(connectionDetails, tunnelConfig)
+  static async connect(
+    connectionDetails: ConnectionDetailsWithAttachment,
+    tunnelConfig: TunnelConfig,
+    tunnelFn: typeof sshTunnel,
+  ) {
+    const tunnel = await tunnelFn(connectionDetails, tunnelConfig)
     return new Tunnel(tunnel)
   }
 
@@ -93,6 +96,7 @@ export default class PsqlService {
     private readonly connectionDetails: ConnectionDetailsWithAttachment,
     private readonly getPsqlConfigsFn = getPsqlConfigs,
     private readonly spawnFn = spawn,
+    private readonly tunnelFn = sshTunnel,
   ) {}
 
   /**
@@ -188,7 +192,7 @@ export default class PsqlService {
     tunnelConfig: TunnelConfig,
     options: Parameters<typeof this.spawnPsql>[0],
   ): Promise<string> {
-    const tunnel = await Tunnel.connect(this.connectionDetails, tunnelConfig)
+    const tunnel = await Tunnel.connect(this.connectionDetails, tunnelConfig, this.tunnelFn)
     pgDebug('after create tunnel')
 
     const psql = this.spawnPsql(options)
