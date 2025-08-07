@@ -32,6 +32,7 @@ export const utils = {
     NotFound, // This should be NotFoundError for consistency, but we're keeping it for backwards compatibility
   },
   pg: {
+    DatabaseResolver,
     fetcher: {
       database(
         heroku: APIClient,
