@@ -1,8 +1,7 @@
 import {expectOutput, stdout} from '@heroku-cli/test-utils'
+import stripAnsi from 'strip-ansi'
 
 import {styledHeader} from '../../../src/ux/styled-header'
-
-import stripAnsi = require('strip-ansi');
 
 describe('styledHeader', function () {
   it('should print the correct styled header output', function () {
