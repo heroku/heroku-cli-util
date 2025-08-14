@@ -15,6 +15,21 @@ import {styledObject} from './ux/styled-object'
 import {table} from './ux/table'
 import {wait} from './ux/wait'
 
+// Export actual types for direct import
+export type {
+  AddOnWithRelatedData,
+  ExtendedAddonAttachment,
+  Link,
+} from './types/pg/data-api'
+
+export type {
+  ConnectionDetails,
+  ConnectionDetailsWithAttachment,
+  TunnelConfig,
+} from './types/pg/tunnel'
+
+// Keep const types for backward compatibility (deprecated)
+/** @deprecated Use direct type imports instead */
 export const types = {
   pg: {
     AddOnWithRelatedData: {} as AddOnWithRelatedData,
