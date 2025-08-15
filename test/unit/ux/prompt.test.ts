@@ -1,10 +1,9 @@
 import {expectOutput, stderr} from '@heroku-cli/test-utils'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
+import stripAnsi from 'strip-ansi'
 
 import {prompt} from '../../../src/ux/prompt'
-
-import stripAnsi = require('strip-ansi');
 
 describe('prompt', function () {
   let stdinStub: sinon.SinonStub
