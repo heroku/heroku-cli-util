@@ -1,9 +1,8 @@
 import {expectOutput, stdout} from '@heroku-cli/test-utils'
+import stripAnsi from 'strip-ansi'
 import heredoc from 'tsheredoc'
 
 import {table} from '../../../src/ux/table'
-
-import stripAnsi = require('strip-ansi')
 
 describe('table', function () {
   it('should print the correct table output', function () {

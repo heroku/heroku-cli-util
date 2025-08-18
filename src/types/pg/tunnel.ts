@@ -1,14 +1,10 @@
-import type {AddOnAttachment} from '@heroku-cli/schema'
-
 import {Server} from 'node:net'
 import * as createTunnel from 'tunnel-ssh'
 
-import type {AddOnAttachmentWithConfigVarsAndPlan} from './data-api'
+import type {ExtendedAddonAttachment} from './data-api'
 
 export type ConnectionDetails = {
   _tunnel?: Server
-  bastionHost?: string
-  bastionKey?: string
   database: string
   host: string
   password: string
@@ -16,10 +12,20 @@ export type ConnectionDetails = {
   port: string
   url: string
   user: string
-}
+} & BastionConfig
 
 export type ConnectionDetailsWithAttachment = {
-  attachment: Required<{addon: AddOnAttachmentWithConfigVarsAndPlan} & AddOnAttachment>
+  attachment: ExtendedAddonAttachment
 } & ConnectionDetails
 
 export type TunnelConfig = createTunnel.Config
+
+export interface BastionConfigResponse {
+  host: string
+  private_key: string
+}
+
+export type BastionConfig = {
+  bastionHost?: string
+  bastionKey?: string
+}

@@ -1,36 +1,47 @@
 import type {APIClient} from '@heroku-cli/command'
-import type {AddOnAttachment} from '@heroku-cli/schema'
 
-import type {AddOnAttachmentWithConfigVarsAndPlan} from '../../types/pg/data-api'
+import type {ExtendedAddonAttachment} from '../../types/pg/data-api'
 
-import {AmbiguousError} from '../../types/errors/ambiguous'
-import {NotFound} from '../../types/errors/not-found'
+import {AmbiguousError} from '../../errors/ambiguous'
+import {NotFound} from '../../errors/not-found'
 
-export const appAttachment = async (heroku: APIClient, app: string | undefined, id: string, options: {
-  addon_service?: string,
+export interface AddonAttachmentResolverOptions {
+  addonService?: string
   namespace?: string
-} = {}): Promise<{ addon: AddOnAttachmentWithConfigVarsAndPlan } & AddOnAttachment> => {
-  const result = await heroku.post<({
-    addon: AddOnAttachmentWithConfigVarsAndPlan
-  } & AddOnAttachment)[]>('/actions/addon-attachments/resolve', {
-      // eslint-disable-next-line camelcase
-      body: {addon_attachment: id, addon_service: options.addon_service, app}, headers: attachmentHeaders,
-    })
-  return singularize('addon_attachment', options.namespace)(result.body)
 }
+export default class AddonAttachmentResolver {
+  private readonly attachmentHeaders: Readonly<{ Accept: string, 'Accept-Inclusion': string }> = {
+    Accept: 'application/vnd.heroku+json; version=3.sdk',
+    'Accept-Inclusion': 'addon:plan,config_vars',
+  }
 
-const attachmentHeaders: Readonly<{ Accept: string, 'Accept-Inclusion': string }> = {
-  Accept: 'application/vnd.heroku+json; version=3.sdk',
-  'Accept-Inclusion': 'addon:plan,config_vars',
-}
+  constructor(private readonly heroku: APIClient) {}
 
-function singularize(type?: null | string, namespace?: null | string) {
-  return <T extends { name?: string, namespace?: null | string }>(matches: T[]): T => {
+  async resolve(
+    appId: string | undefined,
+    attachmentId: string,
+    options: AddonAttachmentResolverOptions = {},
+  ): Promise<ExtendedAddonAttachment>  {
+    const {body: attachments} = await this.heroku.post<ExtendedAddonAttachment[]>(
+      '/actions/addon-attachments/resolve', {
+        // eslint-disable-next-line camelcase
+        body: {addon_attachment: attachmentId, addon_service: options.addonService, app: appId},
+        headers: this.attachmentHeaders,
+      },
+    )
+    return this.singularize(attachments, options.namespace)
+  }
+
+  private singularize(attachments: ExtendedAddonAttachment[], namespace?: null | string) {
+    let matches: ExtendedAddonAttachment[]
+
     if (namespace) {
-      matches = matches.filter(m => m.namespace === namespace)
-    } else if (matches.length > 1) {
-      // In cases that aren't specific enough, filter by namespace
-      matches = matches.filter(m => !Reflect.has(m, 'namespace') || m.namespace === null)
+      matches = attachments.filter(m => m.namespace === namespace)
+    } else if (attachments.length > 1) {
+      // In cases that aren't specific enough, keep only attachments without a namespace
+      matches = attachments.filter(m => !Reflect.has(m, 'namespace') || m.namespace === null)
+    } else {
+      matches = attachments
     }
 
     switch (matches.length) {
@@ -43,7 +54,7 @@ function singularize(type?: null | string, namespace?: null | string) {
     }
 
     default: {
-      throw new AmbiguousError(matches, type ?? '')
+      throw new AmbiguousError(matches, 'addon_attachment')
     }
     }
   }

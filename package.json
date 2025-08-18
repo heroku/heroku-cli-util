@@ -1,5 +1,4 @@
 {
-  "type": "commonjs",
   "name": "@heroku/heroku-cli-util",
   "version": "9.0.2",
   "description": "Set of helpful CLI utilities",
@@ -19,9 +18,10 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.15.3",
     "@types/sinon": "^17.0.4",
+    "@types/sinon-chai": "^4.0.0",
     "@types/tunnel-ssh": "4.1.1",
     "chai": "^4.4.1",
-    "chai-as-promised": "^8.0.1",
+    "chai-as-promised": "^7.1.2",
     "eslint": "^8.57.0",
     "eslint-config-oclif": "^5.0.0",
     "eslint-config-oclif-typescript": "^3.1.14",
@@ -31,6 +31,7 @@
     "nock": "^13.2.9",
     "nyc": "^17.1.0",
     "sinon": "^18.0.1",
+    "sinon-chai": "^3.7.0",
     "stdout-stderr": "^0.1.13",
     "strip-ansi": "^6",
     "ts-node": "^10.9.2",
@@ -48,17 +49,6 @@
   },
   "engines": {
     "node": ">=20"
-  },
-  "mocha": {
-    "require": [
-      "ts-node/register",
-      "source-map-support/register",
-      "test/hooks.ts"
-    ],
-    "watch-extensions": "ts",
-    "recursive": true,
-    "reporter": "spec",
-    "timeout": 360000
   },
   "scripts": {
     "build": "npm run clean && tsc",
