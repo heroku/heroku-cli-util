@@ -49,6 +49,7 @@
     "@heroku/http-call": "^5.5.0",
     "@oclif/core": "^4.3.0",
     "@oclif/table": "0.4.14",
+    "ansis": "^4.1.0",
     "debug": "^4.4.0",
     "inquirer": "^12.6.1",
     "tunnel-ssh": "5.2.0"
