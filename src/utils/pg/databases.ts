@@ -1,4 +1,3 @@
-import {color} from '@heroku-cli/color'
 import {APIClient} from '@heroku-cli/command'
 import {HerokuAPIError} from '@heroku-cli/command/lib/api-client.js'
 import debug from 'debug'
@@ -7,6 +6,7 @@ import type {ExtendedAddonAttachment} from '../../types/pg/data-api.js'
 import type {ConnectionDetails, ConnectionDetailsWithAttachment} from '../../types/pg/tunnel.js'
 
 import {AmbiguousError} from '../../errors/ambiguous.js'
+import * as color from '../../ux/colors.js'
 import AddonAttachmentResolver from '../addons/resolve.js'
 import {bastionKeyPlan, fetchBastionConfig, getBastionConfig} from './bastion.js'
 import {getConfig, getConfigVarName, getConfigVarNameFromAttachment} from './config-vars.js'

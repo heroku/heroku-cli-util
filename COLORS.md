@@ -29,6 +29,7 @@ console.log(colors.label('Name'))                // Bold (default)
 console.log(colors.name('entity-name'))          // Purple
 console.log(colors.info('Help text'))            // Teal
 console.log(colors.inactive('disabled'))         // Gray
+console.log(colors.command('heroku apps:list'))  // White on dark gray background with $ prefix
 ```
 
 ### Using Color Constants
@@ -54,6 +55,8 @@ console.log(ansi.hex(COLORS.BLUE).bold('Custom blue bold text'))
 // COLORS.CYAN     - #50D3D5
 // COLORS.TEAL     - #00D4AA
 // COLORS.GRAY     - #B6B6B6
+// COLORS.CODE_BG  - #2E2E2E
+// COLORS.CODE_FG  - #FFFFFF
 ```
 
 ## Color Definitions
@@ -75,6 +78,7 @@ console.log(ansi.hex(COLORS.BLUE).bold('Custom blue bold text'))
 | `name` | Name of heroku entity without special color | #FF8DD3 | magenta | normal |
 | `info` | Help text, soft alerts | #00D4AA | teal | normal |
 | `inactive` | Disabled and unknown states | #B6B6B6 | gray | normal |
+| `command` | Command examples with shell prompt | #FFFFFF on #2E2E2E | white on dark gray | bold |
 
 ## Demo
 
@@ -87,6 +91,7 @@ npm run example color-demo
 ### Automatic Color Fallback
 
 The `ansis` package automatically detects terminal color capabilities and falls back gracefully:
+
 - **TrueColor terminals**: Full hex color support
 - **ANSI 256 terminals**: 256 color palette
 - **ANSI 16 terminals**: 16 color palette with automatic mapping
@@ -110,6 +115,7 @@ When `ansis` automatically maps colors to ANSI 16, it uses intelligent color app
 | Cyan (#50D3D5) | Team/user | Cyan | Unchanged |
 | Teal (#00D4AA) | Info | Cyan | Maps to cyan |
 | Gray (#B6B6B6) | Inactive | Gray | Unchanged |
+| White on Dark Gray | Command examples | White on Dark Gray | Unchanged |
 
 ## Design Principles
 
@@ -124,12 +130,14 @@ When `ansis` automatically maps colors to ANSI 16, it uses intelligent color app
 The new color system replaces the previous `@heroku-cli/color` package with more specific, semantic color functions. Instead of generic color functions, you now have purpose-built functions for different types of content.
 
 ### Before
+
 ```typescript
 import {color} from '@heroku-cli/color'
 console.log(color.cyan('my-app'))
 ```
 
 ### After
+
 ```typescript
 import * as colors from '@heroku/heroku-cli-util/colors'
 console.log(colors.app('my-app'))

@@ -47,6 +47,7 @@ export default class ColorDemoCommand extends Command {
     ux.stdout(colors.label('🔧 General Purpose Colors:\n'))
     ux.stdout(`  ${colors.label('label')} - Labels, table headers, keys (${colors.colorPalette.label.hex}, ${colors.colorPalette.label.name}, ${colors.colorPalette.label.style})\n`)
     ux.stdout(`  ${colors.info('info')} - Help text, soft alerts (${colors.colorPalette.info.hex}, ${colors.colorPalette.info.name})\n`)
+    ux.stdout(`  ${colors.command('heroku command --flag')} - Command examples and code blocks (${colors.colorPalette.command.hex}, ${colors.colorPalette.command.name})\n`)
 
     ux.stdout('')
 
@@ -87,6 +88,12 @@ export default class ColorDemoCommand extends Command {
     ux.stdout(`  ${colors.label('Name')}    ${colors.label('Status')}    ${colors.label('Updated')}\n`)
     ux.stdout(`  ${colors.app('my-app')}     ${colors.success('active')}     2024-01-15\n`)
     ux.stdout(`  ${colors.app('old-app')}    ${colors.inactive('inactive')}   2023-12-01\n\n`)
+
+    ux.stdout(colors.info('Command examples:\n'))
+    ux.stdout(`  ${colors.info('To list your apps:')}\n`)
+    ux.stdout(`  ${colors.command('heroku apps:list')}\n`)
+    ux.stdout(`  ${colors.info('To create a new app:')}\n`)
+    ux.stdout(`  ${colors.command('heroku apps:create my-awesome-app')}\n\n`)
 
     ux.stdout(colors.label('🎯 Color Palette Summary:\n'))
     ux.stdout(colors.info('All colors are designed to be accessible and consistent across the Heroku CLI experience.\n'))
