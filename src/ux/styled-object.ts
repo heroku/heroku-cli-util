@@ -1,6 +1,7 @@
-import {color} from '@heroku-cli/color'
 import {ux} from '@oclif/core'
 import {inspect} from 'node:util'
+
+import * as color from './colors.js'
 
 function prettyPrint(obj: unknown): string {
   if (!obj) return inspect(obj)
@@ -27,7 +28,7 @@ export function styledObject(obj: unknown, keys?: string[]) {
   const maxKeyLength = Math.max(...keyLengths) + 2
 
   const logKeyValue = (key: string, value: unknown): string =>
-    `${color.rgb(147, 112, 219)(key)}:` + ' '.repeat(maxKeyLength - key.length - 1) + prettyPrint(value)
+    `${color.label(key)}:` + ' '.repeat(maxKeyLength - key.length - 1) + prettyPrint(value)
 
   for (const [key, value] of Object.entries(obj)) {
     if (keys && !keys.includes(key)) continue

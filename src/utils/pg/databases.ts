@@ -1,4 +1,3 @@
-import {color} from '@heroku-cli/color'
 import {APIClient} from '@heroku-cli/command'
 import {HerokuAPIError} from '@heroku-cli/command/lib/api-client.js'
 import debug from 'debug'
@@ -7,11 +6,11 @@ import type {ExtendedAddon, ExtendedAddonAttachment} from '../../types/pg/platfo
 import type {ConnectionDetails} from '../../types/pg/tunnel.js'
 
 import {AmbiguousError} from '../../errors/ambiguous.js'
+import * as color from '../../ux/colors.js'
 import AddonAttachmentResolver from '../addons/attachment-resolver.js'
 import {getAddonService, isLegacyDatabase} from '../addons/helpers.js'
 import {bastionKeyPlan, fetchBastionConfig, getBastionConfig} from './bastion.js'
 import {getConfig, getConfigVarName, getConfigVarNameFromAttachment} from './config-vars.js'
-
 const pgDebug = debug('pg')
 
 export default class DatabaseResolver {

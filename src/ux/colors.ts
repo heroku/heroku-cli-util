@@ -8,6 +8,10 @@ const COLORS = {
   // Blue tones
   BLUE: '#62CBF4',
 
+  // Command tones (dark gray background, white foreground)
+  CODE_BG: '#2E2E2E',
+  CODE_FG: '#FFFFFF',
+
   // Cyan tones
   CYAN: '#50D3D5',
 
@@ -63,6 +67,7 @@ export const user = (text: string) => ansi.hex(COLORS.CYAN)(text)
 export const label = (text: string) => ansi.bold(text)
 export const info = (text: string) => ansi.hex(COLORS.TEAL)(text)
 export const inactive = (text: string) => ansi.hex(COLORS.GRAY)(text)
+export const command = (text: string) => ansi.bgHex(COLORS.CODE_BG).hex(COLORS.CODE_FG).bold(` $ ${text} `)
 
 /**
  * Color palette for reference
@@ -71,6 +76,7 @@ export const colorPalette = {
   addon: {hex: COLORS.YELLOW, name: 'yellow', style: 'bold'},
   app: {hex: COLORS.PURPLE, name: 'purple', style: 'bold'},
   attachment: {hex: COLORS.YELLOW, name: 'yellow', style: 'normal'},
+  command: {hex: COLORS.CODE_FG, name: 'white on dark gray', style: 'bold'},
   datastore: {hex: COLORS.YELLOW, name: 'yellow', style: 'bold'},
   failure: {hex: COLORS.RED, name: 'red', style: 'normal'},
   inactive: {hex: COLORS.GRAY, name: 'gray', style: 'normal'},
@@ -89,3 +95,10 @@ export const colorPalette = {
  * Export color constants for external use
  */
 export {COLORS}
+
+/**
+ * Re-export everything from ansis as a passthrough
+ * This gives access to all ansis functionality while adding our custom colors
+ */
+export * from 'ansis'
+export {default as ansi} from 'ansis'

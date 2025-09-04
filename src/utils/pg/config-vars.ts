@@ -1,10 +1,9 @@
 import type {HTTP} from '@heroku/http-call'
 import type {APIClient} from '@heroku-cli/command'
 
-import {color} from '@heroku-cli/color'
-
 import type {ExtendedAddonAttachment} from '../../types/pg/platform-api.js'
 
+import * as color from '../../ux/colors.js'
 /**
  * Cache of app config vars.
  */
@@ -64,8 +63,8 @@ export function getConfigVarNameFromAttachment(
   if (connStringConfigVarNames.length === 0) {
     throw new Error(
       `No config vars found for ${attachment.name}; perhaps they were removed as a side effect of`
-      + ` ${color.cmd('heroku rollback')}? Use ${color.cmd('heroku addons:attach')} to create a new attachment and `
-      + `then ${color.cmd('heroku addons:detach')} to remove the current attachment.`,
+      + ` ${color.command('heroku rollback')}? Use ${color.command('heroku addons:attach')} to create a new attachment and `
+      + `then ${color.command('heroku addons:detach')} to remove the current attachment.`,
     )
   }
 
