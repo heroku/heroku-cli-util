@@ -9,7 +9,7 @@ const COLORS = {
   BLUE: '#62CBF4',
 
   // Command tones (dark gray background, white foreground)
-  CODE_BG: '#2E2E2E',
+  CODE_BG: '#3A3A3A',
   CODE_FG: '#FFFFFF',
 
   // Cyan tones
