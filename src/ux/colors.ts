@@ -48,8 +48,8 @@ const COLORS = {
 // Colors for entities on the Heroku platform
 export const app = (text: string) => ansi.hex(COLORS.PURPLE).bold(`⬢ ${text}`)
 export const pipeline = (text: string) => ansi.hex(COLORS.PURPLE)(text)
-export const space = (text: string) => ansi.hex(COLORS.BLUE).bold(`⬢ ${text}`)
-export const datastore = (text: string) => ansi.hex(COLORS.YELLOW).bold(`⬢ ${text}`)
+export const space = (text: string) => ansi.hex(COLORS.BLUE).bold(`⬡ ${text}`)
+export const datastore = (text: string) => ansi.hex(COLORS.YELLOW).bold(`⧈ ${text}`)
 export const addon = (text: string) => ansi.hex(COLORS.YELLOW).bold(text)
 export const attachment = (text: string) => ansi.hex(COLORS.YELLOW)(text)
 export const name = (text: string) => ansi.hex(COLORS.MAGENTA)(text)
