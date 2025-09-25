@@ -285,8 +285,8 @@ async function createSSHTunnelAdapter(config: TunnelConfig): Promise<Server> {
   const [server] = await tunnelSsh.createTunnel(
     tunnelOptions,
     serverOptions,
-    sshOptions as unknown as Parameters<typeof tunnelSsh.createTunnel>[2],
-    forwardOptions as unknown as Parameters<typeof tunnelSsh.createTunnel>[3],
+    sshOptions,
+    forwardOptions
   )
   return server
 }

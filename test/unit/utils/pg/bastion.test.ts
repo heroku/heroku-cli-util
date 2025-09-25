@@ -6,9 +6,7 @@ import * as chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import nock from 'nock'
 import {Server} from 'node:net'
-import {promisify} from 'node:util'
 import sinon from 'sinon'
-import * as createTunnel from 'tunnel-ssh'
 
 import {
   bastionKeyPlan,
@@ -554,14 +552,11 @@ describe('bastion', function () {
   })
 
   describe('sshTunnel', function () {
-    let createTunnelStub: sinon.SinonStub<
-      Parameters<typeof createTunnel.default>,
-      Promise<ReturnType<typeof createTunnel.default>>
-    >
+    let createTunnelStub: sinon.SinonStub<[unknown], Promise<Server>>
     let clock: sinon.SinonFakeTimers
 
     beforeEach(function () {
-      // Stub the createTunnel.default function
+      // Stub the tunnel creation function
       createTunnelStub = sinon.stub()
       clock = sinon.useFakeTimers()
     })
@@ -576,7 +571,7 @@ describe('bastion', function () {
         const connectionDetails = defaultConnectionDetails
         const {dbTunnelConfig} = defaultPsqlConfigs
 
-        const result = await sshTunnel(connectionDetails, dbTunnelConfig, 1000, promisify(createTunnelStub))
+        const result = await sshTunnel(connectionDetails, dbTunnelConfig, 1000, createTunnelStub)
 
         expect(result).to.be.undefined
         expect(createTunnelStub).to.not.have.been.called
