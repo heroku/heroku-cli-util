@@ -45,7 +45,7 @@
     "@heroku/http-call": "^5.4.0",
     "@oclif/core": "^2.16.0",
     "debug": "^4.4.0",
-    "tunnel-ssh": "4.1.6"
+    "tunnel-ssh": "5.2.0"
   },
   "engines": {
     "node": ">=20"
