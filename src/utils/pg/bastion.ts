@@ -257,6 +257,9 @@ class Timeout {
  * Adapter for tunnel-ssh v5 API. Translates our TunnelConfig into the v5
  * createTunnel(tunnelOptions, serverOptions, sshOptions, forwardOptions) call
  * and returns the created local Server.
+ *
+ * @param config - The tunnel configuration to translate for v5 API
+ * @returns Promise that resolves to the created local TCP Server
  */
 async function createSSHTunnelAdapter(config: TunnelConfig): Promise<Server> {
   const tunnelOptions = {
@@ -271,22 +274,22 @@ async function createSSHTunnelAdapter(config: TunnelConfig): Promise<Server> {
 
   const sshOptions = {
     host: config.host,
-    username: config.username,
     privateKey: config.privateKey,
+    username: config.username,
   }
 
   const forwardOptions = {
-    srcAddr: config.localHost,
-    srcPort: config.localPort,
     dstAddr: config.dstHost,
     dstPort: config.dstPort,
+    srcAddr: config.localHost,
+    srcPort: config.localPort,
   }
 
   const [server] = await tunnelSsh.createTunnel(
     tunnelOptions,
     serverOptions,
     sshOptions,
-    forwardOptions
+    forwardOptions,
   )
   return server
 }
