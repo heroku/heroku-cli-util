@@ -3,8 +3,7 @@ import type {APIClient} from '@heroku-cli/command'
 import debug from 'debug'
 import {EventEmitter} from 'node:events'
 import {Server} from 'node:net'
-import {promisify} from 'node:util'
-import * as createTunnel from 'tunnel-ssh'
+import * as tunnelSsh from 'tunnel-ssh'
 
 import {ExtendedAddonAttachment} from '../../types/pg/data-api'
 import {
@@ -175,7 +174,7 @@ function tunnelConfig(connectionDetails: ConnectionDetailsWithAttachment): Tunne
  * @param connectionDetails - The database connection details with attachment information
  * @param dbTunnelConfig - The tunnel configuration object
  * @param timeout - The timeout in milliseconds (default: 10000)
- * @param createSSHTunnel - The function to create the SSH tunnel (default: promisified createTunnel.default)
+ * @param createSSHTunnel - The function to create the SSH tunnel
  * @returns Promise that resolves to the tunnel server or null if no bastion key is provided
  * @throws Error if unable to establish the tunnel
  */
@@ -183,7 +182,7 @@ export async function sshTunnel(
   connectionDetails: ConnectionDetailsWithAttachment,
   dbTunnelConfig: TunnelConfig,
   timeout = 10_000,
-  createSSHTunnel = promisify(createTunnel.default),
+  createSSHTunnel = createSSHTunnelAdapter,
 ): Promise<Server | void> {
   if (!connectionDetails.bastionKey) {
     return
@@ -252,4 +251,45 @@ class Timeout {
       clearTimeout(this.timer)
     }
   }
+}
+
+/**
+ * Adapter for tunnel-ssh v5 API. Translates our TunnelConfig into the v5
+ * createTunnel(tunnelOptions, serverOptions, sshOptions, forwardOptions) call
+ * and returns the created local Server.
+ *
+ * @param config - The tunnel configuration to translate for v5 API
+ * @returns Promise that resolves to the created local TCP Server
+ */
+async function createSSHTunnelAdapter(config: TunnelConfig): Promise<Server> {
+  const tunnelOptions = {
+    autoClose: true,
+    reconnectOnError: false,
+  }
+
+  const serverOptions = {
+    host: config.localHost,
+    port: config.localPort,
+  }
+
+  const sshOptions = {
+    host: config.host,
+    privateKey: config.privateKey,
+    username: config.username,
+  }
+
+  const forwardOptions = {
+    dstAddr: config.dstHost,
+    dstPort: config.dstPort,
+    srcAddr: config.localHost,
+    srcPort: config.localPort,
+  }
+
+  const [server] = await tunnelSsh.createTunnel(
+    tunnelOptions,
+    serverOptions,
+    sshOptions,
+    forwardOptions,
+  )
+  return server
 }

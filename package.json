@@ -19,7 +19,6 @@
     "@types/node": "^22.15.3",
     "@types/sinon": "^17.0.4",
     "@types/sinon-chai": "^4.0.0",
-    "@types/tunnel-ssh": "4.1.1",
     "chai": "^4.4.1",
     "chai-as-promised": "^7.1.2",
     "eslint": "^8.57.0",
@@ -45,7 +44,7 @@
     "@heroku/http-call": "^5.4.0",
     "@oclif/core": "^2.16.0",
     "debug": "^4.4.0",
-    "tunnel-ssh": "4.1.6"
+    "tunnel-ssh": "5.2.0"
   },
   "engines": {
     "node": ">=20"
