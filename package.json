@@ -1,6 +1,6 @@
 {
   "name": "@heroku/heroku-cli-util",
-  "version": "9.1.1",
+  "version": "9.1.2",
   "description": "Set of helpful CLI utilities",
   "author": "Heroku",
   "license": "ISC",
@@ -40,8 +40,8 @@
   },
   "dependencies": {
     "@heroku-cli/color": "^2.0.4",
-    "@heroku-cli/command": "^11.5.0",
-    "@heroku/http-call": "^5.4.0",
+    "@heroku-cli/command": "^11.8.0",
+    "@heroku/http-call": "^5.5.0",
     "@oclif/core": "^2.16.0",
     "debug": "^4.4.0",
     "tunnel-ssh": "5.2.0"
