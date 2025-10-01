@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@heroku/heroku-cli-util",
-  "version": "10.1.1",
+  "version": "10.1.2",
   "description": "Set of helpful CLI utilities",
   "author": "Heroku",
   "license": "ISC",
