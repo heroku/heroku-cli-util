@@ -4,6 +4,8 @@ import {AmbiguousError} from './errors/ambiguous'
 import {NotFound} from './errors/not-found'
 import {AddOnWithRelatedData, ExtendedAddonAttachment, Link} from './types/pg/data-api'
 import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from './types/pg/tunnel'
+import {getPsqlConfigs, sshTunnel} from './utils/pg/bastion'
+import {getConfigVarNameFromAttachment} from './utils/pg/config-vars'
 import DatabaseResolver from './utils/pg/databases'
 import getHost from './utils/pg/host'
 import PsqlService from './utils/pg/psql'
@@ -47,6 +49,8 @@ export const utils = {
     NotFound, // This should be NotFoundError for consistency, but we're keeping it for backwards compatibility
   },
   pg: {
+    DatabaseResolver,
+    PsqlService,
     fetcher: {
       database(
         heroku: APIClient,
@@ -68,6 +72,9 @@ export const utils = {
         const psqlService = new PsqlService(connectionDetails)
         return psqlService.execQuery(query, psqlCmdArgs)
       },
+      getConfigVarNameFromAttachment,
+      getPsqlConfigs,
+      sshTunnel,
     },
   },
 }
