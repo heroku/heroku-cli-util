@@ -10,7 +10,7 @@ import {Server} from 'node:net'
 import {Stream} from 'node:stream'
 import {finished} from 'node:stream/promises'
 
-import {ConnectionDetailsWithAttachment, TunnelConfig} from '../../types/pg/tunnel'
+import {ConnectionDetails, TunnelConfig} from '../../types/pg/tunnel'
 import {getPsqlConfigs, sshTunnel} from './bastion'
 
 const pgDebug = debug('pg')
@@ -39,7 +39,7 @@ export class Tunnel {
    * @returns Promise that resolves to a new Tunnel instance
    */
   static async connect(
-    connectionDetails: ConnectionDetailsWithAttachment,
+    connectionDetails: ConnectionDetails,
     tunnelConfig: TunnelConfig,
     tunnelFn: typeof sshTunnel,
   ) {
@@ -93,7 +93,7 @@ type SpawnPsqlOptions = {
 
 export default class PsqlService {
   constructor(
-    private readonly connectionDetails: ConnectionDetailsWithAttachment,
+    private readonly connectionDetails: ConnectionDetails,
     private readonly getPsqlConfigsFn = getPsqlConfigs,
     private readonly spawnFn = spawn,
     private readonly tunnelFn = sshTunnel,
@@ -188,7 +188,8 @@ export default class PsqlService {
    * @param options - The options for spawning the psql process
    * @returns Promise that resolves to the query result as a string
    */
-  private async runWithTunnel(
+  // eslint-disable-next-line perfectionist/sort-classes
+  public async runWithTunnel(
     tunnelConfig: TunnelConfig,
     options: Parameters<typeof this.spawnPsql>[0],
   ): Promise<string> {

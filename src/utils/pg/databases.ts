@@ -118,7 +118,8 @@ export default class DatabaseResolver {
    * @param connStringOrDbName - PostgreSQL connection string or local database name
    * @returns Connection details object with parsed connection information
    */
-  public parsePostgresConnectionString(connStringOrDbName: string): ConnectionDetails {
+  // eslint-disable-next-line perfectionist/sort-classes
+  public static parsePostgresConnectionString(connStringOrDbName: string): ConnectionDetails {
     const dbPath = /:\/\//.test(connStringOrDbName) ? connStringOrDbName : `postgres:///${connStringOrDbName}`
     const url = new URL(dbPath)
     const {hostname, password, pathname, port, username} = url
@@ -159,7 +160,8 @@ export default class DatabaseResolver {
    * @param config - The record of app config vars with their values
    * @returns Connection details with attachment information
    */
-  private getConnectionDetails(
+  // eslint-disable-next-line perfectionist/sort-classes
+  public getConnectionDetails(
     attachment: ExtendedAddonAttachment,
     config: Record<string, string> = {},
   ): ConnectionDetailsWithAttachment {
@@ -168,7 +170,7 @@ export default class DatabaseResolver {
     // build the default payload for non-bastion dbs
     pgDebug(`Using "${connStringVar}" to connect to your database…`)
 
-    const conn = this.parsePostgresConnectionString(config[connStringVar])
+    const conn = DatabaseResolver.parsePostgresConnectionString(config[connStringVar])
 
     const payload: ConnectionDetailsWithAttachment = {
       attachment,
