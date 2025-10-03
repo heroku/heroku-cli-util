@@ -10,7 +10,6 @@ import {
   BastionConfig,
   BastionConfigResponse,
   ConnectionDetails,
-  ConnectionDetailsWithAttachment,
   TunnelConfig,
 } from '../../types/pg/tunnel.js'
 import host from './host.js'
@@ -93,7 +92,7 @@ export const getBastionConfig = function (config: Record<string, string>, baseNa
  * @param connectionDetails - The database connection details with attachment information
  * @returns Object containing database environment variables and tunnel configuration
  */
-export function getPsqlConfigs(connectionDetails: ConnectionDetailsWithAttachment) {
+export function getPsqlConfigs(connectionDetails: ConnectionDetails) {
   const dbEnv: NodeJS.ProcessEnv = baseEnv(connectionDetails)
   const dbTunnelConfig = tunnelConfig(connectionDetails)
 
@@ -154,7 +153,7 @@ function baseEnv(connectionDetails: ConnectionDetails): NodeJS.ProcessEnv {
  * @param connectionDetails - The database connection details with attachment information
  * @returns The tunnel configuration object
  */
-function tunnelConfig(connectionDetails: ConnectionDetailsWithAttachment): TunnelConfig {
+function tunnelConfig(connectionDetails: ConnectionDetails): TunnelConfig {
   const localHost = '127.0.0.1'
   const localPort = Math.floor((Math.random() * (65_535 - 49_152)) + 49_152)
   return {
@@ -179,7 +178,7 @@ function tunnelConfig(connectionDetails: ConnectionDetailsWithAttachment): Tunne
  * @throws Error if unable to establish the tunnel
  */
 export async function sshTunnel(
-  connectionDetails: ConnectionDetailsWithAttachment,
+  connectionDetails: ConnectionDetails,
   dbTunnelConfig: TunnelConfig,
   timeout = 10_000,
   createSSHTunnel = createSSHTunnelAdapter,
