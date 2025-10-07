@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@heroku/heroku-cli-util",
-  "version": "10.1.0",
+  "version": "10.1.2",
   "description": "Set of helpful CLI utilities",
   "author": "Heroku",
   "license": "ISC",
@@ -49,7 +49,7 @@
     "@oclif/table": "0.4.8",
     "debug": "^4.4.0",
     "inquirer": "^12.6.1",
-    "tunnel-ssh": "4.1.6"
+    "tunnel-ssh": "5.2.0"
   },
   "engines": {
     "node": ">=20"

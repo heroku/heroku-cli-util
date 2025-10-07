@@ -1,5 +1,4 @@
 import {Server} from 'node:net'
-import * as createTunnel from 'tunnel-ssh'
 
 import type {ExtendedAddonAttachment} from './data-api.js'
 
@@ -18,7 +17,15 @@ export type ConnectionDetailsWithAttachment = {
   attachment: ExtendedAddonAttachment
 } & ConnectionDetails
 
-export type TunnelConfig = createTunnel.Config
+export interface TunnelConfig {
+  dstHost: string
+  dstPort: number
+  host?: string
+  localHost: string
+  localPort: number
+  privateKey?: string
+  username: string
+}
 
 export interface BastionConfigResponse {
   host: string
