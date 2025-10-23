@@ -461,15 +461,9 @@ describe('DatabaseResolver', function () {
   })
 
   describe('parsePostgresConnectionString', function () {
-    let databaseResolver: DatabaseResolver
     let env: typeof process.env
-    let config: Config
-    let heroku: APIClient
 
     beforeEach(async function () {
-      config = await Config.load()
-      heroku = new APIClient(config)
-      databaseResolver = new DatabaseResolver(heroku)
       env = process.env
     })
 
@@ -480,7 +474,7 @@ describe('DatabaseResolver', function () {
     describe('when parsing full PostgreSQL connection strings', function () {
       it('parses a complete PostgreSQL connection string with all components', function () {
         const connString = 'postgres://user1:password1@host.example.com:5432/database1'
-        const result = databaseResolver.parsePostgresConnectionString(connString)
+        const result = DatabaseResolver.parsePostgresConnectionString(connString)
 
         expect(result).to.deep.equal({
           database: 'database1',
@@ -495,7 +489,7 @@ describe('DatabaseResolver', function () {
 
       it('parses connection string with no port specified', function () {
         const connString = 'postgres://user1:password1@host.example.com/database1'
-        const result = databaseResolver.parsePostgresConnectionString(connString)
+        const result = DatabaseResolver.parsePostgresConnectionString(connString)
 
         expect(result).to.deep.equal({
           database: 'database1',
@@ -510,7 +504,7 @@ describe('DatabaseResolver', function () {
 
       it('parses connection string with custom port', function () {
         const connString = 'postgres://user1:password1@host.example.com:5433/database1'
-        const result = databaseResolver.parsePostgresConnectionString(connString)
+        const result = DatabaseResolver.parsePostgresConnectionString(connString)
 
         expect(result).to.deep.equal({
           database: 'database1',
@@ -527,7 +521,7 @@ describe('DatabaseResolver', function () {
     describe('when parsing database names (without connection string format)', function () {
       it('converts database name to full connection string format', function () {
         const dbName = 'my_database'
-        const result = databaseResolver.parsePostgresConnectionString(dbName)
+        const result = DatabaseResolver.parsePostgresConnectionString(dbName)
 
         expect(result).to.deep.equal({
           database: 'my_database',
@@ -547,7 +541,7 @@ describe('DatabaseResolver', function () {
           PGPORT: '5433',
         }
         const connString = 'postgres://user1:password1@host.example.com/database1'
-        const result = databaseResolver.parsePostgresConnectionString(connString)
+        const result = DatabaseResolver.parsePostgresConnectionString(connString)
 
         expect(result.port).to.equal('5433')
       })
@@ -557,7 +551,7 @@ describe('DatabaseResolver', function () {
           PGPORT: '5433',
         }
         const dbName = 'my_database'
-        const result = databaseResolver.parsePostgresConnectionString(dbName)
+        const result = DatabaseResolver.parsePostgresConnectionString(dbName)
 
         expect(result.port).to.equal('5433')
       })
@@ -567,7 +561,7 @@ describe('DatabaseResolver', function () {
           PGPORT: '5433',
         }
         const connString = 'postgres://user1:password1@host.example.com:5434/database1'
-        const result = databaseResolver.parsePostgresConnectionString(connString)
+        const result = DatabaseResolver.parsePostgresConnectionString(connString)
 
         expect(result.port).to.equal('5434')
       })
@@ -577,7 +571,7 @@ describe('DatabaseResolver', function () {
           PGPORT: '5433',
         }
         const dbName = 'my_database'
-        const result = databaseResolver.parsePostgresConnectionString(dbName)
+        const result = DatabaseResolver.parsePostgresConnectionString(dbName)
 
         expect(result.port).to.equal('5433')
       })
@@ -587,7 +581,7 @@ describe('DatabaseResolver', function () {
       it('uses default port 5432 when no port is specified in connection string', function () {
         process.env = {}
         const connString = 'postgres://user1:password1@host.example.com/database1'
-        const result = databaseResolver.parsePostgresConnectionString(connString)
+        const result = DatabaseResolver.parsePostgresConnectionString(connString)
 
         expect(result.port).to.equal('5432')
       })
@@ -595,7 +589,7 @@ describe('DatabaseResolver', function () {
       it('doesn\'t set a port when parsing database name without connection string', function () {
         process.env = {}
         const dbName = 'my_database'
-        const result = databaseResolver.parsePostgresConnectionString(dbName)
+        const result = DatabaseResolver.parsePostgresConnectionString(dbName)
 
         expect(result.port).to.equal('')
       })
@@ -603,7 +597,7 @@ describe('DatabaseResolver', function () {
       it('doesn\'t set a port when connection string has no port and no hostname', function () {
         process.env = {}
         const dbName = 'my_database'
-        const result = databaseResolver.parsePostgresConnectionString(dbName)
+        const result = DatabaseResolver.parsePostgresConnectionString(dbName)
 
         expect(result.port).to.equal('')
       })
