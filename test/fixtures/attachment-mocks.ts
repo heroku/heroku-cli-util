@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import type {ExtendedAddonAttachment} from '../../src/types/pg/data-api.js'
+import type {ExtendedAddonAttachment} from '../../src/types/pg/platform-api.js'
 
 export const HEROKU_API = 'https://api.heroku.com'
 

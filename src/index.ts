@@ -1,6 +1,6 @@
 import {APIClient} from '@heroku-cli/command'
 
-import type * as DataApiTypes from './types/pg/data-api.js'
+import type * as DataApiTypes from './types/pg/platform-api.js'
 import type * as TunnelTypes from './types/pg/tunnel.js'
 
 import {AmbiguousError} from './errors/ambiguous.js'
@@ -21,6 +21,7 @@ import {wait} from './ux/wait.js'
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace pg {
   export type AddOnWithRelatedData = DataApiTypes.AddOnWithRelatedData
+  export type ExtendedAddon = DataApiTypes.ExtendedAddon
   export type ExtendedAddonAttachment = DataApiTypes.ExtendedAddonAttachment
   export type Link = DataApiTypes.Link
   export type ConnectionDetails = TunnelTypes.ConnectionDetails

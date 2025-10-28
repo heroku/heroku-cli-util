@@ -3,7 +3,7 @@ import type {APIClient} from '@heroku-cli/command'
 
 import {color} from '@heroku-cli/color'
 
-import type {ExtendedAddonAttachment} from '../../types/pg/data-api.js'
+import type {ExtendedAddonAttachment} from '../../types/pg/platform-api.js'
 
 /**
  * Cache of app config vars.

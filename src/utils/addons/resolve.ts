@@ -1,6 +1,6 @@
 import type {APIClient} from '@heroku-cli/command'
 
-import type {ExtendedAddonAttachment} from '../../types/pg/data-api.js'
+import type {ExtendedAddonAttachment} from '../../types/pg/platform-api.js'
 
 import {AmbiguousError} from '../../errors/ambiguous.js'
 import {NotFound} from '../../errors/not-found.js'
