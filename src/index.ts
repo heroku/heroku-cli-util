@@ -2,7 +2,7 @@ import {APIClient} from '@heroku-cli/command'
 
 import {AmbiguousError} from './errors/ambiguous'
 import {NotFound} from './errors/not-found'
-import {AddOnWithRelatedData, ExtendedAddonAttachment, Link} from './types/pg/data-api'
+import {AddOnWithRelatedData, ExtendedAddonAttachment, Link} from './types/pg/platform-api'
 import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from './types/pg/tunnel'
 import {getPsqlConfigs, sshTunnel} from './utils/pg/bastion'
 import {getConfigVarNameFromAttachment} from './utils/pg/config-vars'
@@ -22,7 +22,7 @@ export type {
   AddOnWithRelatedData,
   ExtendedAddonAttachment,
   Link,
-} from './types/pg/data-api'
+} from './types/pg/platform-api'
 
 export type {
   ConnectionDetails,

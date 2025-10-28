@@ -1,4 +1,4 @@
-import type {ExtendedAddonAttachment} from '../types/pg/data-api'
+import type {ExtendedAddonAttachment} from '../types/pg/platform-api'
 
 /**
  * This error is used internally to signal when the `AddonAttachmentResolver` cannot resolve

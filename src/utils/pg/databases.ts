@@ -3,7 +3,7 @@ import {APIClient} from '@heroku-cli/command'
 import {HerokuAPIError} from '@heroku-cli/command/lib/api-client'
 import debug from 'debug'
 
-import type {ExtendedAddonAttachment} from '../../types/pg/data-api'
+import type {ExtendedAddonAttachment} from '../../types/pg/platform-api'
 import type {ConnectionDetails, ConnectionDetailsWithAttachment} from '../../types/pg/tunnel'
 
 import {AmbiguousError} from '../../errors/ambiguous'

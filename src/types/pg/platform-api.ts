@@ -40,6 +40,16 @@ export type ExtendedAddonAttachment = {
   addon: AddonDescriptorWithPlanInclusion
 } & AddonAttachmentWithConfigVarsInclusion
 
+/**
+ * This is the modified type for the `AddOn` we use on these lib functions because all requests made to
+ * Platform API to get add-ons, either through the Add-on List endpoint or the add-on resolver action endpoint,
+ * include the header `Accept-Expansion: addon_service,plan`.
+ */
+export type ExtendedAddon = {
+  addon_service: DeepRequired<Heroku.AddOnService>,
+  plan: DeepRequired<Heroku.Plan>,
+} & DeepRequired<Heroku.AddOn>
+
 export type AddOnWithRelatedData = {
   attachment_names?: string[],
   links?: Link[],

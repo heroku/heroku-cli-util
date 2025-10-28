@@ -1,6 +1,6 @@
 import {Server} from 'node:net'
 
-import type {ExtendedAddonAttachment} from './data-api'
+import type {ExtendedAddonAttachment} from './platform-api'
 
 export type ConnectionDetails = {
   _tunnel?: Server
