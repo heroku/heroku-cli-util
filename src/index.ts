@@ -1,9 +1,10 @@
 import {APIClient} from '@heroku-cli/command'
 
+import type * as DataApiTypes from './types/pg/data-api.js'
+import type * as TunnelTypes from './types/pg/tunnel.js'
+
 import {AmbiguousError} from './errors/ambiguous.js'
 import {NotFound} from './errors/not-found.js'
-import {AddOnWithRelatedData, ExtendedAddonAttachment, Link} from './types/pg/data-api.js'
-import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from './types/pg/tunnel.js'
 import {getPsqlConfigs, sshTunnel} from './utils/pg/bastion.js'
 import {getConfigVarNameFromAttachment} from './utils/pg/config-vars.js'
 import DatabaseResolver from './utils/pg/databases.js'
@@ -17,15 +18,14 @@ import {styledObject} from './ux/styled-object.js'
 import {table} from './ux/table.js'
 import {wait} from './ux/wait.js'
 
-export const types = {
-  pg: {
-    AddOnWithRelatedData: {} as AddOnWithRelatedData,
-    ConnectionDetails: {} as ConnectionDetails,
-    ConnectionDetailsWithAttachment: {} as ConnectionDetailsWithAttachment,
-    ExtendedAddonAttachment: {} as ExtendedAddonAttachment,
-    Link: {} as Link,
-    TunnelConfig: {} as TunnelConfig,
-  },
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace pg {
+  export type AddOnWithRelatedData = DataApiTypes.AddOnWithRelatedData
+  export type ExtendedAddonAttachment = DataApiTypes.ExtendedAddonAttachment
+  export type Link = DataApiTypes.Link
+  export type ConnectionDetails = TunnelTypes.ConnectionDetails
+  export type ConnectionDetailsWithAttachment = TunnelTypes.ConnectionDetailsWithAttachment
+  export type TunnelConfig = TunnelTypes.TunnelConfig
 }
 
 export const utils = {
@@ -42,7 +42,7 @@ export const utils = {
         appId: string,
         attachmentId?: string,
         namespace?: string,
-      ): Promise<ConnectionDetailsWithAttachment> {
+      ): Promise<TunnelTypes.ConnectionDetailsWithAttachment> {
         const databaseResolver = new DatabaseResolver(heroku)
         return databaseResolver.getDatabase(appId, attachmentId, namespace)
       },
@@ -50,7 +50,7 @@ export const utils = {
     host: getHost,
     psql: {
       exec(
-        connectionDetails: ConnectionDetailsWithAttachment,
+        connectionDetails: TunnelTypes.ConnectionDetailsWithAttachment,
         query: string,
         psqlCmdArgs: string[] = [],
       ): Promise<string> {
