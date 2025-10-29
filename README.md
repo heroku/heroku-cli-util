@@ -80,35 +80,67 @@ testHelpers.expectOutput(output, 'expected output');
 
 ### Types
 
+#### Error Classes
+
 ```js
-import { types } from '@heroku/heroku-cli-util';
+import { utils } from '@heroku/heroku-cli-util';
 
 // Error types
 try {
-  throw new types.errors.AmbiguousError([{ name: 'foo' }, { name: 'bar' }], 'addon');
+  throw new utils.errors.AmbiguousError([{ name: 'foo' }, { name: 'bar' }], 'addon');
 } catch (err) {
-  if (err instanceof types.errors.AmbiguousError) {
+  if (err instanceof utils.errors.AmbiguousError) {
     console.error('Ambiguous:', err.message);
   }
 }
 
 try {
-  throw new types.errors.NotFound();
+  throw new utils.errors.NotFound();
 } catch (err) {
-  if (err instanceof types.errors.NotFound) {
+  if (err instanceof utils.errors.NotFound) {
     console.error('Not found:', err.message);
   }
 }
+```
 
-// PG types (for TypeScript)
-/**
- * types.pg.ExtendedAddonAttachment
- * types.pg.AddOnWithRelatedData
- * types.pg.ConnectionDetails
- * types.pg.ConnectionDetailsWithAttachment
- * types.pg.Link
- * types.pg.TunnelConfig
- */
+#### PostgreSQL Types (TypeScript)
+
+Import PG types using the `pg` namespace:
+
+```typescript
+import type { pg } from '@heroku/heroku-cli-util';
+
+// Use the types
+const connection: pg.ConnectionDetails = {
+  database: 'mydb',
+  host: 'localhost',
+  password: 'pass',
+  pathname: '/mydb',
+  port: '5432',
+  url: 'postgres://...',
+  user: 'admin'
+};
+
+function processDatabase(details: pg.ConnectionDetailsWithAttachment) {
+  // ...
+}
+
+const addon: pg.AddOnWithRelatedData = { /* ... */ };
+const link: pg.Link = { /* ... */ };
+const tunnel: pg.TunnelConfig = { /* ... */ };
+```
+
+Alternatively, you can import types directly:
+
+```typescript
+import type { 
+  ConnectionDetails,
+  ConnectionDetailsWithAttachment,
+  AddOnWithRelatedData,
+  ExtendedAddonAttachment,
+  Link,
+  TunnelConfig
+} from '@heroku/heroku-cli-util';
 ```
 
 ### Database and Utility Helpers
