@@ -2,8 +2,22 @@ import {APIClient} from '@heroku-cli/command'
 
 import {AmbiguousError} from './errors/ambiguous'
 import {NotFound} from './errors/not-found'
-import {AddOnWithRelatedData, ExtendedAddonAttachment, Link} from './types/pg/platform-api'
+import {
+  AddOnWithRelatedData,
+  ExtendedAddon,
+  ExtendedAddonAttachment,
+  Link,
+} from './types/pg/platform-api'
 import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from './types/pg/tunnel'
+import {
+  getAddonService,
+  isAdvancedDatabase,
+  isAdvancedPrivateDatabase,
+  isEssentialDatabase,
+  isLegacyDatabase,
+  isLegacyEssentialDatabase,
+  isPostgresAddon,
+} from './utils/addons/helpers'
 import {getPsqlConfigs, sshTunnel} from './utils/pg/bastion'
 import {getConfigVarNameFromAttachment} from './utils/pg/config-vars'
 import DatabaseResolver from './utils/pg/databases'
@@ -20,6 +34,7 @@ import {wait} from './ux/wait'
 // Export actual types for direct import
 export type {
   AddOnWithRelatedData,
+  ExtendedAddon,
   ExtendedAddonAttachment,
   Link,
 } from './types/pg/platform-api'
@@ -37,6 +52,7 @@ export const types = {
     AddOnWithRelatedData: {} as AddOnWithRelatedData,
     ConnectionDetails: {} as ConnectionDetails,
     ConnectionDetailsWithAttachment: {} as ConnectionDetailsWithAttachment,
+    ExtendedAddon: {} as ExtendedAddon,
     ExtendedAddonAttachment: {} as ExtendedAddonAttachment,
     Link: {} as Link,
     TunnelConfig: {} as TunnelConfig,
@@ -51,6 +67,7 @@ export const utils = {
   pg: {
     DatabaseResolver,
     PsqlService,
+    addonService: getAddonService,
     fetcher: {
       database(
         heroku: APIClient,
@@ -63,6 +80,12 @@ export const utils = {
       },
     },
     host: getHost,
+    isAdvancedDatabase,
+    isAdvancedPrivateDatabase,
+    isEssentialDatabase,
+    isLegacyDatabase,
+    isLegacyEssentialDatabase,
+    isPostgresAddon,
     psql: {
       exec(
         connectionDetails: ConnectionDetailsWithAttachment,
