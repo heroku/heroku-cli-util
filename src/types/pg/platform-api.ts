@@ -50,6 +50,10 @@ export type ExtendedAddon = {
   plan: DeepRequired<Heroku.Plan>,
 } & DeepRequired<Heroku.AddOn>
 
+/**
+ * The next two types need review and cleanup. They're not used anywhere in this codebase yet.
+ */
+
 export type AddOnWithRelatedData = {
   attachment_names?: string[],
   links?: Link[],

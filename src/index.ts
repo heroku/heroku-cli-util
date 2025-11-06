@@ -5,6 +5,15 @@ import type * as TunnelTypes from './types/pg/tunnel.js'
 
 import {AmbiguousError} from './errors/ambiguous.js'
 import {NotFound} from './errors/not-found.js'
+import {
+  getAddonService,
+  isAdvancedDatabase,
+  isAdvancedPrivateDatabase,
+  isEssentialDatabase,
+  isLegacyDatabase,
+  isLegacyEssentialDatabase,
+  isPostgresAddon,
+} from './utils/addons/helpers.js'
 import {getPsqlConfigs, sshTunnel} from './utils/pg/bastion.js'
 import {getConfigVarNameFromAttachment} from './utils/pg/config-vars.js'
 import DatabaseResolver from './utils/pg/databases.js'
@@ -37,6 +46,7 @@ export const utils = {
   pg: {
     DatabaseResolver,
     PsqlService,
+    addonService: getAddonService,
     fetcher: {
       database(
         heroku: APIClient,
@@ -49,6 +59,12 @@ export const utils = {
       },
     },
     host: getHost,
+    isAdvancedDatabase,
+    isAdvancedPrivateDatabase,
+    isEssentialDatabase,
+    isLegacyDatabase,
+    isLegacyEssentialDatabase,
+    isPostgresAddon,
     psql: {
       exec(
         connectionDetails: TunnelTypes.ConnectionDetailsWithAttachment,
