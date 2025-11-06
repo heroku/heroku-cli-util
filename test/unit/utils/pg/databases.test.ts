@@ -13,6 +13,12 @@ import AddonAttachmentResolver from '../../../../src/utils/addons/attachment-res
 import {configVarsByAppIdCache} from '../../../../src/utils/pg/config-vars.js'
 import DatabaseResolver from '../../../../src/utils/pg/databases.js'
 import {
+  advancedDatabase,
+  performanceDatabase,
+  premiumDatabase,
+  standardDatabase,
+} from '../../../fixtures/addon-mocks.js'
+import {
   HEROKU_API,
   credentialAttachment,
   defaultAttachment,
@@ -36,6 +42,85 @@ const {expect} = chai
 chai.use(chaiAsPromised)
 
 describe('DatabaseResolver', function () {
+  describe('getArbitraryLegacyDB', function () {
+    let config: Config
+    let heroku: APIClient
+    let env: typeof process.env
+
+    beforeEach(async function () {
+      config = await Config.load()
+      heroku = new APIClient(config)
+      env = process.env
+    })
+
+    afterEach(function () {
+      process.env = env
+      sinon.restore()
+      // eslint-disable-next-line import/no-named-as-default-member
+      nock.cleanAll()
+    })
+
+    describe('when the app has no Heroku Postgres databases', function () {
+      it('throws an error', async function () {
+        // Mock the Heroku API to return empty array (no attachments)
+        const api = nock(HEROKU_API)
+          .get('/apps/app-no-addons/addons')
+          .reply(200, [])
+
+        await expect(new DatabaseResolver(heroku).getArbitraryLegacyDB('app-no-addons'))
+          .to.be.rejectedWith('No Heroku Postgres legacy database on app-no-addons')
+        api.done()
+      })
+    })
+
+    describe('when the app has only Advanced-tier databases', function () {
+      it('throws an error', async function () {
+        const api = nock(HEROKU_API)
+          .get('/apps/my-app/addons')
+          .reply(200, [
+            advancedDatabase,
+            performanceDatabase,
+          ])
+
+        await expect(new DatabaseResolver(heroku).getArbitraryLegacyDB('my-app'))
+          .to.be.rejectedWith('No Heroku Postgres legacy database on my-app')
+        api.done()
+      })
+    })
+
+    describe('when the app has only non-Advanced-tier databases', function () {
+      it('resolves to the first database', async function () {
+        const api = nock(HEROKU_API)
+          .get('/apps/my-app/addons')
+          .reply(200, [
+            standardDatabase,
+            premiumDatabase,
+          ])
+
+        const resolvedAddon = await new DatabaseResolver(heroku).getArbitraryLegacyDB('my-app')
+        expect(resolvedAddon).to.deep.equal(standardDatabase)
+        api.done()
+      })
+    })
+
+    describe('when the app has both Advanced-tier and non-Advanced-tier databases', function () {
+      it('resolves to the first non-Advanced-tier database', async function () {
+        const api = nock(HEROKU_API)
+          .get('/apps/my-app/addons')
+          .reply(200, [
+            advancedDatabase,
+            premiumDatabase,
+            performanceDatabase,
+            standardDatabase,
+          ])
+
+        const resolvedAddon = await new DatabaseResolver(heroku).getArbitraryLegacyDB('my-app')
+        expect(resolvedAddon).to.deep.equal(premiumDatabase)
+        api.done()
+      })
+    })
+  })
+
   describe('getAttachment', function () {
     let config: Config
     let heroku: APIClient

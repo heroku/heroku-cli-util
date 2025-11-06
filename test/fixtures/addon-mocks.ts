@@ -1,4 +1,4 @@
-import type {ExtendedAddon} from '../../src/types/pg/platform-api'
+import type {ExtendedAddon} from '../../src/types/pg/platform-api.js'
 
 export const advancedDatabase: ExtendedAddon = {
   app: {
