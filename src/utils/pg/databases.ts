@@ -7,7 +7,7 @@ import type {ExtendedAddonAttachment} from '../../types/pg/platform-api'
 import type {ConnectionDetails, ConnectionDetailsWithAttachment} from '../../types/pg/tunnel'
 
 import {AmbiguousError} from '../../errors/ambiguous'
-import AddonAttachmentResolver from '../addons/resolve'
+import AddonAttachmentResolver from '../addons/attachment-resolver'
 import {bastionKeyPlan, fetchBastionConfig, getBastionConfig} from './bastion'
 import {getConfig, getConfigVarName, getConfigVarNameFromAttachment} from './config-vars'
 
