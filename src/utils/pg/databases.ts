@@ -3,11 +3,12 @@ import {APIClient} from '@heroku-cli/command'
 import {HerokuAPIError} from '@heroku-cli/command/lib/api-client'
 import debug from 'debug'
 
-import type {ExtendedAddonAttachment} from '../../types/pg/platform-api'
+import type {ExtendedAddon, ExtendedAddonAttachment} from '../../types/pg/platform-api'
 import type {ConnectionDetails, ConnectionDetailsWithAttachment} from '../../types/pg/tunnel'
 
 import {AmbiguousError} from '../../errors/ambiguous'
 import AddonAttachmentResolver from '../addons/attachment-resolver'
+import {isLegacyDatabase} from '../addons/helpers'
 import {bastionKeyPlan, fetchBastionConfig, getBastionConfig} from './bastion'
 import {getConfig, getConfigVarName, getConfigVarNameFromAttachment} from './config-vars'
 
@@ -15,6 +16,11 @@ const pgDebug = debug('pg')
 
 export default class DatabaseResolver {
   private readonly addonAttachmentResolver: AddonAttachmentResolver
+  private readonly addonHeaders: Readonly<{ Accept: string, 'Accept-Expansion': string }> = {
+    Accept: 'application/vnd.heroku+json; version=3.sdk',
+    'Accept-Expansion': 'addon_service,plan',
+  }
+
   private readonly attachmentHeaders: Readonly<{ Accept: string, 'Accept-Inclusion': string }> = {
     Accept: 'application/vnd.heroku+json; version=3.sdk',
     'Accept-Inclusion': 'addon:plan,config_vars',
@@ -26,6 +32,24 @@ export default class DatabaseResolver {
     private readonly fetchBastionConfigFn = fetchBastionConfig,
   ) {
     this.addonAttachmentResolver = new AddonAttachmentResolver(this.heroku)
+  }
+
+  /**
+   * Resolves an arbitrary legacy database add-on based on the provided app name.
+   *
+   * @param app - The name of the app to get the arbitrary legacy database for
+   * @returns Promise resolving to the arbitrary legacy database add-on
+   * @throws {Error} When no legacy database add-on exists on the app
+   */
+  public async getArbitraryLegacyDB(app: string) {
+    pgDebug(`fetching arbitrary legacy database on ${app}`)
+    const {body: addons} = await this.heroku.get<ExtendedAddon[]>(
+      `/apps/${app}/addons`,
+      {headers: this.addonHeaders},
+    )
+    const addon = addons.find(a => a.app.name === app && isLegacyDatabase(a))
+    if (!addon) throw new Error(`No Heroku Postgres legacy database on ${app}`)
+    return addon
   }
 
   /**
