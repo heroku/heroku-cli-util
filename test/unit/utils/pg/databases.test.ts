@@ -9,7 +9,7 @@ import sinon from 'sinon'
 
 import {AmbiguousError} from '../../../../src/errors/ambiguous.js'
 import {NotFound} from '../../../../src/errors/not-found.js'
-import AddonAttachmentResolver from '../../../../src/utils/addons/resolve.js'
+import AddonAttachmentResolver from '../../../../src/utils/addons/attachment-resolver.js'
 import {configVarsByAppIdCache} from '../../../../src/utils/pg/config-vars.js'
 import DatabaseResolver from '../../../../src/utils/pg/databases.js'
 import {

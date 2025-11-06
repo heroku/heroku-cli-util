@@ -7,7 +7,7 @@ import nock from 'nock'
 
 import {AmbiguousError} from '../../../../src/errors/ambiguous.js'
 import {NotFound} from '../../../../src/errors/not-found.js'
-import AddonAttachmentResolver from '../../../../src/utils/addons/resolve.js'
+import AddonAttachmentResolver from '../../../../src/utils/addons/attachment-resolver.js'
 import {
   HEROKU_API,
   credentialAttachment,
