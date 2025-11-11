@@ -20,7 +20,7 @@ const {expect} = chai
 
 chai.use(chaiAsPromised)
 
-describe('addonAttachment', function () {
+describe('AddonAttachmentResolver#resolve', function () {
   let config: Config
   let heroku: APIClient
 

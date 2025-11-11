@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import type {ExtendedAddon} from '../../src/types/pg/platform-api.js'
 
 export const advancedDatabase: ExtendedAddon = {
@@ -5,6 +6,9 @@ export const advancedDatabase: ExtendedAddon = {
     id: 'app-1',
     name: 'my-app',
   },
+  config_vars: [
+    'DATABASE_URL',
+  ],
   id: 'addon-1',
   name: 'postgresql-horizontal-12345',
   plan: {
@@ -123,6 +127,9 @@ export const premiumDatabase: ExtendedAddon = {
     id: 'app-1',
     name: 'my-app',
   },
+  config_vars: [
+    'HEROKU_POSTGRESQL_PURPLE_URL',
+  ],
   id: 'addon-10',
   name: 'postgresql-solid-12345',
   plan: {
@@ -162,6 +169,9 @@ export const standardDatabase: ExtendedAddon = {
     id: 'app-1',
     name: 'my-app',
   },
+  config_vars: [
+    'HEROKU_POSTGRESQL_CYAN_URL',
+  ],
   id: 'addon-13',
   name: 'postgresql-hexagonal-12345',
   plan: {
