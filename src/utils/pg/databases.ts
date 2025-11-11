@@ -8,7 +8,7 @@ import type {ConnectionDetails, ConnectionDetailsWithAttachment} from '../../typ
 
 import {AmbiguousError} from '../../errors/ambiguous'
 import AddonAttachmentResolver from '../addons/attachment-resolver'
-import {isLegacyDatabase} from '../addons/helpers'
+import {getAddonService, isLegacyDatabase} from '../addons/helpers'
 import {bastionKeyPlan, fetchBastionConfig, getBastionConfig} from './bastion'
 import {getConfig, getConfigVarName, getConfigVarNameFromAttachment} from './config-vars'
 
@@ -170,11 +170,10 @@ export default class DatabaseResolver {
    * @returns Promise resolving to array of PostgreSQL add-on attachments
    */
   private async allPostgresAttachments(appId: string): Promise<ExtendedAddonAttachment[]> {
-    const addonService = process.env.HEROKU_POSTGRESQL_ADDON_NAME || 'heroku-postgresql'
     const {body: attachments} = await this.heroku.get<ExtendedAddonAttachment[]>(`/apps/${appId}/addon-attachments`, {
       headers: this.attachmentHeaders,
     })
-    return attachments.filter(a => a.addon.plan.name.split(':', 2)[0] === addonService)
+    return attachments.filter(a => a.addon.plan.name.split(':', 2)[0] === getAddonService())
   }
 
   /**
@@ -246,7 +245,7 @@ export default class DatabaseResolver {
       return {error: undefined, matches: [attached]}
     } catch (error: unknown) {
       if (error instanceof AmbiguousError && error.body.id === 'multiple_matches' && error.matches) {
-        return {error, matches: error.matches}
+        return {error, matches: error.matches as ExtendedAddonAttachment[]}
       }
 
       // This handles the case where the resolver returns a 404 error when making the request, but not the case
