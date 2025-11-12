@@ -1,10 +1,9 @@
-import {APIClient} from '@heroku-cli/command'
-
 import type * as DataApiTypes from './types/pg/platform-api.js'
 import type * as TunnelTypes from './types/pg/tunnel.js'
 
 import {AmbiguousError} from './errors/ambiguous.js'
 import {NotFound} from './errors/not-found.js'
+import AddonResolver from './utils/addons/addon-resolver.js'
 import {
   getAddonService,
   isAdvancedDatabase,
@@ -39,6 +38,7 @@ export namespace pg {
 }
 
 export const utils = {
+  AddonResolver,
   errors: {
     AmbiguousError,
     NotFound, // This should be NotFoundError for consistency, but we're keeping it for backwards compatibility
@@ -47,17 +47,6 @@ export const utils = {
     DatabaseResolver,
     PsqlService,
     addonService: getAddonService,
-    fetcher: {
-      database(
-        heroku: APIClient,
-        appId: string,
-        attachmentId?: string,
-        namespace?: string,
-      ): Promise<TunnelTypes.ConnectionDetailsWithAttachment> {
-        const databaseResolver = new DatabaseResolver(heroku)
-        return databaseResolver.getDatabase(appId, attachmentId, namespace)
-      },
-    },
     host: getHost,
     isAdvancedDatabase,
     isAdvancedPrivateDatabase,

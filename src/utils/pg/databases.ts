@@ -35,6 +35,32 @@ export default class DatabaseResolver {
   }
 
   /**
+   * Return all Heroku Postgres databases on the Legacy tiers for a given app.
+   *
+   * @param app - The name of the app to get the databases for
+   * @returns Promise resolving to all Heroku Postgres databases
+   * @throws {Error} When no legacy database add-on exists on the app
+   */
+  public async getAllLegacyDatabases(app: string): Promise<Array<{attachment_names?: string[]} & ExtendedAddonAttachment['addon']>> {
+    pgDebug(`fetching all legacy databases on ${app}`)
+    const allAttachments = await this.allLegacyDatabaseAttachments(app)
+    const addons: Array<{attachment_names?: string[]} & ExtendedAddonAttachment['addon']> = []
+    for (const attachment of allAttachments) {
+      if (!addons.some(a => a.id === attachment.addon.id)) {
+        addons.push(attachment.addon)
+      }
+    }
+
+    const attachmentNamesByAddon = this.getAttachmentNamesByAddon(allAttachments)
+    for (const addon of addons) {
+      // eslint-disable-next-line camelcase
+      addon.attachment_names = attachmentNamesByAddon[addon.id]
+    }
+
+    return addons
+  }
+
+  /**
    * Resolves an arbitrary legacy database add-on based on the provided app name.
    *
    * @param app - The name of the app to get the arbitrary legacy database for
@@ -214,6 +240,35 @@ export default class DatabaseResolver {
     }
 
     return payload
+  }
+
+  /**
+   * Helper function that attempts to find all Heroku Postgres attachments on a given app.
+   *
+   * @param app - The name of the app to get the attachments for
+   * @returns Promise resolving to an array of all Heroku Postgres attachments on the app
+   */
+  private async allLegacyDatabaseAttachments(app: string) {
+    const {body: attachments} = await this.heroku.get<ExtendedAddonAttachment[]>(
+      `/apps/${app}/addon-attachments`,
+      {headers: this.attachmentHeaders},
+    )
+    return attachments.filter(a => isLegacyDatabase(a.addon))
+  }
+
+  /**
+   * Helper function that groups Heroku Postgres attachments by addon.
+   *
+   * @param attachments - The attachments to group by addon
+   * @returns A record of addon IDs with their attachment names
+   */
+  private getAttachmentNamesByAddon(attachments: ExtendedAddonAttachment[]): Record<string, string[]> {
+    const addons: Record<string, string[]> = {}
+    for (const attachment of attachments) {
+      addons[attachment.addon.id] = [...(addons[attachment.addon.id] || []), attachment.name]
+    }
+
+    return addons
   }
 
   /**
