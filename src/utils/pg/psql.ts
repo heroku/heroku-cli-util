@@ -1,3 +1,4 @@
+import {ux} from '@oclif/core'
 import debug from 'debug'
 import {
   type ChildProcess,
@@ -6,11 +7,14 @@ import {
   spawn,
 } from 'node:child_process'
 import {EventEmitter, once} from 'node:events'
+import fs from 'node:fs'
 import {Server} from 'node:net'
+import path from 'node:path'
 import {Stream} from 'node:stream'
 import {finished} from 'node:stream/promises'
 
-import {ConnectionDetails, TunnelConfig} from '../../types/pg/tunnel.js'
+import type {ConnectionDetailsWithAttachment, TunnelConfig} from '../../types/pg/tunnel.js'
+
 import {getPsqlConfigs, sshTunnel} from './bastion.js'
 
 const pgDebug = debug('pg')
@@ -39,7 +43,7 @@ export class Tunnel {
    * @returns Promise that resolves to a new Tunnel instance
    */
   static async connect(
-    connectionDetails: ConnectionDetails,
+    connectionDetails: ConnectionDetailsWithAttachment,
     tunnelConfig: TunnelConfig,
     tunnelFn: typeof sshTunnel,
   ) {
@@ -93,11 +97,27 @@ type SpawnPsqlOptions = {
 
 export default class PsqlService {
   constructor(
-    private readonly connectionDetails: ConnectionDetails,
+    private readonly connectionDetails: ConnectionDetailsWithAttachment,
     private readonly getPsqlConfigsFn = getPsqlConfigs,
     private readonly spawnFn = spawn,
     private readonly tunnelFn = sshTunnel,
   ) {}
+
+  /**
+   * Executes a file containing SQL commands using the instance's database connection details.
+   * It uses the `getPsqlConfigs` function to get the configuration for the database and the tunnel,
+   * and then calls the `runWithTunnel` function to execute the file.
+   *
+   * @param file - The path to the SQL file to execute
+   * @param psqlCmdArgs - Additional command-line arguments for psql (default: [])
+   * @returns Promise that resolves to the query result as a string
+   */
+  public async execFile(file: string, psqlCmdArgs: string[] = []) {
+    const configs = this.getPsqlConfigsFn(this.connectionDetails)
+    const options = this.psqlFileOptions(file, configs.dbEnv, psqlCmdArgs)
+
+    return this.runWithTunnel(configs.dbTunnelConfig, options)
+  }
 
   /**
    * Executes a PostgreSQL query using the instance's database connection details.
@@ -111,6 +131,34 @@ export default class PsqlService {
   public async execQuery(query: string, psqlCmdArgs: string[] = []) {
     const configs = this.getPsqlConfigsFn(this.connectionDetails)
     const options = this.psqlQueryOptions(query, configs.dbEnv, psqlCmdArgs)
+    return this.runWithTunnel(configs.dbTunnelConfig, options)
+  }
+
+  /**
+   * Fetches the PostgreSQL version from the database by executing the `SHOW server_version` query.
+   *
+   * @returns Promise that resolves to the PostgreSQL version as a string (or undefined).
+   */
+  public async fetchVersion(): Promise<string | undefined> {
+    const output = await this.execQuery('SHOW server_version', ['-X', '-q'])
+    return output.match(/\d+\.\d+/)?.[0]
+  }
+
+  /**
+   * Executes a PostgreSQL interactive session using the instance's database connection details.
+   * It uses the `getPsqlConfigs` function to get the configuration for the database and the tunnel,
+   * and then calls the `runWithTunnel` function to execute the query.
+   *
+   * @param psqlCmdArgs - Additional command-line arguments for psql (default: [])
+   * @returns Promise that resolves to the query result as a string
+   */
+  public async interactiveSession(psqlCmdArgs: string[] = []) {
+    const attachmentName = this.connectionDetails.attachment.name
+    const prompt = `${this.connectionDetails.attachment.app.name}::${attachmentName}%R%# `
+    const configs = this.getPsqlConfigsFn(this.connectionDetails)
+    configs.dbEnv.PGAPPNAME = 'psql interactive' // default was 'psql non-interactive`
+    const options = this.psqlInteractiveOptions(prompt, configs.dbEnv, psqlCmdArgs)
+
     return this.runWithTunnel(configs.dbTunnelConfig, options)
   }
 
@@ -158,7 +206,68 @@ export default class PsqlService {
   }
 
   /**
-   * Creates the options for spawning the psql process.
+   * Creates the options for spawning the psql process for a SQL file execution.
+   *
+   * @param file - The path to the SQL file to execute
+   * @param dbEnv - The database environment variables
+   * @param psqlCmdArgs - Additional command-line arguments for psql (default: [])
+   * @returns Object containing child process options, database environment, and psql arguments
+   */
+  private psqlFileOptions(file: string, dbEnv: NodeJS.ProcessEnv, psqlCmdArgs: string[] = []): SpawnPsqlOptions {
+    pgDebug('Running SQL file: %s', file.trim())
+
+    const childProcessOptions: SpawnOptionsWithStdioTuple<'ignore', 'pipe', 'inherit'> = {
+      stdio: ['ignore', 'pipe', 'inherit'],
+    }
+
+    const psqlArgs = ['-f', file, '--set', 'sslmode=require', ...psqlCmdArgs]
+
+    return {
+      childProcessOptions,
+      dbEnv,
+      psqlArgs,
+    }
+  }
+
+  /**
+   * Creates the options for spawning the psql process for an interactive psql session.
+   *
+   * @param prompt - The prompt to use for the interactive psql session
+   * @param dbEnv - The database environment variables
+   * @param psqlCmdArgs - Additional command-line arguments for psql (default: [])
+   * @returns Object containing child process options, database environment, and psql arguments
+   */
+  private psqlInteractiveOptions(prompt: string, dbEnv: NodeJS.ProcessEnv, psqlCmdArgs: string[] = []): SpawnPsqlOptions {
+    let psqlArgs = ['--set', `PROMPT1=${prompt}`, '--set', `PROMPT2=${prompt}`]
+    const psqlHistoryPath = process.env.HEROKU_PSQL_HISTORY
+    if (psqlHistoryPath) {
+      if (fs.existsSync(psqlHistoryPath) && fs.statSync(psqlHistoryPath).isDirectory()) {
+        const appLogFile = `${psqlHistoryPath}/${prompt.split(':')[0]}`
+        pgDebug('Logging psql history to %s', appLogFile)
+        psqlArgs = [...psqlArgs, '--set', `HISTFILE=${appLogFile}`]
+      } else if (fs.existsSync(path.dirname(psqlHistoryPath))) {
+        pgDebug('Logging psql history to %s', psqlHistoryPath)
+        psqlArgs = [...psqlArgs, '--set', `HISTFILE=${psqlHistoryPath}`]
+      } else {
+        ux.warn(`HEROKU_PSQL_HISTORY is set but is not a valid path (${psqlHistoryPath})\n`)
+      }
+    }
+
+    psqlArgs = [...psqlArgs, '--set', 'sslmode=require', ...psqlCmdArgs]
+
+    const childProcessOptions: SpawnOptionsWithStdioTuple<'inherit', 'inherit', 'inherit'> = {
+      stdio: ['inherit', 'inherit', 'inherit'],
+    }
+
+    return {
+      childProcessOptions,
+      dbEnv,
+      psqlArgs,
+    }
+  }
+
+  /**
+   * Creates the options for spawning the psql process for a single query execution.
    *
    * @param query - The SQL query to execute
    * @param dbEnv - The database environment variables
@@ -188,8 +297,7 @@ export default class PsqlService {
    * @param options - The options for spawning the psql process
    * @returns Promise that resolves to the query result as a string
    */
-  // eslint-disable-next-line perfectionist/sort-classes
-  public async runWithTunnel(
+  private async runWithTunnel(
     tunnelConfig: TunnelConfig,
     options: Parameters<typeof this.spawnPsql>[0],
   ): Promise<string> {
