@@ -76,14 +76,6 @@ export const utils = {
     isLegacyEssentialDatabase,
     isPostgresAddon,
     psql: {
-      exec(
-        connectionDetails: ConnectionDetailsWithAttachment,
-        query: string,
-        psqlCmdArgs: string[] = [],
-      ): Promise<string> {
-        const psqlService = new PsqlService(connectionDetails)
-        return psqlService.execQuery(query, psqlCmdArgs)
-      },
       getConfigVarNameFromAttachment,
       getPsqlConfigs,
       sshTunnel,
