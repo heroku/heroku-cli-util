@@ -290,7 +290,7 @@ export default class DatabaseResolver {
   > {
     debug(`fetching ${attachmentId} on ${appId}`)
 
-    const addonService = process.env.HEROKU_POSTGRESQL_ADDON_NAME || 'heroku-postgresql'
+    const addonService = getAddonService()
     debug(`addon service: ${addonService}`)
 
     try {
