@@ -5,7 +5,7 @@ import {EventEmitter} from 'node:events'
 import {Server} from 'node:net'
 import * as tunnelSsh from 'tunnel-ssh'
 
-import {ExtendedAddonAttachment} from '../../types/pg/data-api'
+import {ExtendedAddonAttachment} from '../../types/pg/platform-api'
 import {
   BastionConfig,
   BastionConfigResponse,

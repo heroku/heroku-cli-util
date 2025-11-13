@@ -1,4 +1,4 @@
-import type {ExtendedAddonAttachment} from '../types/pg/data-api'
+import type {ExtendedAddon, ExtendedAddonAttachment} from '../types/pg/platform-api'
 
 /**
  * This error is used internally to signal when the `AddonAttachmentResolver` cannot resolve
@@ -9,7 +9,7 @@ export class AmbiguousError extends Error {
   public readonly message: string
   public readonly statusCode = 422
 
-  constructor(public readonly matches: ExtendedAddonAttachment[], public readonly type: string) {
+  constructor(public readonly matches: ExtendedAddon[] | ExtendedAddonAttachment[], public readonly type: string) {
     super()
     this.message = `Ambiguous identifier; multiple matching add-ons found: ${matches.map(match => match.name).join(', ')}.`
     this.body = {id: 'multiple_matches', message: this.message}

@@ -1,9 +1,22 @@
-import {APIClient} from '@heroku-cli/command'
-
 import {AmbiguousError} from './errors/ambiguous'
 import {NotFound} from './errors/not-found'
-import {AddOnWithRelatedData, ExtendedAddonAttachment, Link} from './types/pg/data-api'
+import {
+  AddOnWithRelatedData,
+  ExtendedAddon,
+  ExtendedAddonAttachment,
+  Link,
+} from './types/pg/platform-api'
 import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from './types/pg/tunnel'
+import AddonResolver from './utils/addons/addon-resolver'
+import {
+  getAddonService,
+  isAdvancedDatabase,
+  isAdvancedPrivateDatabase,
+  isEssentialDatabase,
+  isLegacyDatabase,
+  isLegacyEssentialDatabase,
+  isPostgresAddon,
+} from './utils/addons/helpers'
 import {getPsqlConfigs, sshTunnel} from './utils/pg/bastion'
 import {getConfigVarNameFromAttachment} from './utils/pg/config-vars'
 import DatabaseResolver from './utils/pg/databases'
@@ -20,9 +33,10 @@ import {wait} from './ux/wait'
 // Export actual types for direct import
 export type {
   AddOnWithRelatedData,
+  ExtendedAddon,
   ExtendedAddonAttachment,
   Link,
-} from './types/pg/data-api'
+} from './types/pg/platform-api'
 
 export type {
   ConnectionDetails,
@@ -37,6 +51,7 @@ export const types = {
     AddOnWithRelatedData: {} as AddOnWithRelatedData,
     ConnectionDetails: {} as ConnectionDetails,
     ConnectionDetailsWithAttachment: {} as ConnectionDetailsWithAttachment,
+    ExtendedAddon: {} as ExtendedAddon,
     ExtendedAddonAttachment: {} as ExtendedAddonAttachment,
     Link: {} as Link,
     TunnelConfig: {} as TunnelConfig,
@@ -44,6 +59,7 @@ export const types = {
 }
 
 export const utils = {
+  AddonResolver,
   errors: {
     AmbiguousError,
     NotFound, // This should be NotFoundError for consistency, but we're keeping it for backwards compatibility
@@ -51,27 +67,15 @@ export const utils = {
   pg: {
     DatabaseResolver,
     PsqlService,
-    fetcher: {
-      database(
-        heroku: APIClient,
-        appId: string,
-        attachmentId?: string,
-        namespace?: string,
-      ): Promise<ConnectionDetailsWithAttachment> {
-        const databaseResolver = new DatabaseResolver(heroku)
-        return databaseResolver.getDatabase(appId, attachmentId, namespace)
-      },
-    },
+    addonService: getAddonService,
     host: getHost,
+    isAdvancedDatabase,
+    isAdvancedPrivateDatabase,
+    isEssentialDatabase,
+    isLegacyDatabase,
+    isLegacyEssentialDatabase,
+    isPostgresAddon,
     psql: {
-      exec(
-        connectionDetails: ConnectionDetailsWithAttachment,
-        query: string,
-        psqlCmdArgs: string[] = [],
-      ): Promise<string> {
-        const psqlService = new PsqlService(connectionDetails)
-        return psqlService.execQuery(query, psqlCmdArgs)
-      },
       getConfigVarNameFromAttachment,
       getPsqlConfigs,
       sshTunnel,

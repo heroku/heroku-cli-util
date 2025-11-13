@@ -3,11 +3,12 @@ import {APIClient} from '@heroku-cli/command'
 import {HerokuAPIError} from '@heroku-cli/command/lib/api-client'
 import debug from 'debug'
 
-import type {ExtendedAddonAttachment} from '../../types/pg/data-api'
+import type {ExtendedAddon, ExtendedAddonAttachment} from '../../types/pg/platform-api'
 import type {ConnectionDetails, ConnectionDetailsWithAttachment} from '../../types/pg/tunnel'
 
 import {AmbiguousError} from '../../errors/ambiguous'
-import AddonAttachmentResolver from '../addons/resolve'
+import AddonAttachmentResolver from '../addons/attachment-resolver'
+import {getAddonService, isLegacyDatabase} from '../addons/helpers'
 import {bastionKeyPlan, fetchBastionConfig, getBastionConfig} from './bastion'
 import {getConfig, getConfigVarName, getConfigVarNameFromAttachment} from './config-vars'
 
@@ -15,6 +16,11 @@ const pgDebug = debug('pg')
 
 export default class DatabaseResolver {
   private readonly addonAttachmentResolver: AddonAttachmentResolver
+  private readonly addonHeaders: Readonly<{ Accept: string, 'Accept-Expansion': string }> = {
+    Accept: 'application/vnd.heroku+json; version=3.sdk',
+    'Accept-Expansion': 'addon_service,plan',
+  }
+
   private readonly attachmentHeaders: Readonly<{ Accept: string, 'Accept-Inclusion': string }> = {
     Accept: 'application/vnd.heroku+json; version=3.sdk',
     'Accept-Inclusion': 'addon:plan,config_vars',
@@ -26,6 +32,72 @@ export default class DatabaseResolver {
     private readonly fetchBastionConfigFn = fetchBastionConfig,
   ) {
     this.addonAttachmentResolver = new AddonAttachmentResolver(this.heroku)
+  }
+
+  /**
+   * Parses a PostgreSQL connection string (or a local database name) into a ConnectionDetails object.
+   *
+   * @param connStringOrDbName - PostgreSQL connection string or local database name
+   * @returns Connection details object with parsed connection information
+   */
+  public static parsePostgresConnectionString(connStringOrDbName: string): ConnectionDetails {
+    const dbPath = /:\/\//.test(connStringOrDbName) ? connStringOrDbName : `postgres:///${connStringOrDbName}`
+    const url = new URL(dbPath)
+    const {hostname, password, pathname, port, username} = url
+
+    return {
+      database: pathname.slice(1), // remove the leading slash from the pathname
+      host: hostname,
+      password,
+      pathname,
+      port: port || process.env.PGPORT || (hostname && '5432'),
+      url: dbPath,
+      user: username,
+    }
+  }
+
+  /**
+   * Return all Heroku Postgres databases on the Legacy tiers for a given app.
+   *
+   * @param app - The name of the app to get the databases for
+   * @returns Promise resolving to all Heroku Postgres databases
+   * @throws {Error} When no legacy database add-on exists on the app
+   */
+  public async getAllLegacyDatabases(app: string): Promise<Array<{attachment_names?: string[]} & ExtendedAddonAttachment['addon']>> {
+    pgDebug(`fetching all legacy databases on ${app}`)
+    const allAttachments = await this.allLegacyDatabaseAttachments(app)
+    const addons: Array<{attachment_names?: string[]} & ExtendedAddonAttachment['addon']> = []
+    for (const attachment of allAttachments) {
+      if (!addons.some(a => a.id === attachment.addon.id)) {
+        addons.push(attachment.addon)
+      }
+    }
+
+    const attachmentNamesByAddon = this.getAttachmentNamesByAddon(allAttachments)
+    for (const addon of addons) {
+      // eslint-disable-next-line camelcase
+      addon.attachment_names = attachmentNamesByAddon[addon.id]
+    }
+
+    return addons
+  }
+
+  /**
+   * Resolves an arbitrary legacy database add-on based on the provided app name.
+   *
+   * @param app - The name of the app to get the arbitrary legacy database for
+   * @returns Promise resolving to the arbitrary legacy database add-on
+   * @throws {Error} When no legacy database add-on exists on the app
+   */
+  public async getArbitraryLegacyDB(app: string) {
+    pgDebug(`fetching arbitrary legacy database on ${app}`)
+    const {body: addons} = await this.heroku.get<ExtendedAddon[]>(
+      `/apps/${app}/addons`,
+      {headers: this.addonHeaders},
+    )
+    const addon = addons.find(a => a.app.name === app && isLegacyDatabase(a))
+    if (!addon) throw new Error(`No Heroku Postgres legacy database on ${app}`)
+    return addon
   }
 
   /**
@@ -86,81 +158,12 @@ export default class DatabaseResolver {
   }
 
   /**
-   * Returns the connection details for a database attachment resolved through the identifiers passed as
-   * arguments: appId, attachmentId and namespace (credential).
-   *
-   * @param appId - The ID of the app containing the database
-   * @param attachmentId - Optional database identifier (defaults to 'DATABASE_URL')
-   * @param namespace - Optional namespace/credential for the attachment
-   * @returns Promise resolving to connection details with attachment information
-   */
-  public async getDatabase(
-    appId: string,
-    attachmentId?: string,
-    namespace?: string,
-  ): Promise<ConnectionDetailsWithAttachment> {
-    const attached = await this.getAttachment(appId, attachmentId, namespace)
-    const config = await this.getConfigFn(this.heroku, attached.app.name)
-    const database = this.getConnectionDetails(attached, config)
-
-    // Add bastion configuration if it's a non-shielded Private Space add-on and we still don't have the config.
-    if (bastionKeyPlan(attached) && !database.bastionKey) {
-      const bastionConfig = await this.fetchBastionConfigFn(this.heroku, attached.addon)
-      Object.assign(database, bastionConfig)
-    }
-
-    return database
-  }
-
-  /**
-   * Parses a PostgreSQL connection string (or a local database name) into a ConnectionDetails object.
-   *
-   * @param connStringOrDbName - PostgreSQL connection string or local database name
-   * @returns Connection details object with parsed connection information
-   */
-  // eslint-disable-next-line perfectionist/sort-classes
-  public static parsePostgresConnectionString(connStringOrDbName: string): ConnectionDetails {
-    const dbPath = /:\/\//.test(connStringOrDbName) ? connStringOrDbName : `postgres:///${connStringOrDbName}`
-    const url = new URL(dbPath)
-    const {hostname, password, pathname, port, username} = url
-
-    return {
-      database: pathname.slice(1), // remove the leading slash from the pathname
-      host: hostname,
-      password,
-      pathname,
-      port: port || process.env.PGPORT || (hostname && '5432'),
-      url: dbPath,
-      user: username,
-    }
-  }
-
-  /**
-   * Fetches all Heroku PostgreSQL add-on attachments for a given app.
-   *
-   * This is used internally by the `getAttachment` function to get all valid Heroku PostgreSQL add-on attachments
-   * to generate a list of possible valid attachments when the user passes a database name that doesn't match any
-   * attachments.
-   *
-   * @param appId - The ID of the app to get the attachments for
-   * @returns Promise resolving to array of PostgreSQL add-on attachments
-   */
-  private async allPostgresAttachments(appId: string): Promise<ExtendedAddonAttachment[]> {
-    const addonService = process.env.HEROKU_POSTGRESQL_ADDON_NAME || 'heroku-postgresql'
-    const {body: attachments} = await this.heroku.get<ExtendedAddonAttachment[]>(`/apps/${appId}/addon-attachments`, {
-      headers: this.attachmentHeaders,
-    })
-    return attachments.filter(a => a.addon.plan.name.split(':', 2)[0] === addonService)
-  }
-
-  /**
    * Returns the connection details for a database attachment according to the app config vars.
    *
    * @param attachment - The attachment to get the connection details for
    * @param config - The record of app config vars with their values
    * @returns Connection details with attachment information
    */
-  // eslint-disable-next-line perfectionist/sort-classes
   public getConnectionDetails(
     attachment: ExtendedAddonAttachment,
     config: Record<string, string> = {},
@@ -194,6 +197,79 @@ export default class DatabaseResolver {
   }
 
   /**
+   * Returns the connection details for a database attachment resolved through the identifiers passed as
+   * arguments: appId, attachmentId and namespace (credential).
+   *
+   * @param appId - The ID of the app containing the database
+   * @param attachmentId - Optional database identifier (defaults to 'DATABASE_URL')
+   * @param namespace - Optional namespace/credential for the attachment
+   * @returns Promise resolving to connection details with attachment information
+   */
+  public async getDatabase(
+    appId: string,
+    attachmentId?: string,
+    namespace?: string,
+  ): Promise<ConnectionDetailsWithAttachment> {
+    const attached = await this.getAttachment(appId, attachmentId, namespace)
+    const config = await this.getConfigFn(this.heroku, attached.app.name)
+    const database = this.getConnectionDetails(attached, config)
+
+    // Add bastion configuration if it's a non-shielded Private Space add-on and we still don't have the config.
+    if (bastionKeyPlan(attached) && !database.bastionKey) {
+      const bastionConfig = await this.fetchBastionConfigFn(this.heroku, attached.addon)
+      Object.assign(database, bastionConfig)
+    }
+
+    return database
+  }
+
+  /**
+   * Helper function that attempts to find all Heroku Postgres attachments on a given app.
+   *
+   * @param app - The name of the app to get the attachments for
+   * @returns Promise resolving to an array of all Heroku Postgres attachments on the app
+   */
+  private async allLegacyDatabaseAttachments(app: string) {
+    const {body: attachments} = await this.heroku.get<ExtendedAddonAttachment[]>(
+      `/apps/${app}/addon-attachments`,
+      {headers: this.attachmentHeaders},
+    )
+    return attachments.filter(a => isLegacyDatabase(a.addon))
+  }
+
+  /**
+   * Fetches all Heroku PostgreSQL add-on attachments for a given app.
+   *
+   * This is used internally by the `getAttachment` function to get all valid Heroku PostgreSQL add-on attachments
+   * to generate a list of possible valid attachments when the user passes a database name that doesn't match any
+   * attachments.
+   *
+   * @param appId - The ID of the app to get the attachments for
+   * @returns Promise resolving to array of PostgreSQL add-on attachments
+   */
+  private async allPostgresAttachments(appId: string): Promise<ExtendedAddonAttachment[]> {
+    const {body: attachments} = await this.heroku.get<ExtendedAddonAttachment[]>(`/apps/${appId}/addon-attachments`, {
+      headers: this.attachmentHeaders,
+    })
+    return attachments.filter(a => a.addon.plan.name.split(':', 2)[0] === getAddonService())
+  }
+
+  /**
+   * Helper function that groups Heroku Postgres attachments by addon.
+   *
+   * @param attachments - The attachments to group by addon
+   * @returns A record of addon IDs with their attachment names
+   */
+  private getAttachmentNamesByAddon(attachments: ExtendedAddonAttachment[]): Record<string, string[]> {
+    const addons: Record<string, string[]> = {}
+    for (const attachment of attachments) {
+      addons[attachment.addon.id] = [...(addons[attachment.addon.id] || []), attachment.name]
+    }
+
+    return addons
+  }
+
+  /**
    * Helper function that attempts to find a single addon attachment matching the given database identifier
    * (attachment name, id, or config var name).
    *
@@ -214,7 +290,7 @@ export default class DatabaseResolver {
   > {
     debug(`fetching ${attachmentId} on ${appId}`)
 
-    const addonService = process.env.HEROKU_POSTGRESQL_ADDON_NAME || 'heroku-postgresql'
+    const addonService = getAddonService()
     debug(`addon service: ${addonService}`)
 
     try {
@@ -222,7 +298,7 @@ export default class DatabaseResolver {
       return {error: undefined, matches: [attached]}
     } catch (error: unknown) {
       if (error instanceof AmbiguousError && error.body.id === 'multiple_matches' && error.matches) {
-        return {error, matches: error.matches}
+        return {error, matches: error.matches as ExtendedAddonAttachment[]}
       }
 
       // This handles the case where the resolver returns a 404 error when making the request, but not the case
