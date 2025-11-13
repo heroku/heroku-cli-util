@@ -7,7 +7,7 @@ import nock from 'nock'
 
 import {AmbiguousError} from '../../../../src/errors/ambiguous.js'
 import {NotFound} from '../../../../src/errors/not-found.js'
-import AddonAttachmentResolver from '../../../../src/utils/addons/resolve.js'
+import AddonAttachmentResolver from '../../../../src/utils/addons/attachment-resolver.js'
 import {
   HEROKU_API,
   credentialAttachment,
@@ -20,7 +20,7 @@ const {expect} = chai
 
 chai.use(chaiAsPromised)
 
-describe('addonAttachment', function () {
+describe('AddonAttachmentResolver#resolve', function () {
   let config: Config
   let heroku: APIClient
 
