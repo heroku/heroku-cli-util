@@ -121,7 +121,7 @@ const connection: pg.ConnectionDetails = {
   user: 'admin'
 };
 
-function processDatabase(details: pg.ConnectionDetailsWithAttachment) {
+function processDatabase(details: pg.ConnectionDetails) {
   // ...
 }
 
@@ -135,7 +135,6 @@ Alternatively, you can import types directly:
 ```typescript
 import type { 
   ConnectionDetails,
-  ConnectionDetailsWithAttachment,
   AddOnWithRelatedData,
   ExtendedAddonAttachment,
   Link,

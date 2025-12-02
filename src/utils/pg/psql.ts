@@ -13,7 +13,7 @@ import path from 'node:path'
 import {Stream} from 'node:stream'
 import {finished} from 'node:stream/promises'
 
-import type {ConnectionDetailsWithAttachment, TunnelConfig} from '../../types/pg/tunnel.js'
+import type {ConnectionDetails, TunnelConfig} from '../../types/pg/tunnel.js'
 
 import {getPsqlConfigs, sshTunnel} from './bastion.js'
 
@@ -43,7 +43,7 @@ export class Tunnel {
    * @returns Promise that resolves to a new Tunnel instance
    */
   static async connect(
-    connectionDetails: ConnectionDetailsWithAttachment,
+    connectionDetails: ConnectionDetails,
     tunnelConfig: TunnelConfig,
     tunnelFn: typeof sshTunnel,
   ) {
@@ -97,7 +97,7 @@ type SpawnPsqlOptions = {
 
 export default class PsqlService {
   constructor(
-    private readonly connectionDetails: ConnectionDetailsWithAttachment,
+    private readonly connectionDetails: ConnectionDetails,
     private readonly getPsqlConfigsFn = getPsqlConfigs,
     private readonly spawnFn = spawn,
     private readonly tunnelFn = sshTunnel,
@@ -153,8 +153,8 @@ export default class PsqlService {
    * @returns Promise that resolves to the query result as a string
    */
   public async interactiveSession(psqlCmdArgs: string[] = []) {
-    const attachmentName = this.connectionDetails.attachment.name
-    const prompt = `${this.connectionDetails.attachment.app.name}::${attachmentName}%R%# `
+    const attachmentName = this.connectionDetails.attachment!.name
+    const prompt = `${this.connectionDetails.attachment!.app.name}::${attachmentName}%R%# `
     const configs = this.getPsqlConfigsFn(this.connectionDetails)
     configs.dbEnv.PGAPPNAME = 'psql interactive' // default was 'psql non-interactive`
     const options = this.psqlInteractiveOptions(prompt, configs.dbEnv, psqlCmdArgs)
