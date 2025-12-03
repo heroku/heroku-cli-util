@@ -123,19 +123,25 @@ export default class DatabaseResolver {
       attachmentId = appConfigMatch[2]
     }
 
-    const {error, matches} = await this.matchesHelper(appId, attachmentId, namespace)
+    let {error, matches} = await this.getAttachmentsViaResolver(appId, attachmentId, namespace)
 
     // happy path where the resolver matches just one
     if (matches && matches.length === 1) {
       return matches[0]
     }
 
-    // handle the case where the resolver didn't find any matches for the given database and show valid options.
+    // handle the case where the resolver didn't find any matches for the given database.
     if (!matches) {
       const attachments = await this.allPostgresAttachments(appId)
       if (attachments.length === 0) {
         throw new Error(`${color.app(appId)} has no databases`)
-      } else {
+      }
+
+      // attempt to find a match using config var names
+      matches = await this.getAttachmentsViaConfigVarNames(attachments, appId, attachmentId)
+
+      if (matches.length === 0) {
+        const databaseName = attachmentId.endsWith('_URL') ? attachmentId.slice(0, -4) : attachmentId
         const validOptions = attachments.map(attachment => getConfigVarName(attachment.config_vars))
         throw new Error(`Unknown database: ${attachmentId}. Valid options are: ${validOptions.join(', ')}`)
       }
@@ -271,6 +277,26 @@ export default class DatabaseResolver {
 
   /**
    * Helper function that attempts to find a single addon attachment matching the given database identifier
+   * by comparing the identifier to the config var names of all attachments on the app
+   * (attachment name, id, or config var name).
+   *
+   * This is used internally by the `getAttachment` function to handle the lookup of addon attachments.
+   * It returns either an array with a single match or an empty array if no matches are found.
+   *
+   * @param attachments - Array of attachments for the specified app ID
+   * @param appId - The ID of the app to search for attachments
+   * @param attachmentId - The database identifier to match
+   * @returns Promise resolving to either a single match or no matches
+   */
+  private async getAttachmentsViaConfigVarNames(attachments: ExtendedAddonAttachment[], appId: string, attachmentId: string): Promise<ExtendedAddonAttachment[]> {
+    const targetConfigVarName = attachmentId.endsWith('_URL') ? attachmentId : `${attachmentId}_URL`
+    const config = await this.getConfigFn(this.heroku, appId)
+    return attachments.filter(attachment => config[targetConfigVarName] && config[targetConfigVarName] === config[getConfigVarName(attachment.config_vars as string[])])
+  }
+
+  /**
+   * Helper function that attempts to find a single addon attachment matching the given database identifier
+   * via the add-on attachments resolver
    * (attachment name, id, or config var name).
    *
    * This is used internally by the `getAttachment` function to handle the lookup of addon attachments.
@@ -283,7 +309,7 @@ export default class DatabaseResolver {
    * @param namespace - Optional namespace/credential filter
    * @returns Promise resolving to either a single match, multiple matches with error, or no matches with error
    */
-  private async matchesHelper(appId: string, attachmentId: string, namespace?: string): Promise<
+  private async getAttachmentsViaResolver(appId: string, attachmentId: string, namespace?: string): Promise<
     {error: AmbiguousError, matches: ExtendedAddonAttachment[]} |
     {error: HerokuAPIError, matches: null} |
     {error: undefined, matches: ExtendedAddonAttachment[]}
