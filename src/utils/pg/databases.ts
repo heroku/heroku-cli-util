@@ -173,7 +173,7 @@ export default class DatabaseResolver {
   public getConnectionDetails(
     attachment: ExtendedAddonAttachment,
     config: Record<string, string> = {},
-  ): ConnectionDetailsWithAttachment {
+  ): ConnectionDetails {
     const connStringVar = getConfigVarNameFromAttachment(attachment, config)
 
     // build the default payload for non-bastion dbs
@@ -181,7 +181,7 @@ export default class DatabaseResolver {
 
     const conn = DatabaseResolver.parsePostgresConnectionString(config[connStringVar])
 
-    const payload: ConnectionDetailsWithAttachment = {
+    const payload: ConnectionDetails = {
       attachment,
       database: conn.database,
       host: conn.host,
@@ -215,7 +215,7 @@ export default class DatabaseResolver {
     appId: string,
     attachmentId?: string,
     namespace?: string,
-  ): Promise<ConnectionDetailsWithAttachment> {
+  ): Promise<ConnectionDetails> {
     const attached = await this.getAttachment(appId, attachmentId, namespace)
     const config = await this.getConfigFn(this.heroku, attached.app.name)
     const database = this.getConnectionDetails(attached, config)

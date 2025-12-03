@@ -4,6 +4,7 @@ import type {ExtendedAddonAttachment} from './platform-api'
 
 export type ConnectionDetails = {
   _tunnel?: Server
+  attachment?: ExtendedAddonAttachment
   database: string
   host: string
   password: string
@@ -12,10 +13,6 @@ export type ConnectionDetails = {
   url: string
   user: string
 } & BastionConfig
-
-export type ConnectionDetailsWithAttachment = {
-  attachment: ExtendedAddonAttachment
-} & ConnectionDetails
 
 export interface TunnelConfig {
   dstHost: string

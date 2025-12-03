@@ -6,7 +6,7 @@ import {
   ExtendedAddonAttachment,
   Link,
 } from './types/pg/platform-api'
-import {ConnectionDetails, ConnectionDetailsWithAttachment, TunnelConfig} from './types/pg/tunnel'
+import {ConnectionDetails, TunnelConfig} from './types/pg/tunnel'
 import AddonResolver from './utils/addons/addon-resolver'
 import {
   getAddonService,
@@ -40,7 +40,6 @@ export type {
 
 export type {
   ConnectionDetails,
-  ConnectionDetailsWithAttachment,
   TunnelConfig,
 } from './types/pg/tunnel'
 
@@ -50,7 +49,6 @@ export const types = {
   pg: {
     AddOnWithRelatedData: {} as AddOnWithRelatedData,
     ConnectionDetails: {} as ConnectionDetails,
-    ConnectionDetailsWithAttachment: {} as ConnectionDetailsWithAttachment,
     ExtendedAddon: {} as ExtendedAddon,
     ExtendedAddonAttachment: {} as ExtendedAddonAttachment,
     Link: {} as Link,
