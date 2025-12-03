@@ -4,7 +4,7 @@ import {HerokuAPIError} from '@heroku-cli/command/lib/api-client'
 import debug from 'debug'
 
 import type {ExtendedAddon, ExtendedAddonAttachment} from '../../types/pg/platform-api'
-import type {ConnectionDetails, ConnectionDetailsWithAttachment} from '../../types/pg/tunnel'
+import type {ConnectionDetails} from '../../types/pg/tunnel'
 
 import {AmbiguousError} from '../../errors/ambiguous'
 import AddonAttachmentResolver from '../addons/attachment-resolver'
@@ -143,7 +143,8 @@ export default class DatabaseResolver {
       if (matches.length === 0) {
         const databaseName = attachmentId.endsWith('_URL') ? attachmentId.slice(0, -4) : attachmentId
         const validOptions = attachments.map(attachment => getConfigVarName(attachment.config_vars))
-        throw new Error(`Unknown database: ${attachmentId}. Valid options are: ${validOptions.join(', ')}`)
+        const validOptionsString = validOptions.map(option => option.endsWith('_URL') ? option.slice(0, -4) : option).join(', ')
+        throw new Error(`Unknown database: ${databaseName}. Valid options are: ${validOptionsString}`)
       }
     }
 
