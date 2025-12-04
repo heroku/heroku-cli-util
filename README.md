@@ -105,7 +105,6 @@ try {
  * types.pg.AddOnAttachmentWithConfigVarsAndPlan
  * types.pg.AddOnWithRelatedData
  * types.pg.ConnectionDetails
- * types.pg.ConnectionDetailsWithAttachment
  * types.pg.Link
  * types.pg.TunnelConfig
  */

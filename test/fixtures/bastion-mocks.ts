@@ -1,9 +1,9 @@
-import type {ConnectionDetailsWithAttachment} from '../../src/types/pg/tunnel'
+import type {ConnectionDetails} from '../../src/types/pg/tunnel'
 
 import {defaultAttachment, privateDatabaseAttachment, shieldDatabaseAttachment} from './attachment-mocks'
 
 // Connection details for default attachment (essential plan, no tunnel required)
-export const defaultConnectionDetails: ConnectionDetailsWithAttachment = {
+export const defaultConnectionDetails: ConnectionDetails = {
   attachment: defaultAttachment,
   database: 'db1',
   host: 'main-database.example.com',
@@ -15,7 +15,7 @@ export const defaultConnectionDetails: ConnectionDetailsWithAttachment = {
 }
 
 // Connection details for shield database attachment (shield plan, requires tunnel)
-export const shieldDatabaseConnectionDetails: ConnectionDetailsWithAttachment = {
+export const shieldDatabaseConnectionDetails: ConnectionDetails = {
   attachment: shieldDatabaseAttachment,
   bastionHost: '10.7.0.1',
   bastionKey: '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----',
@@ -29,7 +29,7 @@ export const shieldDatabaseConnectionDetails: ConnectionDetailsWithAttachment = 
 }
 
 // Connection details for private database attachment (private plan, requires tunnel)
-export const privateDatabaseConnectionDetails: ConnectionDetailsWithAttachment = {
+export const privateDatabaseConnectionDetails: ConnectionDetails = {
   attachment: privateDatabaseAttachment,
   bastionHost: '10.7.0.2',
   bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
