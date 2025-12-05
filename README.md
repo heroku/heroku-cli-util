@@ -135,7 +135,6 @@ Alternatively, you can import types directly:
 ```typescript
 import type { 
   ConnectionDetails,
-  ConnectionDetailsWithAttachment,
   AddOnWithRelatedData,
   ExtendedAddonAttachment,
   Link,

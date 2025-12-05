@@ -33,7 +33,6 @@ export namespace pg {
   export type ExtendedAddonAttachment = DataApiTypes.ExtendedAddonAttachment
   export type Link = DataApiTypes.Link
   export type ConnectionDetails = TunnelTypes.ConnectionDetails
-  export type ConnectionDetailsWithAttachment = TunnelTypes.ConnectionDetailsWithAttachment
   export type TunnelConfig = TunnelTypes.TunnelConfig
 }
 

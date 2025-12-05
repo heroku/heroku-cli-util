@@ -11,7 +11,7 @@ import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
 import * as tmp from 'tmp'
 
-import {ConnectionDetailsWithAttachment} from '../../../../src/types/pg/tunnel.js'
+import {ConnectionDetails} from '../../../../src/types/pg/tunnel.js'
 import {PsqlConfigs} from '../../../../src/utils/pg/bastion.js'
 import PsqlService from '../../../../src/utils/pg/psql.js'
 import {defaultConnectionDetails, privateDatabaseConnectionDetails} from '../../../fixtures/bastion-mocks.js'
@@ -25,7 +25,7 @@ chai.use(sinonChai)
 // Helper function to create a mock tunnel server
 describe('PsqlService', function () {
   let psqlService: PsqlService
-  let connectionDetails: ConnectionDetailsWithAttachment
+  let connectionDetails: ConnectionDetails
   let mockGetPsqlConfigs: sinon.SinonStub
   let mockSpawn: sinon.SinonStub
   let mockChildProcess: {killed: boolean} & ChildProcess
@@ -696,7 +696,7 @@ describe('PsqlService', function () {
         expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
 
         // Verify spawn was called with correct parameters
-        const expectedPrompt = `${connectionDetails.attachment.app.name}::${connectionDetails.attachment.name}%R%# `
+        const expectedPrompt = `${connectionDetails.attachment!.app.name}::${connectionDetails.attachment!.name}%R%# `
         expect(mockSpawn).to.have.been.calledOnceWith('psql', [
           '--set',
           `PROMPT1=${expectedPrompt}`,
@@ -735,7 +735,7 @@ describe('PsqlService', function () {
         expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
 
         // Verify spawn was called with correct parameters
-        const expectedPrompt = `${connectionDetails.attachment.app.name}::${connectionDetails.attachment.name}%R%# `
+        const expectedPrompt = `${connectionDetails.attachment!.app.name}::${connectionDetails.attachment!.name}%R%# `
         expect(mockSpawn).to.have.been.calledOnceWith('psql', [
           '--set',
           `PROMPT1=${expectedPrompt}`,
@@ -794,7 +794,7 @@ describe('PsqlService', function () {
         expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
 
         // Verify spawn was called with tunnel-adjusted environment
-        const expectedPrompt = `${connectionDetails.attachment.app.name}::${connectionDetails.attachment.name}%R%# `
+        const expectedPrompt = `${connectionDetails.attachment!.app.name}::${connectionDetails.attachment!.name}%R%# `
         expect(mockSpawn).to.have.been.calledOnceWith('psql', [
           '--set',
           `PROMPT1=${expectedPrompt}`,
@@ -913,14 +913,14 @@ describe('PsqlService', function () {
         expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
 
         // Verify spawn was called with correct parameters
-        const expectedPrompt = `${connectionDetails.attachment.app.name}::${connectionDetails.attachment.name}%R%# `
+        const expectedPrompt = `${connectionDetails.attachment!.app.name}::${connectionDetails.attachment!.name}%R%# `
         expect(mockSpawn).to.have.been.calledOnceWith('psql', [
           '--set',
           `PROMPT1=${expectedPrompt}`,
           '--set',
           `PROMPT2=${expectedPrompt}`,
           '--set',
-          `HISTFILE=${tmpDirName}/${connectionDetails.attachment.app.name}`,
+          `HISTFILE=${tmpDirName}/${connectionDetails.attachment!.app.name}`,
           '--set',
           'sslmode=require',
         ], {
@@ -969,7 +969,7 @@ describe('PsqlService', function () {
         expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
 
         // Verify spawn was called with correct parameters
-        const expectedPrompt = `${connectionDetails.attachment.app.name}::${connectionDetails.attachment.name}%R%# `
+        const expectedPrompt = `${connectionDetails.attachment!.app.name}::${connectionDetails.attachment!.name}%R%# `
         expect(mockSpawn).to.have.been.calledOnceWith('psql', [
           '--set',
           `PROMPT1=${expectedPrompt}`,
@@ -1026,7 +1026,7 @@ describe('PsqlService', function () {
         expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
 
         // Verify spawn was called with correct parameters
-        const expectedPrompt = `${connectionDetails.attachment.app.name}::${connectionDetails.attachment.name}%R%# `
+        const expectedPrompt = `${connectionDetails.attachment!.app.name}::${connectionDetails.attachment!.name}%R%# `
         expect(mockSpawn).to.have.been.calledOnceWith('psql', [
           '--set',
           `PROMPT1=${expectedPrompt}`,
