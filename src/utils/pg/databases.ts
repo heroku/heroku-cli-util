@@ -141,9 +141,10 @@ export default class DatabaseResolver {
       matches = await this.getAttachmentsViaConfigVarNames(attachments, appId, attachmentId)
 
       if (matches.length === 0) {
-        attachmentId.endsWith('_URL') ? attachmentId.slice(0, -4) : attachmentId
+        const databaseName = attachmentId.endsWith('_URL') ? attachmentId.slice(0, -4) : attachmentId
         const validOptions = attachments.map(attachment => getConfigVarName(attachment.config_vars))
-        throw new Error(`Unknown database: ${attachmentId}. Valid options are: ${validOptions.join(', ')}`)
+        const validOptionsString = validOptions.map(option => option.endsWith('_URL') ? option.slice(0, -4) : option).join(', ')
+        throw new Error(`Unknown database: ${databaseName}. Valid options are: ${validOptionsString}`)
       }
     }
 
