@@ -13,7 +13,7 @@ import path from 'node:path'
 import {Stream} from 'node:stream'
 import {finished} from 'node:stream/promises'
 
-import type {ConnectionDetailsWithAttachment, TunnelConfig} from '../../types/pg/tunnel.js'
+import type {ConnectionDetails, TunnelConfig} from '../../types/pg/tunnel.js'
 
 import {getPsqlConfigs, sshTunnel} from './bastion.js'
 
@@ -43,7 +43,7 @@ export class Tunnel {
    * @returns Promise that resolves to a new Tunnel instance
    */
   static async connect(
-    connectionDetails: ConnectionDetailsWithAttachment,
+    connectionDetails: ConnectionDetails,
     tunnelConfig: TunnelConfig,
     tunnelFn: typeof sshTunnel,
   ) {
@@ -97,7 +97,7 @@ type SpawnPsqlOptions = {
 
 export default class PsqlService {
   constructor(
-    private readonly connectionDetails: ConnectionDetailsWithAttachment,
+    private readonly connectionDetails: ConnectionDetails,
     private readonly getPsqlConfigsFn = getPsqlConfigs,
     private readonly spawnFn = spawn,
     private readonly tunnelFn = sshTunnel,
@@ -153,13 +153,58 @@ export default class PsqlService {
    * @returns Promise that resolves to the query result as a string
    */
   public async interactiveSession(psqlCmdArgs: string[] = []) {
-    const attachmentName = this.connectionDetails.attachment.name
-    const prompt = `${this.connectionDetails.attachment.app.name}::${attachmentName}%R%# `
+    const attachmentName = this.connectionDetails.attachment!.name
+    const prompt = `${this.connectionDetails.attachment!.app.name}::${attachmentName}%R%# `
     const configs = this.getPsqlConfigsFn(this.connectionDetails)
     configs.dbEnv.PGAPPNAME = 'psql interactive' // default was 'psql non-interactive`
     const options = this.psqlInteractiveOptions(prompt, configs.dbEnv, psqlCmdArgs)
 
     return this.runWithTunnel(configs.dbTunnelConfig, options)
+  }
+
+  /**
+   * Runs the psql command with tunnel support.
+   *
+   * @param tunnelConfig - The tunnel configuration object
+   * @param options - The options for spawning the psql process
+   * @returns Promise that resolves to the query result as a string
+   */
+  public async runWithTunnel(
+    tunnelConfig: TunnelConfig,
+    options: Parameters<typeof this.spawnPsql>[0],
+  ): Promise<string> {
+    const tunnel = await Tunnel.connect(this.connectionDetails, tunnelConfig, this.tunnelFn)
+    pgDebug('after create tunnel')
+
+    const psql = this.spawnPsql(options)
+    // Note: In non-interactive mode, psql.stdout is available for capturing output.
+    // In interactive mode, stdio: 'inherit' would make psql.stdout null.
+    // Return a string for consistency but ideally we should return the child process from this function
+    // and let the caller decide what to do with stdin/stdout/stderr
+    const stdoutPromise = psql.stdout ? this.consumeStream(psql.stdout) : Promise.resolve('')
+    const cleanupSignalTraps = this.trapAndForwardSignalsToChildProcess(psql)
+
+    try {
+      pgDebug('waiting for psql or tunnel to exit')
+      // wait for either psql or tunnel to exit;
+      // the important bit is that we ensure both processes are
+      // always cleaned up in the `finally` block below
+      await Promise.race([
+        this.waitForPSQLExit(psql),
+        tunnel.waitForClose(),
+      ])
+    } catch (error) {
+      pgDebug('wait for psql or tunnel error', error)
+      throw error
+    } finally {
+      pgDebug('begin tunnel cleanup')
+      cleanupSignalTraps()
+      tunnel.close()
+      this.kill(psql, 'SIGKILL')
+      pgDebug('end tunnel cleanup')
+    }
+
+    return stdoutPromise as Promise<string>
   }
 
   /**
@@ -288,51 +333,6 @@ export default class PsqlService {
       dbEnv,
       psqlArgs,
     }
-  }
-
-  /**
-   * Runs the psql command with tunnel support.
-   *
-   * @param tunnelConfig - The tunnel configuration object
-   * @param options - The options for spawning the psql process
-   * @returns Promise that resolves to the query result as a string
-   */
-  private async runWithTunnel(
-    tunnelConfig: TunnelConfig,
-    options: Parameters<typeof this.spawnPsql>[0],
-  ): Promise<string> {
-    const tunnel = await Tunnel.connect(this.connectionDetails, tunnelConfig, this.tunnelFn)
-    pgDebug('after create tunnel')
-
-    const psql = this.spawnPsql(options)
-    // Note: In non-interactive mode, psql.stdout is available for capturing output.
-    // In interactive mode, stdio: 'inherit' would make psql.stdout null.
-    // Return a string for consistency but ideally we should return the child process from this function
-    // and let the caller decide what to do with stdin/stdout/stderr
-    const stdoutPromise = psql.stdout ? this.consumeStream(psql.stdout) : Promise.resolve('')
-    const cleanupSignalTraps = this.trapAndForwardSignalsToChildProcess(psql)
-
-    try {
-      pgDebug('waiting for psql or tunnel to exit')
-      // wait for either psql or tunnel to exit;
-      // the important bit is that we ensure both processes are
-      // always cleaned up in the `finally` block below
-      await Promise.race([
-        this.waitForPSQLExit(psql),
-        tunnel.waitForClose(),
-      ])
-    } catch (error) {
-      pgDebug('wait for psql or tunnel error', error)
-      throw error
-    } finally {
-      pgDebug('begin tunnel cleanup')
-      cleanupSignalTraps()
-      tunnel.close()
-      this.kill(psql, 'SIGKILL')
-      pgDebug('end tunnel cleanup')
-    }
-
-    return stdoutPromise as Promise<string>
   }
 
   /**

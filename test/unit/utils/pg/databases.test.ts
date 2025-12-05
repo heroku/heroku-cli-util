@@ -51,11 +51,13 @@ describe('DatabaseResolver', function () {
     let config: Config
     let heroku: APIClient
     let env: typeof process.env
+    let herokuApi: nock.Scope
 
     beforeEach(async function () {
       config = await Config.load()
       heroku = new APIClient(config)
       env = process.env
+      herokuApi = nock(HEROKU_API)
     })
 
     afterEach(function () {
@@ -63,24 +65,24 @@ describe('DatabaseResolver', function () {
       sinon.restore()
       // eslint-disable-next-line import/no-named-as-default-member
       nock.cleanAll()
+      herokuApi.done()
     })
 
     describe('when the app has no Heroku Postgres databases', function () {
       it('returns an empty array', async function () {
         // Mock the Heroku API to return empty array (no attachments)
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/app-no-addons/addon-attachments')
           .reply(200, [])
 
         const result = await new DatabaseResolver(heroku).getAllLegacyDatabases('app-no-addons')
         expect(result).to.deep.equal([])
-        api.done()
       })
     })
 
     describe('when the app has only Advanced-tier databases', function () {
       it('throws an error', async function () {
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/my-app/addon-attachments')
           .reply(200, [
             advancedDatabaseAttachment,
@@ -89,13 +91,12 @@ describe('DatabaseResolver', function () {
 
         const result = await new DatabaseResolver(heroku).getAllLegacyDatabases('my-app')
         expect(result).to.deep.equal([])
-        api.done()
       })
     })
 
     describe('when the app has only non-Advanced-tier databases', function () {
       it('returns an array containing all non-Advanced-tier databases', async function () {
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/my-app/addon-attachments')
           .reply(200, [
             defaultAttachment,
@@ -109,13 +110,12 @@ describe('DatabaseResolver', function () {
           {...premiumDatabaseAttachment.addon, attachment_names: ['HEROKU_POSTGRESQL_PURPLE']},
           {...miniDatabaseAttachment.addon, attachment_names: ['HEROKU_POSTGRESQL_WHITE']},
         ])
-        api.done()
       })
     })
 
     describe('when the app has both Advanced-tier and non-Advanced-tier databases', function () {
       it('returns an array containing only the non-Advanced-tier databases', async function () {
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/my-app/addon-attachments')
           .reply(200, [
             defaultAttachment,
@@ -131,13 +131,12 @@ describe('DatabaseResolver', function () {
           {...premiumDatabaseAttachment.addon, attachment_names: ['HEROKU_POSTGRESQL_PURPLE']},
           {...miniDatabaseAttachment.addon, attachment_names: ['HEROKU_POSTGRESQL_WHITE']},
         ])
-        api.done()
       })
     })
 
     describe('when the app has multiple attachments for the same add-on', function () {
       it('returns an array containing each add-on only once with all its attachment names', async function () {
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/my-app/addon-attachments')
           .reply(200, [
             defaultAttachment,
@@ -150,7 +149,6 @@ describe('DatabaseResolver', function () {
           {...defaultAttachment.addon, attachment_names: ['MAIN_DATABASE', 'MAIN_RO_DATABASE']},
           {...premiumDatabaseAttachment.addon, attachment_names: ['HEROKU_POSTGRESQL_PURPLE']},
         ])
-        api.done()
       })
     })
   })
@@ -159,11 +157,13 @@ describe('DatabaseResolver', function () {
     let config: Config
     let heroku: APIClient
     let env: typeof process.env
+    let herokuApi: nock.Scope
 
     beforeEach(async function () {
       config = await Config.load()
       heroku = new APIClient(config)
       env = process.env
+      herokuApi = nock(HEROKU_API)
     })
 
     afterEach(function () {
@@ -171,24 +171,24 @@ describe('DatabaseResolver', function () {
       sinon.restore()
       // eslint-disable-next-line import/no-named-as-default-member
       nock.cleanAll()
+      herokuApi.done()
     })
 
     describe('when the app has no Heroku Postgres databases', function () {
       it('throws an error', async function () {
         // Mock the Heroku API to return empty array (no attachments)
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/app-no-addons/addons')
           .reply(200, [])
 
         await expect(new DatabaseResolver(heroku).getArbitraryLegacyDB('app-no-addons'))
           .to.be.rejectedWith('No Heroku Postgres legacy database on app-no-addons')
-        api.done()
       })
     })
 
     describe('when the app has only Advanced-tier databases', function () {
       it('throws an error', async function () {
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/my-app/addons')
           .reply(200, [
             advancedDatabase,
@@ -197,13 +197,12 @@ describe('DatabaseResolver', function () {
 
         await expect(new DatabaseResolver(heroku).getArbitraryLegacyDB('my-app'))
           .to.be.rejectedWith('No Heroku Postgres legacy database on my-app')
-        api.done()
       })
     })
 
     describe('when the app has only non-Advanced-tier databases', function () {
       it('resolves to the first database', async function () {
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/my-app/addons')
           .reply(200, [
             standardDatabase,
@@ -212,13 +211,12 @@ describe('DatabaseResolver', function () {
 
         const resolvedAddon = await new DatabaseResolver(heroku).getArbitraryLegacyDB('my-app')
         expect(resolvedAddon).to.deep.equal(standardDatabase)
-        api.done()
       })
     })
 
     describe('when the app has both Advanced-tier and non-Advanced-tier databases', function () {
       it('resolves to the first non-Advanced-tier database', async function () {
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/my-app/addons')
           .reply(200, [
             advancedDatabase,
@@ -229,7 +227,6 @@ describe('DatabaseResolver', function () {
 
         const resolvedAddon = await new DatabaseResolver(heroku).getArbitraryLegacyDB('my-app')
         expect(resolvedAddon).to.deep.equal(premiumDatabase)
-        api.done()
       })
     })
   })
@@ -239,12 +236,15 @@ describe('DatabaseResolver', function () {
     let heroku: APIClient
     let addonAttachmentResolveStub: sinon.SinonStub
     let env: typeof process.env
+    let herokuApi: nock.Scope
 
     beforeEach(async function () {
       config = await Config.load()
       heroku = new APIClient(config)
       addonAttachmentResolveStub = sinon.stub(AddonAttachmentResolver.prototype, 'resolve')
       env = process.env
+      herokuApi = nock(HEROKU_API)
+      configVarsByAppIdCache.clear()
     })
 
     afterEach(function () {
@@ -252,6 +252,7 @@ describe('DatabaseResolver', function () {
       sinon.restore()
       // eslint-disable-next-line import/no-named-as-default-member
       nock.cleanAll()
+      herokuApi.done()
     })
 
     describe('when matchesHelper returns a single match', function () {
@@ -315,7 +316,7 @@ describe('DatabaseResolver', function () {
         addonAttachmentResolveStub.rejects(notFoundError)
 
         // Mock the Heroku API to return empty array (no attachments)
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/app-no-addons/addon-attachments')
           .reply(200, [])
 
@@ -325,7 +326,6 @@ describe('DatabaseResolver', function () {
           sinon.assert.calledWith(
             addonAttachmentResolveStub, 'app-no-addons', 'MAIN_DATABASE', {addonService: 'heroku-postgresql', namespace: undefined},
           )
-          api.done()
           expect((error as Error).message).to.equal('app-no-addons has no databases')
         }
       })
@@ -334,9 +334,11 @@ describe('DatabaseResolver', function () {
         addonAttachmentResolveStub.rejects(notFoundError)
 
         // Mock the Heroku API to return available attachments
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/my-app/addon-attachments')
           .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
+          .get('/apps/my-app/config-vars')
+          .reply(200, myAppConfigVars)
 
         try {
           await new DatabaseResolver(heroku).getAttachment('my-app', 'NONEXISTENT_DB')
@@ -344,9 +346,8 @@ describe('DatabaseResolver', function () {
           sinon.assert.calledWith(
             addonAttachmentResolveStub, 'my-app', 'NONEXISTENT_DB', {addonService: 'heroku-postgresql', namespace: undefined},
           )
-          api.done()
           expect((error as Error).message).to.equal(
-            'Unknown database: NONEXISTENT_DB. Valid options are: MAIN_DATABASE_URL, MAIN_RO_DATABASE_URL, FOLLOWER_DATABASE_URL',
+            'Unknown database: NONEXISTENT_DB. Valid options are: MAIN_DATABASE, MAIN_RO_DATABASE, FOLLOWER_DATABASE',
           )
         }
       })
@@ -355,7 +356,7 @@ describe('DatabaseResolver', function () {
         addonAttachmentResolveStub.rejects(notFoundError)
 
         // Mock the Heroku API to return available attachments
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/app-no-addons/addon-attachments')
           .reply(200, [])
 
@@ -365,7 +366,6 @@ describe('DatabaseResolver', function () {
           sinon.assert.calledWith(
             addonAttachmentResolveStub, 'app-no-addons', 'MAIN_DATABASE', {addonService: 'heroku-postgresql', namespace: undefined},
           )
-          api.done()
           expect((error as Error).message).to.equal('app-no-addons has no databases')
         }
       })
@@ -392,15 +392,31 @@ describe('DatabaseResolver', function () {
         addonAttachmentResolveStub.rejects(notFoundError)
 
         // Mock the Heroku API to return available attachments for the specified addon service
-        nock(HEROKU_API)
+        herokuApi
           .get('/apps/my-app/addon-attachments')
           .reply(200, [developerAddonAttachment])
+          .get('/apps/my-app/config-vars')
+          .reply(200, myAppConfigVars)
 
         await expect(new DatabaseResolver(heroku).getAttachment('my-app', 'FOLLOWER'))
-          .to.be.rejectedWith('Unknown database: FOLLOWER. Valid options are: DEV_ADDON_DATABASE_URL')
+          .to.be.rejectedWith('Unknown database: FOLLOWER. Valid options are: DEV_ADDON_DATABASE')
         sinon.assert.calledWith(
           addonAttachmentResolveStub, 'my-app', 'FOLLOWER', {addonService: 'heroku-postgresql-devname', namespace: undefined},
         )
+      })
+
+      it('returns any matches found via config var names', async function () {
+        addonAttachmentResolveStub.rejects(notFoundError)
+
+        // Mock the Heroku API to return available attachments
+        herokuApi
+          .get('/apps/my-app/addon-attachments')
+          .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
+          .get('/apps/my-app/config-vars')
+          .reply(200, myAppConfigVars)
+
+        const result = await new DatabaseResolver(heroku).getAttachment('my-app', 'MAIN_DATABASE')
+        expect(result).to.deep.equal(defaultAttachment)
       })
     })
 
@@ -438,14 +454,13 @@ describe('DatabaseResolver', function () {
         )
 
         // Mock the Heroku API to return config vars for the app (to check if the attachments are equivalent)
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/my-app/config-vars')
           .reply(200, myAppConfigVars)
 
         try {
           await new DatabaseResolver(heroku).getAttachment('my-app', 'MAIN')
         } catch (error: unknown) {
-          api.done()
           sinon.assert.calledWith(
             addonAttachmentResolveStub, 'my-app', 'MAIN', {addonService: 'heroku-postgresql', namespace: undefined},
           )
@@ -464,14 +479,13 @@ describe('DatabaseResolver', function () {
         )
 
         // Mock the Heroku API to return config vars for the app (to check if the attachments are equivalent)
-        const api = nock(HEROKU_API)
+        herokuApi
           .get('/apps/my-other-app/config-vars')
           .reply(200, myOtherAppConfigVars)
 
         const result = await new DatabaseResolver(heroku).getAttachment('my-other-app', 'FOLLOWER')
 
         expect(result).to.deep.equal(foreignFollowerAttachment)
-        api.done()
         sinon.assert.calledWith(
           addonAttachmentResolveStub, 'my-other-app', 'FOLLOWER', {addonService: 'heroku-postgresql', namespace: undefined},
         )
