@@ -50,7 +50,7 @@
     "@oclif/core": "^4.3.0",
     "@oclif/table": "0.4.14",
     "debug": "^4.4.0",
-    "inquirer": "^12.6.1",
+    "inquirer": "^13.0.2",
     "tunnel-ssh": "5.2.0"
   },
   "engines": {
