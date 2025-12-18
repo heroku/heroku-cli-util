@@ -68,6 +68,7 @@ export const label = (text: string) => ansi.bold(text)
 export const info = (text: string) => ansi.hex(COLORS.TEAL)(text)
 export const inactive = (text: string) => ansi.hex(COLORS.GRAY)(text)
 export const command = (text: string) => ansi.bgHex(COLORS.CODE_BG).hex(COLORS.CODE_FG).bold(` $ ${text} `)
+export const code = (text: string) => ansi.bgHex(COLORS.CODE_BG).hex(COLORS.CODE_FG).bold(`${text} `)
 
 /**
  * Color palette for reference

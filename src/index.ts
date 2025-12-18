@@ -71,4 +71,4 @@ export const hux = {
   wait,
 }
 
-export * as colors from './ux/colors.js'
+export * as color from './ux/colors.js'
