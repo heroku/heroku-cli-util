@@ -14,4 +14,4 @@ if [ ! -f "examples/$COMMAND-command.ts" ]; then
   exit 1
 fi
 
-node --loader ts-node/esm "examples/$COMMAND-command.ts" "$@"
+node --import ./examples/register.mjs "examples/$COMMAND-command.ts" "$@"
