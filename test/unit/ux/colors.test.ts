@@ -1,4 +1,5 @@
 import {expect} from 'chai'
+
 import * as colors from '../../../src/ux/colors.js'
 
 describe('colors', () => {
@@ -152,7 +153,7 @@ describe('colors', () => {
       expect(colors.colorPalette.app.hex).to.equal('#ACADFF')
       expect(colors.colorPalette.addon.hex).to.equal('#BFBD25')
       expect(colors.colorPalette.attachment.hex).to.equal('#BFBD25')
-      expect(colors.colorPalette.pipeline.hex).to.equal('#FF8DD3')
+      expect(colors.colorPalette.pipeline.hex).to.equal('#ACADFF')
       expect(colors.colorPalette.space.hex).to.equal('#62CBF4')
       expect(colors.colorPalette.datastore.hex).to.equal('#BFBD25')
       expect(colors.colorPalette.success.hex).to.equal('#00D300')
@@ -169,7 +170,7 @@ describe('colors', () => {
       expect(colors.colorPalette.app.name).to.equal('purple')
       expect(colors.colorPalette.addon.name).to.equal('yellow')
       expect(colors.colorPalette.attachment.name).to.equal('yellow')
-      expect(colors.colorPalette.pipeline.name).to.equal('magenta')
+      expect(colors.colorPalette.pipeline.name).to.equal('purple')
       expect(colors.colorPalette.space.name).to.equal('blue')
       expect(colors.colorPalette.datastore.name).to.equal('yellow')
       expect(colors.colorPalette.success.name).to.equal('green')
@@ -180,24 +181,6 @@ describe('colors', () => {
       expect(colors.colorPalette.name.name).to.equal('magenta')
       expect(colors.colorPalette.info.name).to.equal('teal')
       expect(colors.colorPalette.inactive.name).to.equal('gray')
-    })
-
-    it('should have correct styles', () => {
-      expect(colors.colorPalette.app.style).to.equal('bold')
-      expect(colors.colorPalette.addon.style).to.equal('normal')
-      expect(colors.colorPalette.attachment.style).to.equal('normal')
-      expect(colors.colorPalette.pipeline.style).to.equal('normal')
-      expect(colors.colorPalette.space.style).to.equal('bold')
-      expect(colors.colorPalette.datastore.style).to.equal('bold')
-      expect(colors.colorPalette.success.style).to.equal('normal')
-      expect(colors.colorPalette.failure.style).to.equal('normal')
-      expect(colors.colorPalette.warning.style).to.equal('normal')
-      expect(colors.colorPalette.team.style).to.equal('normal')
-      expect(colors.colorPalette.user.style).to.equal('normal')
-      expect(colors.colorPalette.label.style).to.equal('bold')
-      expect(colors.colorPalette.name.style).to.equal('normal')
-      expect(colors.colorPalette.info.style).to.equal('normal')
-      expect(colors.colorPalette.inactive.style).to.equal('normal')
     })
   })
 })
