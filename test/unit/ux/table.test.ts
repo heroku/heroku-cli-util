@@ -1,10 +1,10 @@
 import {stdout} from '@heroku-cli/test-utils'
+import ansis from 'ansis'
 import {expect} from 'chai'
-import stripAnsi from 'strip-ansi'
 
 import {table} from '../../../src/ux/table.js'
 
-const removeAllWhitespace = (str: string): string => stripAnsi(str).replace(/\s+/g, '')
+const removeAllWhitespace = (str: string): string => ansis.strip(str).replace(/\s+/g, '')
 
 describe('table', function () {
   it('should print the correct table output', function () {
