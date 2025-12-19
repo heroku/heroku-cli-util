@@ -1,5 +1,4 @@
-import {Command} from '@oclif/core'
-import {ux} from '@oclif/core'
+import {Command, ux} from '@oclif/core'
 
 import {color} from '../src/index.js'
 
@@ -95,11 +94,63 @@ export default class ColorDemoCommand extends Command {
     ux.stdout(`  ${color.info('To create a new app:')}\n`)
     ux.stdout(`  ${color.command('heroku apps:create my-awesome-app')}\n\n`)
 
+    // ============================================================================
+    // MIXING CUSTOM AND ANSIS COLORS
+    // ============================================================================
+    ux.stdout(color.label('🔀 Mixing Custom and ANSIS colors:\n'))
+    ux.stdout(color.info('You can combine custom Heroku colors with ansis functionality for more complex styling.\n\n'))
+
+    ux.stdout('// Using ansis with custom colors\n')
+    ux.stdout(`  ${color.bold(color.app('my-app'))}      // Bold custom app color\n`)
+    ux.stdout(`  ${color.underline(color.success('Success!'))} // Underlined success\n`)
+    ux.stdout(`  ${color.bgBlue(color.team('my-team'))}  // Team name with blue background\n\n`)
+
+    ux.stdout('// Using custom colors with ansis styling\n')
+    ux.stdout(`  ${color.label('Deploying')} ${color.app('my-app')} ${color.info('to')} ${color.space('production')} ${color.success('✓')}\n`)
+    ux.stdout(`  ${color.failure('Error:')} ${color.bold('Failed to connect to')} ${color.datastore('DATABASE')}\n`)
+    ux.stdout(`  ${color.warning('Warning:')} ${color.italic('This will add charges to your account')}\n\n`)
+
+    // ============================================================================
+    // ANSIS FUNCTIONALITY - Direct access to ansis features
+    // ============================================================================
+    ux.stdout(color.label('🌈 ANSIS Functionality:\n'))
+    ux.stdout(color.info('The color interface also provides direct access to ansis functionality for additional styling options.\n\n'))
+
+    ux.stdout('// Text styling\n')
+    ux.stdout(`  ${color.bold('bold text')}               // Bold\n`)
+    ux.stdout(`  ${color.italic('italic text')}           // Italic\n`)
+    ux.stdout(`  ${color.underline('underlined text')}    // Underlined\n\n`)
+
+    ux.stdout('// Combined styling\n')
+    ux.stdout(`  ${color.bold.red('bold red')}            // Bold + red\n`)
+    ux.stdout(`  ${color.underline.blue('underlined blue')} // Underlined + blue\n`)
+    ux.stdout(`  ${color.bold.italic.cyan('bold italic cyan')} // Multiple styles\n\n`)
+
+    ux.stdout('// Custom colors\n')
+    ux.stdout(`  ${color.hex('#FF6B6B')('custom hex color')}    // Custom hex color\n`)
+    ux.stdout(`  ${color.rgb(255, 107, 107)('RGB color')}   // RGB color\n\n`)
+
     ux.stdout(color.label('🎯 Color Palette Summary:\n'))
+    ux.stdout(color.info('The color interface provides two complementary approaches:\n\n'))
+
+    ux.stdout(`  ${color.bold('Custom Heroku colors:')}\n`)
+    ux.stdout(`    • Semantic functions (${color.app('app')}, ${color.success('success')}, etc.)\n`)
+    ux.stdout('    • Purpose-built for Heroku CLI consistency\n')
+    ux.stdout('    • Include icons and specific styling\n')
+    ux.stdout(`    • Use design system colors (${color.colorPalette.app.hex}, ${color.colorPalette.success.hex}, etc.)\n\n`)
+
+    ux.stdout(`  ${color.bold('ANSIS Colors:')}\n`)
+    ux.stdout('    • Direct access to all ansis functionality\n')
+    ux.stdout(`    • Standard ANSI colors (${color.red('red')}, ${color.blue('blue')}, etc.)\n`)
+    ux.stdout(`    • Text styling (${color.bold('bold')}, ${color.italic('italic')}, etc.)\n`)
+    ux.stdout(`    • Custom colors (${color.hex('#FF6B6B')('hex')}, ${color.rgb(255, 107, 107)('RGB')})\n`)
+    ux.stdout('    • Chainable methods for complex styling\n\n')
+
     ux.stdout(color.info('All colors are designed to be accessible and consistent across the Heroku CLI experience.\n'))
     ux.stdout(color.info('Bold styling is used for primary entities (apps, spaces, datastores, addons, teams) and labels.\n'))
     ux.stdout(color.info('Status colors follow semantic conventions: green for success, red for errors, orange for warnings.\n'))
-    ux.stdout(color.info('Purple is used for apps and pipelines, magenta for general names, and yellow for addons and datastores.\n\n'))
+    ux.stdout(color.info('Purple is used for apps and pipelines, magenta for general names, and yellow for addons and datastores.\n'))
+    ux.stdout(color.info('Both approaches can be used together for maximum flexibility while maintaining Heroku CLI design consistency.\n\n'))
   }
 }
 
