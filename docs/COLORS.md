@@ -76,7 +76,8 @@ When `ansis` automatically maps colors to ANSI 16, it uses intelligent color app
 
 - **Accessibility**: All colors are designed to be accessible and provide sufficient contrast
 - **Consistency**: Colors follow semantic conventions across the CLI
-- **Hierarchy**: Bold styling is used for primary Heroku entities (apps, spaces, datastores)
+- **Hierarchy**: Bold styling is used for primary resources (apps, spaces, datastores, addons)
+- **Heroku Resources**: Resources offered directly from Heroku get an icon identifier
 - **Color Grouping**: Related entities share similar colors to create visual relationships:
   - **Purple** is used for app-related concepts: apps, pipelines, and spaces
   - **Yellow** is used for addon-related concepts: addons (both Heroku and third-party), PostgreSQL databases, and attachments
