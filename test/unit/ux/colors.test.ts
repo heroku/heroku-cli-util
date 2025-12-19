@@ -2,108 +2,108 @@ import {expect} from 'chai'
 
 import * as colors from '../../../src/ux/colors.js'
 
-describe('colors', () => {
-  describe('app-related colors', () => {
-    it('should style app names with purple and bold', () => {
+describe('colors', function () {
+  describe('app-related colors', function () {
+    it('should style app names with purple and bold', function () {
       const result = colors.app('my-app')
       expect(result).to.include('my-app')
       // The exact ANSI codes will vary, but we can check that it's not just plain text
       expect(result).to.not.equal('my-app')
     })
 
-    it('should style addon names with yellow', () => {
+    it('should style addon names with yellow', function () {
       const result = colors.addon('heroku-postgresql')
       expect(result).to.include('heroku-postgresql')
       expect(result).to.not.equal('heroku-postgresql')
     })
 
-    it('should style attachment names with yellow', () => {
+    it('should style attachment names with yellow', function () {
       const result = colors.attachment('DATABASE')
       expect(result).to.include('DATABASE')
       expect(result).to.not.equal('DATABASE')
     })
 
-    it('should style pipeline names with magenta', () => {
+    it('should style pipeline names with magenta', function () {
       const result = colors.pipeline('staging')
       expect(result).to.include('staging')
       expect(result).to.not.equal('staging')
     })
 
-    it('should style space names with blue and bold', () => {
+    it('should style space names with blue and bold', function () {
       const result = colors.space('production')
       expect(result).to.include('production')
       expect(result).to.not.equal('production')
     })
 
-    it('should style datastore names with yellow and bold', () => {
+    it('should style datastore names with yellow and bold', function () {
       const result = colors.datastore('postgresql-123')
       expect(result).to.include('postgresql-123')
       expect(result).to.not.equal('postgresql-123')
     })
   })
 
-  describe('status colors', () => {
-    it('should style success messages with green', () => {
+  describe('status colors', function () {
+    it('should style success messages with green', function () {
       const result = colors.success('Deploy complete')
       expect(result).to.include('Deploy complete')
       expect(result).to.not.equal('Deploy complete')
     })
 
-    it('should style failure messages with red', () => {
+    it('should style failure messages with red', function () {
       const result = colors.failure('Build failed')
       expect(result).to.include('Build failed')
       expect(result).to.not.equal('Build failed')
     })
 
-    it('should style warning messages with orange', () => {
+    it('should style warning messages with orange', function () {
       const result = colors.warning('Deprecated feature')
       expect(result).to.include('Deprecated feature')
       expect(result).to.not.equal('Deprecated feature')
     })
   })
 
-  describe('user/team colors', () => {
-    it('should style team names with cyan', () => {
+  describe('user/team colors', function () {
+    it('should style team names with cyan', function () {
       const result = colors.team('my-team')
       expect(result).to.include('my-team')
       expect(result).to.not.equal('my-team')
     })
 
-    it('should style user emails with cyan', () => {
+    it('should style user emails with cyan', function () {
       const result = colors.user('user@example.com')
       expect(result).to.include('user@example.com')
       expect(result).to.not.equal('user@example.com')
     })
   })
 
-  describe('general purpose colors', () => {
-    it('should style labels with bold', () => {
+  describe('general purpose colors', function () {
+    it('should style labels with bold', function () {
       const result = colors.label('Name')
       expect(result).to.include('Name')
       expect(result).to.not.equal('Name')
     })
 
-    it('should style names with purple', () => {
+    it('should style names with purple', function () {
       const result = colors.name('entity-name')
       expect(result).to.include('entity-name')
       expect(result).to.not.equal('entity-name')
     })
 
-    it('should style info text with teal', () => {
+    it('should style info text with teal', function () {
       const result = colors.info('Help text')
       expect(result).to.include('Help text')
       expect(result).to.not.equal('Help text')
     })
 
-    it('should style inactive text with gray', () => {
+    it('should style inactive text with gray', function () {
       const result = colors.inactive('disabled')
       expect(result).to.include('disabled')
       expect(result).to.not.equal('disabled')
     })
   })
 
-  describe('color constants', () => {
-    it('should have all required color constants', () => {
+  describe('color constants', function () {
+    it('should have all required color constants', function () {
       expect(colors.COLORS).to.have.property('PURPLE')
       expect(colors.COLORS).to.have.property('YELLOW')
       expect(colors.COLORS).to.have.property('MAGENTA')
@@ -116,7 +116,7 @@ describe('colors', () => {
       expect(colors.COLORS).to.have.property('GRAY')
     })
 
-    it('should have correct hex values for color constants', () => {
+    it('should have correct hex values for color constants', function () {
       expect(colors.COLORS.PURPLE).to.equal('#ACADFF')
       expect(colors.COLORS.YELLOW).to.equal('#BFBD25')
       expect(colors.COLORS.MAGENTA).to.equal('#FF8DD3')
@@ -130,8 +130,8 @@ describe('colors', () => {
     })
   })
 
-  describe('color palette', () => {
-    it('should have all required color definitions', () => {
+  describe('color palette', function () {
+    it('should have all required color definitions', function () {
       expect(colors.colorPalette).to.have.property('app')
       expect(colors.colorPalette).to.have.property('addon')
       expect(colors.colorPalette).to.have.property('attachment')
@@ -149,7 +149,7 @@ describe('colors', () => {
       expect(colors.colorPalette).to.have.property('inactive')
     })
 
-    it('should have correct hex values', () => {
+    it('should have correct hex values', function () {
       expect(colors.colorPalette.app.hex).to.equal('#ACADFF')
       expect(colors.colorPalette.addon.hex).to.equal('#BFBD25')
       expect(colors.colorPalette.attachment.hex).to.equal('#BFBD25')
@@ -166,7 +166,7 @@ describe('colors', () => {
       expect(colors.colorPalette.inactive.hex).to.equal('#B6B6B6')
     })
 
-    it('should have correct color names', () => {
+    it('should have correct color names', function () {
       expect(colors.colorPalette.app.name).to.equal('purple')
       expect(colors.colorPalette.addon.name).to.equal('yellow')
       expect(colors.colorPalette.attachment.name).to.equal('yellow')
