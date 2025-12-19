@@ -1,7 +1,7 @@
 import {Command} from '@oclif/core'
 import {ux} from '@oclif/core'
 
-import * as color from '../src/ux/colors.js'
+import {color} from '../src/index.js'
 
 export default class InterfaceDemoCommand extends Command {
   static description = 'Demo of the color interface showing both custom Heroku colors and ansis functionality'

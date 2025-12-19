@@ -5,58 +5,13 @@ This document describes the new color palette for the Heroku CLI, implemented us
 ## Usage
 
 ```typescript
-import * as colors from '@heroku/heroku-cli-util/colors'
+import {color} from '@heroku/heroku-cli-util'
 
-// App-related colors
-console.log(colors.app('my-awesome-app'))        // Purple, bold
-console.log(colors.addon('heroku-postgresql'))   // Yellow
-console.log(colors.attachment('DATABASE'))       // Yellow
-console.log(colors.pipeline('staging'))          // Magenta
-console.log(colors.space('production'))          // Blue, bold
-console.log(colors.datastore('postgresql-123'))  // Yellow, bold
-
-// Status colors
-console.log(colors.success('Deploy complete'))   // Green
-console.log(colors.failure('Build failed'))      // Red
-console.log(colors.warning('Deprecated feature')) // Orange
-
-// User/Team colors
-console.log(colors.team('my-team'))              // Cyan
-console.log(colors.user('user@example.com'))     // Cyan
-
-// General purpose colors
-console.log(colors.label('Name'))                // Bold (default)
-console.log(colors.name('entity-name'))          // Purple
-console.log(colors.info('Help text'))            // Teal
-console.log(colors.inactive('disabled'))         // Gray
-console.log(colors.command('heroku apps:list'))  // White on dark gray background with $ prefix
-```
-
-### Using Color Constants
-
-You can also access the raw color constants for custom styling:
-
-```typescript
-import { COLORS } from '@heroku/heroku-cli-util/colors'
-import ansi from 'ansis'
-
-// Use color constants directly
-console.log(ansi.hex(COLORS.PURPLE)('Custom purple text'))
-console.log(ansi.hex(COLORS.BLUE).bold('Custom blue bold text'))
-
-// Available constants:
-// COLORS.PURPLE   - #ACADFF
-// COLORS.YELLOW   - #BFBD25
-// COLORS.MAGENTA  - #FF8DD3
-// COLORS.BLUE     - #62CBF4
-// COLORS.GREEN    - #00D300
-// COLORS.RED      - #FF8787
-// COLORS.ORANGE   - #F29D00
-// COLORS.CYAN     - #50D3D5
-// COLORS.TEAL     - #00D4AA
-// COLORS.GRAY     - #B6B6B6
-// COLORS.CODE_BG  - #2E2E2E
-// COLORS.CODE_FG  - #FFFFFF
+console.log(color.app('my-awesome-app'))
+console.log(color.addon('heroku-postgresql'))
+console.log(color.success('Deploy complete'))
+console.log(color.team('my-team'))
+console.log(color.orange('Custom orange color'))
 ```
 
 ## Color Definitions
@@ -123,6 +78,10 @@ When `ansis` automatically maps colors to ANSI 16, it uses intelligent color app
 - **Consistency**: Colors follow semantic conventions across the CLI
 - **Hierarchy**: Bold styling is used for primary entities (apps, spaces, datastores) and labels
 - **Status**: Status colors follow semantic conventions: green for success, red for errors, orange for warnings
+- **Color Grouping**: Related entities share similar colors to create visual relationships:
+  - **Purple** is used for app-related concepts: apps, pipelines, and spaces
+  - **Yellow** is used for addon-related concepts: addons (both Heroku and third-party), PostgreSQL databases, and attachments
+  - **Cyan** is used for user-related concepts: users, organizations, and teams
 - **Automatic Fallback**: The `ansis` package automatically handles color fallback for different terminal capabilities
 
 ## Migration from @heroku-cli/color
@@ -139,6 +98,6 @@ console.log(color.cyan('my-app'))
 ### After
 
 ```typescript
-import * as colors from '@heroku/heroku-cli-util/colors'
-console.log(colors.app('my-app'))
+import {color} from '@heroku/heroku-cli-util'
+console.log(color.app('my-app'))
 ```
