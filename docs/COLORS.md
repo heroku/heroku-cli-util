@@ -76,12 +76,12 @@ When `ansis` automatically maps colors to ANSI 16, it uses intelligent color app
 
 - **Accessibility**: All colors are designed to be accessible and provide sufficient contrast
 - **Consistency**: Colors follow semantic conventions across the CLI
-- **Hierarchy**: Bold styling is used for primary entities (apps, spaces, datastores) and labels
-- **Status**: Status colors follow semantic conventions: green for success, red for errors, orange for warnings
+- **Hierarchy**: Bold styling is used for primary Heroku entities (apps, spaces, datastores)
 - **Color Grouping**: Related entities share similar colors to create visual relationships:
   - **Purple** is used for app-related concepts: apps, pipelines, and spaces
   - **Yellow** is used for addon-related concepts: addons (both Heroku and third-party), PostgreSQL databases, and attachments
   - **Cyan** is used for user-related concepts: users, organizations, and teams
+  - **Status**: Status colors follow semantic conventions: green for success, red for errors, orange for warnings
 - **Automatic Fallback**: The `ansis` package automatically handles color fallback for different terminal capabilities
 
 ## Migration from @heroku-cli/color
