@@ -1,6 +1,6 @@
-# Heroku CLI Color Palette
+# Heroku CLI Color System
 
-This document describes the new color palette for the Heroku CLI, implemented using the `ansis` npm package.
+This document describes the new color system for the Heroku CLI, implemented using the `ansis` npm package.
 
 ## Usage
 
@@ -87,7 +87,7 @@ When `ansis` automatically maps colors to ANSI 16, it uses intelligent color app
 
 ## Migration from @heroku-cli/color
 
-The new color system replaces the previous `@heroku-cli/color` package with more specific, semantic color functions. Instead of generic color functions, you now have purpose-built functions for different types of content.
+The new color system replaces the previous `@heroku-cli/color` package with more semantic color functions. Instead of a mix of semantic and generic color functions, you now have purpose-built functions that cover most types of content. The interface should largely remain the same, simply importing from a different package.
 
 ### Before
 
