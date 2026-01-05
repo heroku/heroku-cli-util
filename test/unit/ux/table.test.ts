@@ -4,7 +4,7 @@ import {expect} from 'chai'
 
 import {table} from '../../../src/ux/table.js'
 
-const removeAllWhitespace = (str: string): string => ansis.strip(str).replace(/\s+/g, '')
+const removeAllWhitespace = (str: string): string => ansis.strip(str).replaceAll(/\s+/g, '')
 
 describe('table', function () {
   it('should print the correct table output', function () {
