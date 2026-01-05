@@ -49,7 +49,7 @@
     "@oclif/table": "0.4.14",
     "ansis": "^4.1.0",
     "debug": "^4.4.0",
-    "inquirer": "^12.6.1",
+    "inquirer": "^13.1.0",
     "tunnel-ssh": "5.2.0"
   },
   "engines": {
