@@ -30,7 +30,8 @@ export function table<T extends Record<string, unknown>>(
       borderColor: 'whiteBright',
       borderStyle: 'headers-only-with-underline',
       headerOptions: {
-        color: 'rgb(147, 112, 219)',
+        bold: true,
+        color: 'white', // or 'reset' to use default terminal color
       },
     }),
     ...tableOptions,

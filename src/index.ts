@@ -70,3 +70,5 @@ export const hux = {
   table,
   wait,
 }
+
+export * as color from './ux/colors.js'

@@ -3,6 +3,7 @@ import {HTTPError} from '@heroku/http-call'
 import {APIClient} from '@heroku-cli/command'
 import {HerokuAPIError} from '@heroku-cli/command/lib/api-client.js'
 import {Config} from '@oclif/core'
+import ansis from 'ansis'
 import * as chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import nock from 'nock'
@@ -326,7 +327,7 @@ describe('DatabaseResolver', function () {
           sinon.assert.calledWith(
             addonAttachmentResolveStub, 'app-no-addons', 'MAIN_DATABASE', {addonService: 'heroku-postgresql', namespace: undefined},
           )
-          expect((error as Error).message).to.equal('app-no-addons has no databases')
+          expect(ansis.strip((error as Error).message)).to.equal('⬢ app-no-addons has no databases')
         }
       })
 
@@ -366,7 +367,7 @@ describe('DatabaseResolver', function () {
           sinon.assert.calledWith(
             addonAttachmentResolveStub, 'app-no-addons', 'MAIN_DATABASE', {addonService: 'heroku-postgresql', namespace: undefined},
           )
-          expect((error as Error).message).to.equal('app-no-addons has no databases')
+          expect(ansis.strip((error as Error).message)).to.equal('⬢ app-no-addons has no databases')
         }
       })
 

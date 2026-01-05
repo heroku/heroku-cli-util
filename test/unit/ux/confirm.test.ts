@@ -1,7 +1,7 @@
 import {stdout} from '@heroku-cli/test-utils'
+import ansis from 'ansis'
 import {expect} from 'chai'
 import {stdin as mockStdin} from 'mock-stdin'
-import stripAnsi from 'strip-ansi'
 
 import {confirm} from '../../../src/ux/confirm.js'
 
@@ -25,7 +25,7 @@ describe('confirm', function () {
     await wait(2000)
     stdin.send('y\n')
     const result = await confirmPromise
-    const output = stripAnsi(stdout())
+    const output = ansis.strip(stdout())
     expect(output).to.contain('Are you sure')
     expect(result).to.equal(true)
   })
@@ -35,7 +35,7 @@ describe('confirm', function () {
     await wait(2000)
     stdin.send('n\n')
     const result = await confirmPromise
-    const output = stripAnsi(stdout())
+    const output = ansis.strip(stdout())
     expect(output).to.contain('Are you sure')
     expect(result).to.equal(false)
   })
@@ -44,7 +44,7 @@ describe('confirm', function () {
     const confirmPromise = confirm('Are you sure', {ms: 1000})
     await wait(2000) // Wait longer than the timeout
     const result = await confirmPromise
-    const output = stripAnsi(stdout())
+    const output = ansis.strip(stdout())
     expect(output).to.contain('Are you sure')
     expect(result).to.equal(false) // Default answer is false
   })
@@ -53,7 +53,7 @@ describe('confirm', function () {
     const confirmPromise = confirm('Are you sure', {defaultAnswer: true, ms: 1000})
     await wait(2000) // Wait longer than the timeout
     const result = await confirmPromise
-    const output = stripAnsi(stdout())
+    const output = ansis.strip(stdout())
     expect(output).to.contain('Are you sure')
     expect(result).to.equal(true) // Custom default answer is true
   })

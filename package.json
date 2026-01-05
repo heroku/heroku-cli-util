@@ -36,7 +36,6 @@
     "nock": "^13.2.9",
     "sinon": "^18.0.1",
     "sinon-chai": "^3.7.0",
-    "strip-ansi": "^6",
     "tmp": "^0.2.5",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
@@ -44,11 +43,11 @@
     "typescript": "^5.4.0"
   },
   "dependencies": {
-    "@heroku-cli/color": "^2.0.4",
     "@heroku-cli/command": "^12.0.0",
     "@heroku/http-call": "^5.5.0",
     "@oclif/core": "^4.3.0",
     "@oclif/table": "0.4.14",
+    "ansis": "^4.1.0",
     "debug": "^4.4.0",
     "inquirer": "^12.6.1",
     "tunnel-ssh": "5.2.0"

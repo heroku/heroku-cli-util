@@ -2,14 +2,14 @@
 
 A set of helpful CLI utilities for Heroku and oclif-based Node.js CLIs. This
 package provides convenient wrappers and helpers for user interaction, output
-formatting, and test utilities.
+formatting, and color styling.
 
 ## Features
 
 - **User prompts and confirmations** (yes/no, input)
 - **Styled output** (headers, JSON, objects, tables)
 - **Wait indicators** for async operations
-- **Test helpers** for CLI output and environment setup
+- **Colors** for consistent, semantic CLI styling
 
 ## Installation
 
@@ -59,24 +59,34 @@ const name = await hux.prompt('What is your name?');
 const proceed = await hux.confirm('Continue?');
 ```
 
-### Test Helpers
+### Colors
 
 ```js
-import { testHelpers } from '@heroku/heroku-cli-util';
+import { color } from '@heroku/heroku-cli-util';
 
-testHelpers.initCliTest();
+// App-related colors
+console.log(color.app('my-awesome-app'));        // Purple, bold with app icon
+console.log(color.pipeline('staging'));          // Purple
+console.log(color.space('production'));         // Blue, bold with space icon
+console.log(color.addon('heroku-postgresql'));   // Yellow, bold
+console.log(color.datastore('postgresql-123'));  // Yellow, bold with datastore icon
 
-testHelpers.setupStdoutStderr();
-// ...run your CLI code...
-const output = testHelpers.stdout();
-const errorOutput = testHelpers.stderr();
-testHelpers.restoreStdoutStderr();
+// Status colors
+console.log(color.success('Deploy complete'));   // Green
+console.log(color.failure('Build failed'));      // Red
+console.log(color.warning('Deprecated feature')); // Orange
 
-testHelpers.expectOutput(output, 'expected output');
+// User/Team colors
+console.log(color.team('my-team'));              // Cyan, bold
+console.log(color.user('user@example.com'));     // Cyan
 
-// Run a command (see docs for details)
-// await testHelpers.runCommand(MyCommand, ['arg1', 'arg2']);
+// General purpose
+console.log(color.label('Name'));                // Bold
+console.log(color.info('Help text'));            // Teal
+console.log(color.command('heroku apps:list'));  // Command with prompt styling
 ```
+
+See the [COLORS.md](docs/COLORS.md) documentation for the complete color palette and usage guide.
 
 ### Types
 
