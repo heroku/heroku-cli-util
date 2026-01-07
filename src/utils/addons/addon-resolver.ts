@@ -19,8 +19,6 @@ export default class AddonResolver {
     addonService?: string,
   ): Promise<ExtendedAddon>  {
     const [appPart, addonPart] = addon.match(/^(.+)::(.+)$/)?.slice(1) ?? [app, addon]
-    console.log('appPart', appPart)
-    console.log('addonPart', addonPart)
     const {body: addons} = await this.heroku.post<ExtendedAddon[]>('/actions/addons/resolve', {
       body: {
         addon: addonPart,
