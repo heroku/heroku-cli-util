@@ -22,6 +22,7 @@ import {ago} from './ux/ago.js'
 import {alignColumns} from './ux/align-columns.js'
 import {anykey} from './ux/any-key.js'
 import {confirm} from './ux/confirm.js'
+import {toHumanReadableDataSize} from './ux/data-size.js'
 import {openUrl} from './ux/open-url.js'
 import {prompt} from './ux/prompt.js'
 import {styledHeader} from './ux/styled-header.js'
@@ -77,6 +78,7 @@ export const hux = {
   styledJSON,
   styledObject,
   table,
+  toHumanReadableDataSize,
   toTitleCase,
   wait,
 }
