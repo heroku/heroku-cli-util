@@ -18,7 +18,9 @@ import {getConfigVarNameFromAttachment} from './utils/pg/config-vars.js'
 import DatabaseResolver from './utils/pg/databases.js'
 import getHost from './utils/pg/host.js'
 import PsqlService from './utils/pg/psql.js'
+import {anykey} from './ux/any-key.js'
 import {confirm} from './ux/confirm.js'
+import {openUrl} from './ux/open-url.js'
 import {prompt} from './ux/prompt.js'
 import {styledHeader} from './ux/styled-header.js'
 import {styledJSON} from './ux/styled-json.js'
@@ -62,7 +64,9 @@ export const utils = {
 }
 
 export const hux = {
+  anykey,
   confirm,
+  openUrl,
   prompt,
   styledHeader,
   styledJSON,
