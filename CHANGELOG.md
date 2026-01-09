@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.4.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.3.0...heroku-cli-util-v10.4.0) (2026-01-09)
+
+
+### Features
+
+* adding utility functions from 'heroku-cli-plugin-data-beta' (W-20610130) ([#262](https://github.com/heroku/heroku-cli-util/issues/262)) ([9f5588c](https://github.com/heroku/heroku-cli-util/commit/9f5588ca11cb3713898896f0de22069fc007d918))
+
+
+### Continuous Integration
+
+* adding token for release on push PRs to trigger ci ([#266](https://github.com/heroku/heroku-cli-util/issues/266)) ([1033d2c](https://github.com/heroku/heroku-cli-util/commit/1033d2cfbd0bfc9d39dfb3b5cfb291b60a7793fc))
+
 ## [10.3.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.2.0...heroku-cli-util-v10.3.0) (2026-01-09)
 
 
