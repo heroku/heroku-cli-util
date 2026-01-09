@@ -27,6 +27,7 @@ import {styledHeader} from './ux/styled-header.js'
 import {styledJSON} from './ux/styled-json.js'
 import {styledObject} from './ux/styled-object.js'
 import {table} from './ux/table.js'
+import {toTitleCase} from './ux/to-title-case.js'
 import {wait} from './ux/wait.js'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -74,6 +75,7 @@ export const hux = {
   styledJSON,
   styledObject,
   table,
+  toTitleCase,
   wait,
 }
 
