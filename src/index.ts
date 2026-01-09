@@ -18,6 +18,7 @@ import {getConfigVarNameFromAttachment} from './utils/pg/config-vars.js'
 import DatabaseResolver from './utils/pg/databases.js'
 import getHost from './utils/pg/host.js'
 import PsqlService from './utils/pg/psql.js'
+import {alignColumns} from './ux/align-columns.js'
 import {anykey} from './ux/any-key.js'
 import {confirm} from './ux/confirm.js'
 import {openUrl} from './ux/open-url.js'
@@ -64,6 +65,7 @@ export const utils = {
 }
 
 export const hux = {
+  alignColumns,
   anykey,
   confirm,
   openUrl,
