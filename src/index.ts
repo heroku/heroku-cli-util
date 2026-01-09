@@ -23,6 +23,7 @@ import {alignColumns} from './ux/align-columns.js'
 import {anykey} from './ux/any-key.js'
 import {confirm} from './ux/confirm.js'
 import {toHumanReadableDataSize} from './ux/data-size.js'
+import {formatPrice} from './ux/format-price.js'
 import {openUrl} from './ux/open-url.js'
 import {prompt} from './ux/prompt.js'
 import {styledHeader} from './ux/styled-header.js'
@@ -72,6 +73,7 @@ export const hux = {
   alignColumns,
   anykey,
   confirm,
+  formatPrice,
   openUrl,
   prompt,
   styledHeader,
