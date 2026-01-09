@@ -5,6 +5,10 @@
   "description": "Set of helpful CLI utilities",
   "author": "Heroku",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heroku/heroku-cli-util.git"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
