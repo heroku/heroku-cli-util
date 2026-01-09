@@ -18,12 +18,19 @@ import {getConfigVarNameFromAttachment} from './utils/pg/config-vars.js'
 import DatabaseResolver from './utils/pg/databases.js'
 import getHost from './utils/pg/host.js'
 import PsqlService from './utils/pg/psql.js'
+import {ago} from './ux/ago.js'
+import {alignColumns} from './ux/align-columns.js'
+import {anykey} from './ux/any-key.js'
 import {confirm} from './ux/confirm.js'
+import {toHumanReadableDataSize} from './ux/data-size.js'
+import {formatPrice} from './ux/format-price.js'
+import {openUrl} from './ux/open-url.js'
 import {prompt} from './ux/prompt.js'
 import {styledHeader} from './ux/styled-header.js'
 import {styledJSON} from './ux/styled-json.js'
 import {styledObject} from './ux/styled-object.js'
 import {table} from './ux/table.js'
+import {toTitleCase} from './ux/to-title-case.js'
 import {wait} from './ux/wait.js'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -62,12 +69,19 @@ export const utils = {
 }
 
 export const hux = {
+  ago,
+  alignColumns,
+  anykey,
   confirm,
+  formatPrice,
+  openUrl,
   prompt,
   styledHeader,
   styledJSON,
   styledObject,
   table,
+  toHumanReadableDataSize,
+  toTitleCase,
   wait,
 }
 
