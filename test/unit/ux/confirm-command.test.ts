@@ -25,7 +25,7 @@ describe('confirmCommand', function () {
   it('should err on confirm flag mismatch', async function () {
     await confirmCommand({comparison: 'myapp', confirmation: 'nope'})
       .catch((error: Error) => {
-        expect(ansis.strip(error.message)).to.equal('Confirmation nope did not match app. Aborted.')
+        expect(ansis.strip(error.message)).to.equal('Confirmation nope did not match myapp. Aborted.')
       })
   })
 
@@ -47,7 +47,7 @@ describe('confirmCommand', function () {
     promptFunction.resolves('nope')
     await confirmCommand({comparison: 'myapp', promptFunction})
       .catch((error: Error) => {
-        expect(ansis.strip(error.message)).to.equal('Confirmation did not match app. Aborted.')
+        expect(ansis.strip(error.message)).to.equal('Confirmation did not match myapp. Aborted.')
       })
   })
 
@@ -55,7 +55,7 @@ describe('confirmCommand', function () {
     const customMessage = 'custom aborted message'
     await confirmCommand({abortedMessage: customMessage, comparison: 'myapp', confirmation: 'nope'})
       .catch((error: Error) => {
-        expect(ansis.strip(error.message)).to.equal(`Confirmation nope did not match app. ${customMessage}`)
+        expect(ansis.strip(error.message)).to.equal(`Confirmation nope did not match myapp. ${customMessage}`)
       })
   })
 })

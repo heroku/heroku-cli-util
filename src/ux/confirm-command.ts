@@ -51,7 +51,7 @@ export async function confirmCommand({
 
   if (confirmation) {
     if (confirmation === comparison) return
-    throw new Error(`Confirmation ${color.bold.red(confirm)} did not match ${color.bold.red(comparison)}. ${abortedMessage}`)
+    throw new Error(`Confirmation ${color.bold.red(confirmation)} did not match ${color.bold.red(comparison)}. ${abortedMessage}`)
   }
 
   if (!warningMessage) {
