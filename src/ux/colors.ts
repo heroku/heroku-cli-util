@@ -3,94 +3,113 @@ import ansi from 'ansis'
 
 /**
  * Color constants for Heroku CLI output
- * Each hex value corresponds to a specific color in the design system
+ * Most colors use ANSI256 codes for better compatibility with terminals that don't support TrueColor.
+ * Magenta, red, and cyan are kept as hex values for precise color matching.
  */
 const COLORS = {
-  // Blue tones
-  BLUE: '#62CBF4',
+  // Blue tones (ANSI256: 117)
+  BLUE: 117,
 
   // Command tones (dark gray background, white foreground)
-  CODE_BG: '#3A3A3A',
-  CODE_FG: '#FFFFFF',
+  // ANSI256: 237 (background), 255 (foreground)
+  CODE_BG: 237,
+  CODE_FG: 255,
 
-  // Cyan tones
+  // Cyan tones (kept as hex for precise color matching)
   CYAN: '#50D3D5',
 
-  // Gray tones
-  GRAY: '#B6B6B6',
+  // Gray tones (ANSI256: 248)
+  GRAY: 248,
 
-  // Green tones
-  GREEN: '#00D300',
+  // Green tones (ANSI256: 40)
+  GREEN: 40,
 
-  // Magenta tones
+  // Magenta tones (kept as hex for precise color matching)
   MAGENTA: '#FF8DD3',
 
-  // Orange tones
-  ORANGE: '#F29D00',
+  // Orange tones (ANSI256: 214)
+  ORANGE: 214,
 
-  // Purple tones
-  PURPLE: '#ACADFF',
+  // Purple tones (ANSI256: 147 - closest match to original #ACADFF)
+  PURPLE: 147,
 
-  // Red tones
+  // Red tones (kept as hex for precise color matching)
   RED: '#FF8787',
 
-  // Teal tones
-  TEAL: '#00D4AA',
+  // Teal tones (ANSI256: 43)
+  TEAL: 43,
 
-  // Yellow tones
-  YELLOW: '#BFBD25',
+  // Yellow tones (ANSI256: 185)
+  YELLOW: 185,
 } as const
 
 /**
  * Color definitions for Heroku CLI output
- * Each color has a specific purpose and hex value as defined in the design system
+ * Each color has a specific purpose as defined in the design system
+ * Colors use ANSI256 codes where possible, with hex values for magenta, red, and cyan
  */
 
+// Helper function to apply color based on type (number = ANSI256, string = hex)
+const colorize = (color: number | string) =>
+  typeof color === 'number' ? ansi.fg(color) : ansi.hex(color)
+
+const bgColorize = (color: number | string) =>
+  typeof color === 'number' ? ansi.bg(color) : ansi.bgHex(color)
+
+// Check if terminal supports at least ANSI256 (level >= 2)
+// Level values: 0=no color, 1=ANSI16, 2=ANSI256, 3=TrueColor
+const supportsAnsi256 = ansi.level >= 2
+
+// Helper function for purple color that falls back to ANSI16 magenta when only ANSI16 is supported
+const purpleColorize = () =>
+  supportsAnsi256 ? ansi.fg(COLORS.PURPLE) : ansi.magenta
+
 // Colors for entities on the Heroku platform
-export const app = (text: string) => ansi.hex(COLORS.PURPLE).bold(`⬢ ${text}`)
-export const pipeline = (text: string) => ansi.hex(COLORS.PURPLE)(text)
-export const space = (text: string) => ansi.hex(COLORS.BLUE).bold(`⬡ ${text}`)
-export const datastore = (text: string) => ansi.hex(COLORS.YELLOW).bold(`☷ ${text}`)
-export const addon = (text: string) => ansi.hex(COLORS.YELLOW).bold(text)
-export const attachment = (text: string) => ansi.hex(COLORS.YELLOW)(text)
-export const name = (text: string) => ansi.hex(COLORS.MAGENTA)(text)
+export const app = (text: string) => purpleColorize().bold(`${supportsAnsi256 ? '⬢ ' : ''}${text}`)
+export const pipeline = (text: string) => purpleColorize()(text)
+export const space = (text: string) => colorize(COLORS.BLUE).bold(`${supportsAnsi256 ? '⬡ ' : ''}${text}`)
+export const datastore = (text: string) => colorize(COLORS.YELLOW).bold(`${supportsAnsi256 ? '⛁ ' : ''}${text}`)
+export const addon = (text: string) => colorize(COLORS.YELLOW).bold(text)
+export const attachment = (text: string) => colorize(COLORS.YELLOW)(text)
+export const name = (text: string) => colorize(COLORS.MAGENTA)(text)
 
 // Status colors
-export const success = (text: string) => ansi.hex(COLORS.GREEN)(text)
-export const failure = (text: string) => ansi.hex(COLORS.RED)(text)
-export const warning = (text: string) => ansi.hex(COLORS.ORANGE)(text)
+export const success = (text: string) => colorize(COLORS.GREEN)(text)
+export const failure = (text: string) => colorize(COLORS.RED)(text)
+export const warning = (text: string) => colorize(COLORS.ORANGE)(text)
 
 // User/Team colors
-export const team = (text: string) => ansi.hex(COLORS.CYAN).bold(text)
-export const user = (text: string) => ansi.hex(COLORS.CYAN)(text)
+export const team = (text: string) => colorize(COLORS.CYAN).bold(text)
+export const user = (text: string) => colorize(COLORS.CYAN)(text)
 
 // General purpose colors
 export const label = (text: string) => ansi.bold(text)
-export const info = (text: string) => ansi.hex(COLORS.TEAL)(text)
-export const inactive = (text: string) => ansi.hex(COLORS.GRAY)(text)
-export const command = (text: string) => ansi.bgHex(COLORS.CODE_BG).hex(COLORS.CODE_FG).bold(` $ ${text} `)
-export const code = (text: string) => ansi.bgHex(COLORS.CODE_BG).hex(COLORS.CODE_FG).bold(`${text} `)
+export const info = (text: string) => colorize(COLORS.TEAL)(text)
+export const inactive = (text: string) => colorize(COLORS.GRAY)(text)
+export const command = (text: string) => bgColorize(COLORS.CODE_BG).fg(COLORS.CODE_FG as number).bold(` $ ${text} `)
+export const code = (text: string) => bgColorize(COLORS.CODE_BG).fg(COLORS.CODE_FG as number).bold(`${text}`)
 
 /**
  * Color palette for reference
+ * Shows ANSI256 codes for most colors, hex values for magenta, red, and cyan
  */
 export const colorPalette = {
-  addon: {hex: COLORS.YELLOW, name: 'yellow', style: 'bold'},
-  app: {hex: COLORS.PURPLE, name: 'purple', style: 'bold'},
-  attachment: {hex: COLORS.YELLOW, name: 'yellow', style: 'normal'},
-  command: {hex: COLORS.CODE_FG, name: 'white on dark gray', style: 'bold'},
-  datastore: {hex: COLORS.YELLOW, name: 'yellow', style: 'bold'},
-  failure: {hex: COLORS.RED, name: 'red', style: 'normal'},
-  inactive: {hex: COLORS.GRAY, name: 'gray', style: 'normal'},
-  info: {hex: COLORS.TEAL, name: 'teal', style: 'normal'},
-  label: {hex: 'default', name: 'bright white/black', style: 'bold'},
-  name: {hex: COLORS.MAGENTA, name: 'magenta', style: 'normal'},
-  pipeline: {hex: COLORS.PURPLE, name: 'purple', style: 'normal'},
-  space: {hex: COLORS.BLUE, name: 'blue', style: 'bold'},
-  success: {hex: COLORS.GREEN, name: 'green', style: 'normal'},
-  team: {hex: COLORS.CYAN, name: 'cyan', style: 'bold'},
-  user: {hex: COLORS.CYAN, name: 'cyan', style: 'normal'},
-  warning: {hex: COLORS.ORANGE, name: 'orange', style: 'normal'},
+  addon: {name: 'yellow', style: 'bold', value: COLORS.YELLOW},
+  app: {name: 'purple', style: 'bold', value: COLORS.PURPLE},
+  attachment: {name: 'yellow', style: 'normal', value: COLORS.YELLOW},
+  command: {name: 'white on dark gray', style: 'bold', value: COLORS.CODE_FG},
+  datastore: {name: 'yellow', style: 'bold', value: COLORS.YELLOW},
+  failure: {name: 'red', style: 'normal', value: COLORS.RED},
+  inactive: {name: 'gray', style: 'normal', value: COLORS.GRAY},
+  info: {name: 'teal', style: 'normal', value: COLORS.TEAL},
+  label: {name: 'bright white/black', style: 'bold', value: 'default'},
+  name: {name: 'magenta', style: 'normal', value: COLORS.MAGENTA},
+  pipeline: {name: 'purple', style: 'normal', value: COLORS.PURPLE},
+  space: {name: 'blue', style: 'bold', value: COLORS.BLUE},
+  success: {name: 'green', style: 'normal', value: COLORS.GREEN},
+  team: {name: 'cyan', style: 'bold', value: COLORS.CYAN},
+  user: {name: 'cyan', style: 'normal', value: COLORS.CYAN},
+  warning: {name: 'orange', style: 'normal', value: COLORS.ORANGE},
 } as const
 
 /**
