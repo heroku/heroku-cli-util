@@ -116,17 +116,24 @@ describe('colors', function () {
       expect(color.COLORS).to.have.property('GRAY')
     })
 
-    it('should have correct hex values for color constants', function () {
-      expect(color.COLORS.PURPLE).to.equal('#ACADFF')
-      expect(color.COLORS.YELLOW).to.equal('#BFBD25')
+    it('should have correct values for color constants (ANSI256 codes or hex)', function () {
+      // ANSI256 codes (numbers)
+      expect(color.COLORS.YELLOW).to.equal(185) // ANSI256 yellow
+      expect(color.COLORS.BLUE).to.equal(117) // ANSI256 blue
+      expect(color.COLORS.GREEN).to.equal(40) // ANSI256 green
+      expect(color.COLORS.ORANGE).to.equal(214) // ANSI256 orange
+      expect(color.COLORS.TEAL).to.equal(43) // ANSI256 teal
+      expect(color.COLORS.GRAY).to.equal(248) // ANSI256 gray
+      expect(color.COLORS.CODE_BG).to.equal(237) // ANSI256 dark gray
+      expect(color.COLORS.CODE_FG).to.equal(255) // ANSI256 white
+
+      // ANSI256 codes
+      expect(color.COLORS.PURPLE).to.equal(147) // ANSI256 purple (closest to original #ACADFF)
+
+      // Hex values (kept for precise color matching)
       expect(color.COLORS.MAGENTA).to.equal('#FF8DD3')
-      expect(color.COLORS.BLUE).to.equal('#62CBF4')
-      expect(color.COLORS.GREEN).to.equal('#00D300')
       expect(color.COLORS.RED).to.equal('#FF8787')
-      expect(color.COLORS.ORANGE).to.equal('#F29D00')
       expect(color.COLORS.CYAN).to.equal('#50D3D5')
-      expect(color.COLORS.TEAL).to.equal('#00D4AA')
-      expect(color.COLORS.GRAY).to.equal('#B6B6B6')
     })
   })
 
@@ -149,21 +156,21 @@ describe('colors', function () {
       expect(color.colorPalette).to.have.property('inactive')
     })
 
-    it('should have correct hex values', function () {
-      expect(color.colorPalette.app.hex).to.equal('#ACADFF')
-      expect(color.colorPalette.addon.hex).to.equal('#BFBD25')
-      expect(color.colorPalette.attachment.hex).to.equal('#BFBD25')
-      expect(color.colorPalette.pipeline.hex).to.equal('#ACADFF')
-      expect(color.colorPalette.space.hex).to.equal('#62CBF4')
-      expect(color.colorPalette.datastore.hex).to.equal('#BFBD25')
-      expect(color.colorPalette.success.hex).to.equal('#00D300')
-      expect(color.colorPalette.failure.hex).to.equal('#FF8787')
-      expect(color.colorPalette.warning.hex).to.equal('#F29D00')
-      expect(color.colorPalette.team.hex).to.equal('#50D3D5')
-      expect(color.colorPalette.user.hex).to.equal('#50D3D5')
-      expect(color.colorPalette.name.hex).to.equal('#FF8DD3')
-      expect(color.colorPalette.info.hex).to.equal('#00D4AA')
-      expect(color.colorPalette.inactive.hex).to.equal('#B6B6B6')
+    it('should have correct color values (ANSI256 codes or hex)', function () {
+      expect(color.colorPalette.app.value).to.equal(147) // ANSI256 purple
+      expect(color.colorPalette.addon.value).to.equal(185) // ANSI256 yellow
+      expect(color.colorPalette.attachment.value).to.equal(185) // ANSI256 yellow
+      expect(color.colorPalette.pipeline.value).to.equal(147) // ANSI256 purple
+      expect(color.colorPalette.space.value).to.equal(117) // ANSI256 blue
+      expect(color.colorPalette.datastore.value).to.equal(185) // ANSI256 yellow
+      expect(color.colorPalette.success.value).to.equal(40) // ANSI256 green
+      expect(color.colorPalette.failure.value).to.equal('#FF8787') // hex red
+      expect(color.colorPalette.warning.value).to.equal(214) // ANSI256 orange
+      expect(color.colorPalette.team.value).to.equal('#50D3D5') // hex cyan
+      expect(color.colorPalette.user.value).to.equal('#50D3D5') // hex cyan
+      expect(color.colorPalette.name.value).to.equal('#FF8DD3') // hex magenta
+      expect(color.colorPalette.info.value).to.equal(43) // ANSI256 teal
+      expect(color.colorPalette.inactive.value).to.equal(248) // ANSI256 gray
     })
 
     it('should have correct color names', function () {
