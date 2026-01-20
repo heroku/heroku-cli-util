@@ -1,5 +1,3 @@
-// https://github.com/heroku/cli/blob/b7bff57d8b1a0b9c81dc4e122e74d4fb0deb9333/packages/cli/test/unit/lib/confirm-command.unit.test.ts
-
 import {stderr, stdout} from '@heroku-cli/test-utils'
 import ansis from 'ansis'
 import {expect} from 'chai'
@@ -34,7 +32,7 @@ describe('confirmCommand', function () {
   it('should not err on confirm prompt match', async function () {
     promptFunction.resolves('app')
     await confirmCommand({app: 'app', promptFunction})
-    expect(stderr()).to.contain('Warning: WARNING: Destructive Action')
+    expect(stderr()).to.contain('Warning: Destructive Action')
     expect(stdout()).to.equal('')
   })
 
