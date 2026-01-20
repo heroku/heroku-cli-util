@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@heroku/heroku-cli-util",
-  "version": "10.3.0",
+  "version": "10.4.4",
   "description": "Set of helpful CLI utilities",
   "author": "Heroku",
   "license": "ISC",
@@ -38,13 +38,11 @@
     "mock-stdin": "^1.0.0",
     "nock": "^13.2.9",
     "open": "^11",
-    "printf": "^0.6.1",
     "sinon": "^18.0.1",
     "sinon-chai": "^3.7.0",
     "tmp": "^0.2.5",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "tsheredoc": "^1.0.1",
     "typescript": "^5.4.0"
   },
   "dependencies": {
@@ -55,6 +53,8 @@
     "ansis": "^4.1.0",
     "debug": "^4.4.0",
     "inquirer": "^12.6.1",
+    "printf": "^0.6.1",
+    "tsheredoc": "^1.0.1",
     "tunnel-ssh": "5.2.0"
   },
   "engines": {
