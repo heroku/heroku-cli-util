@@ -63,7 +63,7 @@ describe('colors', function () {
   })
 
   describe('user/team colors', function () {
-    it('should style team names with cyan', function () {
+    it('should style team names with light cyan', function () {
       const result = color.team('my-team')
       expect(result).to.include('my-team')
       expect(result).to.not.equal('my-team')
@@ -112,6 +112,7 @@ describe('colors', function () {
       expect(color.COLORS).to.have.property('RED')
       expect(color.COLORS).to.have.property('ORANGE')
       expect(color.COLORS).to.have.property('CYAN')
+      expect(color.COLORS).to.have.property('CYAN_LIGHT')
       expect(color.COLORS).to.have.property('TEAL')
       expect(color.COLORS).to.have.property('GRAY')
     })
@@ -134,6 +135,7 @@ describe('colors', function () {
       expect(color.COLORS.MAGENTA).to.equal('#FF8DD3')
       expect(color.COLORS.RED).to.equal('#FF8787')
       expect(color.COLORS.CYAN).to.equal('#50D3D5')
+      expect(color.COLORS.CYAN_LIGHT).to.equal('#6FE5E7')
     })
   })
 
@@ -166,7 +168,7 @@ describe('colors', function () {
       expect(color.colorPalette.success.value).to.equal(40) // ANSI256 green
       expect(color.colorPalette.failure.value).to.equal('#FF8787') // hex red
       expect(color.colorPalette.warning.value).to.equal(214) // ANSI256 orange
-      expect(color.colorPalette.team.value).to.equal('#50D3D5') // hex cyan
+      expect(color.colorPalette.team.value).to.equal('#6FE5E7') // hex light cyan
       expect(color.colorPalette.user.value).to.equal('#50D3D5') // hex cyan
       expect(color.colorPalette.name.value).to.equal('#FF8DD3') // hex magenta
       expect(color.colorPalette.info.value).to.equal(43) // ANSI256 teal
@@ -183,7 +185,7 @@ describe('colors', function () {
       expect(color.colorPalette.success.name).to.equal('green')
       expect(color.colorPalette.failure.name).to.equal('red')
       expect(color.colorPalette.warning.name).to.equal('orange')
-      expect(color.colorPalette.team.name).to.equal('cyan')
+      expect(color.colorPalette.team.name).to.equal('light cyan')
       expect(color.colorPalette.user.name).to.equal('cyan')
       expect(color.colorPalette.name.name).to.equal('magenta')
       expect(color.colorPalette.info.name).to.equal('teal')

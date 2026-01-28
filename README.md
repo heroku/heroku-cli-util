@@ -77,7 +77,7 @@ console.log(color.failure('Build failed'));      // Red
 console.log(color.warning('Deprecated feature')); // Orange
 
 // User/Team colors
-console.log(color.team('my-team'));              // Cyan, bold
+console.log(color.team('my-team'));              // Light cyan
 console.log(color.user('user@example.com'));     // Cyan
 
 // General purpose

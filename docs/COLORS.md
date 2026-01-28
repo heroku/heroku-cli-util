@@ -2,7 +2,7 @@
 
 This document describes the new color system for the Heroku CLI, implemented using the `ansis` npm package.
 
-## Usage
+## Basic Usage
 
 ```typescript
 import {color} from '@heroku/heroku-cli-util'
@@ -16,24 +16,217 @@ console.log(color.orange('Custom orange color'))
 
 ## Color Definitions
 
-| Alias | Purpose | Hex Value | Color Name | Style |
-|-------|---------|-----------|------------|-------|
-| `app` | Name of an app | #ACADFF | purple | bold |
-| `addon` | Name of an addon | #BFBD25 | yellow | bold |
-| `attachment` | Name of an attachment | #BFBD25 | yellow | normal |
-| `pipeline` | Name of a pipeline | #ACADFF | purple | normal |
-| `space` | Name of a space | #62CBF4 | blue | bold |
-| `datastore` | Name of a heroku datastore | #BFBD25 | yellow | bold |
-| `success` | Success messages and states | #00D300 | green | normal |
-| `failure` | Failure, error messages and states | #FF8787 | red | normal |
-| `warning` | Warning messages | #F29D00 | orange | normal |
-| `team` | Heroku team/org | #50D3D5 | cyan | bold |
-| `user` | Heroku user/email | #50D3D5 | cyan | normal |
-| `label` | Labels, table headers and keys | default | bright white/black | bold |
-| `name` | Name of heroku entity without special color | #FF8DD3 | magenta | normal |
-| `info` | Help text, soft alerts | #00D4AA | teal | normal |
-| `inactive` | Disabled and unknown states | #B6B6B6 | gray | normal |
-| `command` | Command examples with shell prompt | #FFFFFF on #2E2E2E | white on dark gray | bold |
+### Heroku Platform Resources
+
+#### `app`
+**Purpose**: Displays the name of a Heroku application. This is the primary resource type in the Heroku platform.
+
+**Color**: Purple (ANSI256: 147, approx. #AFAFFF)  
+**Style**: Hexagon icon (⬢) prefix when ANSI256 is supported
+
+**Example**:
+```typescript
+console.log(`Deploying to ${color.app('my-awesome-app')}`)
+// Output: Deploying to ⬢ my-awesome-app (in purple)
+```
+
+#### `pipeline`
+**Purpose**: Displays the name of a Heroku pipeline. Pipelines group related apps together for continuous delivery workflows.
+
+**Color**: Purple (ANSI256: 147, approx. #AFAFFF)  
+**Style**: Normal weight (no bold)
+
+**Example**:
+```typescript
+console.log(`Pipeline: ${color.pipeline('production-pipeline')}`)
+// Output: Pipeline: production-pipeline (in purple)
+```
+
+#### `space`
+**Purpose**: Displays the name of a Heroku Private Space. Spaces provide network isolation for apps in a private network.
+
+**Color**: Blue (ANSI256: 117, approx. #87D7FF)  
+**Style**: Space icon (⬡) prefix when ANSI256 is supported
+
+**Example**:
+```typescript
+console.log(`Space: ${color.space('private-network')}`)
+// Output: Space: ⬡ private-network (in blue)
+```
+
+#### `addon`
+**Purpose**: Displays the name of a Heroku addon. Addons provide additional services and functionality to apps (e.g., databases, monitoring, logging).
+
+**Color**: Yellow (ANSI256: 185, approx. #D7D75F)  
+**Style**: Normal weight
+
+**Example**:
+```typescript
+console.log(`Addon: ${color.addon('heroku-postgresql')}`)
+// Output: Addon: heroku-postgresql (in yellow)
+```
+
+#### `attachment`
+**Purpose**: Displays the name of an addon attachment. Attachments connect addons to apps, allowing multiple apps to share the same addon instance.
+
+**Color**: Yellow (ANSI256: 185, approx. #D7D75F)  
+**Style**: Normal weight (no bold)
+
+**Example**:
+```typescript
+console.log(`Attachment: ${color.attachment('DATABASE_URL')}`)
+// Output: Attachment: DATABASE_URL (in yellow)
+```
+
+#### `datastore`
+**Purpose**: Displays the name of a Heroku datastore (e.g., Heroku Postgres, Heroku Redis). These are first-party data storage services provided by Heroku.
+
+**Color**: Yellow (ANSI256: 185, approx. #D7D75F)  
+**Style**: Datastore icon (⛁) prefix when ANSI256 is supported
+
+**Example**:
+```typescript
+console.log(`Datastore: ${color.datastore('postgres-12345')}`)
+// Output: Datastore: ⛁ postgres-12345 (in yellow)
+```
+
+### Status Colors
+
+#### `success`
+**Purpose**: Indicates successful operations, positive states, and completion messages. Use for confirmations, successful deployments, and positive feedback.
+
+**Color**: Green (ANSI256: 40, approx. #00D700)  
+**Style**: Normal weight
+
+**Example**:
+```typescript
+console.log(color.success('Deploy complete'))
+// Output: Deploy complete (in green)
+```
+
+#### `failure`
+**Purpose**: Indicates errors, failures, and negative states. Use for error messages, failed operations, and critical issues.
+
+**Color**: Red (Hex: #FF8787)  
+**Style**: Normal weight
+
+**Example**:
+```typescript
+console.log(color.failure('Deploy failed: Build timeout'))
+// Output: Deploy failed: Build timeout (in red)
+```
+
+#### `warning`
+**Purpose**: Indicates warnings and cautionary messages. Used when we want the user to knowof a potentially bad state or action they really should take -- deprecation notices as an example.
+
+**Color**: Orange (ANSI256: 214, approx. #FF8700)  
+**Style**: Normal weight
+
+**Example**:
+```typescript
+console.log(color.warning('This feature will be deprecated soon'))
+// Output: This feature will be deprecated soon (in orange)
+```
+
+### User and Team Colors
+
+#### `team`
+**Purpose**: Displays the name of a Heroku team or organization. Teams allow multiple users to collaborate on apps and resources.
+
+**Color**: Light Cyan (Hex: #6FE5E7)  
+**Style**: Normal weight
+
+**Example**:
+```typescript
+console.log(`Team: ${color.team('acme-corp')}`)
+// Output: Team: acme-corp (in light cyan)
+```
+
+#### `user`
+**Purpose**: Displays Heroku user information, typically email addresses. Use for showing who performed an action or owns a resource.
+
+**Color**: Cyan (Hex: #50D3D5)  
+**Style**: Normal weight (no bold)
+
+**Example**:
+```typescript
+console.log(`Owner: ${color.user('user@example.com')}`)
+// Output: Owner: user@example.com (in cyan)
+```
+
+### General Purpose Colors
+
+#### `name`
+**Purpose**: Displays the name of a generic Heroku resource that doesn't have a specific semantic color. Use as a fallback for resource types that don't have dedicated color functions.
+
+**Color**: Magenta (Hex: #FF8DD3)  
+**Style**: Normal weight
+
+**Example**:
+```typescript
+console.log(`Resource: ${color.name('custom-resource')}`)
+// Output: Resource: custom-resource (in magenta)
+```
+
+#### `info`
+**Purpose**: Displays informational text, help messages, soft alerts, URLs, and can serve as an alternative color for generic Heroku resources. Use for supplementary information that doesn't require emphasis.
+
+**Color**: Teal (ANSI256: 43, approx. #00D7D7)  
+**Style**: Normal weight
+
+**Example**:
+```typescript
+console.log(color.info('Visit https://dashboard.heroku.com for more details'))
+// Output: Visit https://dashboard.heroku.com for more details (in teal)
+```
+
+#### `label`
+**Purpose**: Displays labels, table headers, and keys. Provides emphasis without color. Adapts to terminal theme (bright white on dark backgrounds, black on light backgrounds).
+
+**Color**: Default terminal foreground color  
+**Style**: Normal weight
+
+**Example**:
+```typescript
+console.log(`${color.label('Status')}: ${color.success('Active')}`)
+// Output: Status: Active (Status in default color, Active in green)
+```
+
+#### `inactive`
+**Purpose**: Displays disabled states, unknown values, and inactive resources. Use to indicate that something is not currently active or available.
+
+**Color**: Gray (ANSI256: 248, approx. #A8A8A8)  
+**Style**: Normal weight
+
+**Example**:
+```typescript
+console.log(`Status: ${color.inactive('Unknown')}`)
+// Output: Status: Unknown (in gray)
+```
+
+#### `command`
+**Purpose**: Displays command examples with a shell prompt indicator. Use for showing users example commands they can run in their terminal.
+
+**Color**: White foreground on dark gray background (ANSI256: 255 on 237, approx. #FFFFFF on #3A3A3A)  
+**Style**: ` $ ` prefix and suffix
+
+**Example**:
+```typescript
+console.log(`Run: ${color.command('heroku apps:info')}`)
+// Output: Run:  $ heroku apps:info  (in white on dark gray background)
+```
+
+#### `code`
+**Purpose**: Displays code snippets and command examples without a shell prompt. Use for inline code, file paths, or code blocks that don't need the prompt indicator.
+
+**Color**: White foreground on dark gray background (ANSI256: 255 on 237, approx. #FFFFFF on #3A3A3A)  
+**Style**: Normal weight
+
+**Example**:
+```typescript
+console.log(`File: ${color.code('config/database.yml')}`)
+// Output: File: config/database.yml (in white on dark gray background)
+```
 
 ## Demo
 
@@ -54,29 +247,10 @@ The `ansis` package automatically detects terminal color capabilities and falls 
 
 No additional configuration is needed - the colors will automatically adapt to your terminal's capabilities.
 
-## Color Fallback Behavior
-
-When `ansis` automatically maps colors to ANSI 16, it uses intelligent color approximation:
-
-| Original Color | Hex Value | Typical ANSI 16 Mapping | Notes |
-|----------------|-----------|-------------------------|-------|
-| Purple (#ACADFF) | App names, pipelines | Magenta | Maintains distinction |
-| Blue (#62CBF4) | Space names | Cyan | Good contrast |
-| Yellow (#BFBD25) | Addons, attachments, datastores | Yellow | Unchanged |
-| Magenta (#FF8DD3) | General names | Magenta | Unchanged |
-| Green (#00D300) | Success | Green | Unchanged |
-| Red (#FF8787) | Failure | Red | Unchanged |
-| Orange (#F29D00) | Warning | Yellow | Maps to yellow |
-| Cyan (#50D3D5) | Team/user | Cyan | Unchanged |
-| Teal (#00D4AA) | Info | Cyan | Maps to cyan |
-| Gray (#B6B6B6) | Inactive | Gray | Unchanged |
-| White on Dark Gray | Command examples | White on Dark Gray | Unchanged |
-
 ## Design Principles
 
 - **Accessibility**: All colors are designed to be accessible and provide sufficient contrast
 - **Consistency**: Colors follow semantic conventions across the CLI
-- **Hierarchy**: Bold styling is used for primary resources (apps, spaces, datastores, addons)
 - **Heroku Resources**: Resources offered directly from Heroku get an icon identifier
 - **Color Grouping**: Related entities share similar colors to create visual relationships:
   - **Purple** is used for app-related concepts: apps, pipelines, and spaces
