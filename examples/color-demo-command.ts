@@ -19,17 +19,17 @@ export default class ColorDemoCommand extends Command {
     const colorMap: Record<string, () => void> = {
       addon() {
         ux.stdout(color.label('📱 Addon Color:\n'))
-        ux.stdout(`  ${color.addon('addon')} - Name of an addon (${color.colorPalette.addon.value}, ${color.colorPalette.addon.name}, ${color.colorPalette.addon.style})\n`)
+        ux.stdout(`  ${color.addon('addon')} - Name of an addon (${color.colorPalette.addon.value}, ${color.colorPalette.addon.name})\n`)
         ux.stdout(`\n  Example: ${color.addon('heroku-postgresql:essential-0')}\n`)
       },
       app() {
         ux.stdout(color.label('📱 App Color:\n'))
-        ux.stdout(`  ${color.app('app')} - Name of an app (${color.colorPalette.app.value}, ${color.colorPalette.app.name}, ${color.colorPalette.app.style})\n`)
+        ux.stdout(`  ${color.app('app')} - Name of an app (${color.colorPalette.app.value}, ${color.colorPalette.app.name})\n`)
         ux.stdout(`\n  Example: ${color.app('my-awesome-app')}\n`)
       },
       attachment() {
         ux.stdout(color.label('📱 Attachment Color:\n'))
-        ux.stdout(`  ${color.attachment('attachment')} - Name of an attachment (${color.colorPalette.attachment.value}, ${color.colorPalette.attachment.name})\n`)
+        ux.stdout(`  ${color.attachment('attachment')} - Name of an attachment (uses gold color, ANSI256: ${color.COLORS.GOLD})\n`)
         ux.stdout(`\n  Example: ${color.attachment('HEROKU_POSTGRESQL_AMBER')}\n`)
       },
       command() {
@@ -39,7 +39,7 @@ export default class ColorDemoCommand extends Command {
       },
       datastore() {
         ux.stdout(color.label('📱 Datastore Color:\n'))
-        ux.stdout(`  ${color.datastore('datastore')} - Name of a heroku datastore (${color.colorPalette.datastore.value}, ${color.colorPalette.datastore.name}, ${color.colorPalette.datastore.style})\n`)
+        ux.stdout(`  ${color.datastore('datastore')} - Name of a heroku datastore (${color.colorPalette.datastore.value}, ${color.colorPalette.datastore.name})\n`)
         ux.stdout(`\n  Example: ${color.datastore('DATABASE')}\n`)
       },
       failure() {
@@ -64,17 +64,17 @@ export default class ColorDemoCommand extends Command {
       },
       name() {
         ux.stdout(color.label('📱 Name Color:\n'))
-        ux.stdout(`  ${color.name('name')} - Name of heroku entity without special color (${color.colorPalette.name.value}, ${color.colorPalette.name.name})\n`)
+        ux.stdout(`  ${color.name('name')} - Name of heroku entity without special color (uses pink color, ANSI256: ${color.COLORS.PINK})\n`)
         ux.stdout(`\n  Example: ${color.name('my-entity')}\n`)
       },
       pipeline() {
         ux.stdout(color.label('📱 Pipeline Color:\n'))
-        ux.stdout(`  ${color.pipeline('pipeline')} - Name of a pipeline (${color.colorPalette.pipeline.value}, ${color.colorPalette.pipeline.name})\n`)
+        ux.stdout(`  ${color.pipeline('pipeline')} - Name of a pipeline (uses magenta color, ${color.COLORS.MAGENTA})\n`)
         ux.stdout(`\n  Example: ${color.pipeline('staging')}\n`)
       },
       space() {
         ux.stdout(color.label('📱 Space Color:\n'))
-        ux.stdout(`  ${color.space('space')} - Name of a space (${color.colorPalette.space.value}, ${color.colorPalette.space.name}, ${color.colorPalette.space.style})\n`)
+        ux.stdout(`  ${color.space('space')} - Name of a space (${color.colorPalette.space.value}, ${color.colorPalette.space.name})\n`)
         ux.stdout(`\n  Example: ${color.space('production')}\n`)
       },
       success() {
@@ -84,7 +84,7 @@ export default class ColorDemoCommand extends Command {
       },
       team() {
         ux.stdout(color.label('👥 Team Color:\n'))
-        ux.stdout(`  ${color.team('team')} - Heroku team/org (${color.colorPalette.team.value}, ${color.colorPalette.team.name}, ${color.colorPalette.team.style})\n`)
+        ux.stdout(`  ${color.team('team')} - Heroku team/org (uses light cyan, ${color.COLORS.CYAN_LIGHT})\n`)
         ux.stdout(`\n  Example: ${color.team('my-team')}\n`)
       },
       user() {
@@ -121,13 +121,13 @@ export default class ColorDemoCommand extends Command {
 
     // Colors for entities on the Heroku platform
     ux.stdout(color.label('📱 App-Related Colors:\n'))
-    ux.stdout(`  ${color.app('app')} - Name of an app (${color.colorPalette.app.value}, ${color.colorPalette.app.name}, ${color.colorPalette.app.style})\n`)
-    ux.stdout(`  ${color.pipeline('pipeline')} - Name of a pipeline (${color.colorPalette.pipeline.value}, ${color.colorPalette.pipeline.name})\n`)
-    ux.stdout(`  ${color.space('space')} - Name of a space (${color.colorPalette.space.value}, ${color.colorPalette.space.name}, ${color.colorPalette.space.style})\n`)
-    ux.stdout(`  ${color.datastore('datastore')} - Name of a heroku datastore (${color.colorPalette.datastore.value}, ${color.colorPalette.datastore.name}, ${color.colorPalette.datastore.style})\n`)
-    ux.stdout(`  ${color.addon('addon')} - Name of an addon (${color.colorPalette.addon.value}, ${color.colorPalette.addon.name}, ${color.colorPalette.addon.style})\n`)
-    ux.stdout(`  ${color.attachment('attachment')} - Name of an attachment (${color.colorPalette.attachment.value}, ${color.colorPalette.attachment.name})\n`)
-    ux.stdout(`  ${color.name('name')} - Name of heroku entity without special color (${color.colorPalette.name.value}, ${color.colorPalette.name.name})\n`)
+    ux.stdout(`  ${color.app('app')} - Name of an app (${color.colorPalette.app.value}, ${color.colorPalette.app.name})\n`)
+    ux.stdout(`  ${color.pipeline('pipeline')} - Name of a pipeline (uses magenta color, ${color.COLORS.MAGENTA})\n`)
+    ux.stdout(`  ${color.space('space')} - Name of a space (${color.colorPalette.space.value}, ${color.colorPalette.space.name})\n`)
+    ux.stdout(`  ${color.datastore('datastore')} - Name of a heroku datastore (${color.colorPalette.datastore.value}, ${color.colorPalette.datastore.name})\n`)
+    ux.stdout(`  ${color.addon('addon')} - Name of an addon (${color.colorPalette.addon.value}, ${color.colorPalette.addon.name})\n`)
+    ux.stdout(`  ${color.attachment('attachment')} - Name of an attachment (uses gold color, ANSI256: ${color.COLORS.GOLD})\n`)
+    ux.stdout(`  ${color.name('name')} - Name of heroku entity without special color (uses pink color, ANSI256: ${color.COLORS.PINK})\n`)
 
     ux.stdout('')
 
@@ -142,7 +142,7 @@ export default class ColorDemoCommand extends Command {
 
     // User/Team colors
     ux.stdout(color.label('👥 User/Team Colors:\n'))
-    ux.stdout(`  ${color.team('team')} - Heroku team/org (${color.colorPalette.team.value}, ${color.colorPalette.team.name}, ${color.colorPalette.team.style})\n`)
+    ux.stdout(`  ${color.team('team')} - Heroku team/org (uses light cyan, ${color.COLORS.CYAN_LIGHT})\n`)
     ux.stdout(`  ${color.user('user')} - Heroku user/email (${color.colorPalette.user.value}, ${color.colorPalette.user.name})\n`)
 
     ux.stdout('')
@@ -252,9 +252,8 @@ export default class ColorDemoCommand extends Command {
     ux.stdout('    • Chainable methods for complex styling\n\n')
 
     ux.stdout(color.info('All colors are designed to be accessible and consistent across the Heroku CLI experience.\n'))
-    ux.stdout(color.info('Bold styling is used for primary entities (apps, spaces, datastores, addons, teams) and labels.\n'))
     ux.stdout(color.info('Status colors follow semantic conventions: green for success, red for errors, orange for warnings.\n'))
-    ux.stdout(color.info('Purple is used for apps and pipelines, magenta for general names, and yellow for addons and datastores.\n'))
+    ux.stdout(color.info('Purple is used for apps, magenta for pipelines, pink for general names, yellow for addons and datastores, and gold for attachments.\n'))
     ux.stdout(color.info('Both approaches can be used together for maximum flexibility while maintaining Heroku CLI design consistency.\n\n'))
   }
 }

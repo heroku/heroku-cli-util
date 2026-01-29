@@ -4,7 +4,7 @@ import {color} from '../../../src/index.js'
 
 describe('colors', function () {
   describe('app-related colors', function () {
-    it('should style app names with purple and bold', function () {
+    it('should style app names with purple', function () {
       const result = color.app('my-app')
       expect(result).to.include('my-app')
       // The exact ANSI codes will vary, but we can check that it's not just plain text
@@ -17,7 +17,7 @@ describe('colors', function () {
       expect(result).to.not.equal('heroku-postgresql')
     })
 
-    it('should style attachment names with yellow', function () {
+    it('should style attachment names with gold', function () {
       const result = color.attachment('DATABASE')
       expect(result).to.include('DATABASE')
       expect(result).to.not.equal('DATABASE')
@@ -29,13 +29,13 @@ describe('colors', function () {
       expect(result).to.not.equal('staging')
     })
 
-    it('should style space names with blue and bold', function () {
+    it('should style space names with blue', function () {
       const result = color.space('production')
       expect(result).to.include('production')
       expect(result).to.not.equal('production')
     })
 
-    it('should style datastore names with yellow and bold', function () {
+    it('should style datastore names with yellow', function () {
       const result = color.datastore('postgresql-123')
       expect(result).to.include('postgresql-123')
       expect(result).to.not.equal('postgresql-123')
@@ -63,7 +63,7 @@ describe('colors', function () {
   })
 
   describe('user/team colors', function () {
-    it('should style team names with cyan', function () {
+    it('should style team names with light cyan', function () {
       const result = color.team('my-team')
       expect(result).to.include('my-team')
       expect(result).to.not.equal('my-team')
@@ -83,7 +83,7 @@ describe('colors', function () {
       expect(result).to.not.equal('Name')
     })
 
-    it('should style names with purple', function () {
+    it('should style names with pink', function () {
       const result = color.name('entity-name')
       expect(result).to.include('entity-name')
       expect(result).to.not.equal('entity-name')
@@ -112,8 +112,11 @@ describe('colors', function () {
       expect(color.COLORS).to.have.property('RED')
       expect(color.COLORS).to.have.property('ORANGE')
       expect(color.COLORS).to.have.property('CYAN')
+      expect(color.COLORS).to.have.property('CYAN_LIGHT')
       expect(color.COLORS).to.have.property('TEAL')
       expect(color.COLORS).to.have.property('GRAY')
+      expect(color.COLORS).to.have.property('GOLD')
+      expect(color.COLORS).to.have.property('PINK')
     })
 
     it('should have correct values for color constants (ANSI256 codes or hex)', function () {
@@ -129,11 +132,14 @@ describe('colors', function () {
 
       // ANSI256 codes
       expect(color.COLORS.PURPLE).to.equal(147) // ANSI256 purple (closest to original #ACADFF)
+      expect(color.COLORS.GOLD).to.equal(220) // ANSI256 gold
+      expect(color.COLORS.PINK).to.equal(212) // ANSI256 pink
 
       // Hex values (kept for precise color matching)
-      expect(color.COLORS.MAGENTA).to.equal('#FF8DD3')
+      expect(color.COLORS.MAGENTA).to.equal('#FF22DD')
       expect(color.COLORS.RED).to.equal('#FF8787')
       expect(color.COLORS.CYAN).to.equal('#50D3D5')
+      expect(color.COLORS.CYAN_LIGHT).to.equal('#8FF5F7')
     })
   })
 
@@ -154,23 +160,28 @@ describe('colors', function () {
       expect(color.colorPalette).to.have.property('name')
       expect(color.colorPalette).to.have.property('info')
       expect(color.colorPalette).to.have.property('inactive')
+      expect(color.colorPalette).to.have.property('gold')
+      expect(color.colorPalette).to.have.property('code')
+      expect(color.colorPalette).to.have.property('command')
+      expect(color.colorPalette).to.have.property('snippet')
     })
 
     it('should have correct color values (ANSI256 codes or hex)', function () {
       expect(color.colorPalette.app.value).to.equal(147) // ANSI256 purple
       expect(color.colorPalette.addon.value).to.equal(185) // ANSI256 yellow
-      expect(color.colorPalette.attachment.value).to.equal(185) // ANSI256 yellow
-      expect(color.colorPalette.pipeline.value).to.equal(147) // ANSI256 purple
+      expect(color.colorPalette.attachment.value).to.equal(185) // ANSI256 yellow (palette shows yellow, but function uses gold)
+      expect(color.colorPalette.pipeline.value).to.equal(147) // ANSI256 purple (palette shows purple, but function uses magenta)
       expect(color.colorPalette.space.value).to.equal(117) // ANSI256 blue
       expect(color.colorPalette.datastore.value).to.equal(185) // ANSI256 yellow
       expect(color.colorPalette.success.value).to.equal(40) // ANSI256 green
       expect(color.colorPalette.failure.value).to.equal('#FF8787') // hex red
       expect(color.colorPalette.warning.value).to.equal(214) // ANSI256 orange
-      expect(color.colorPalette.team.value).to.equal('#50D3D5') // hex cyan
+      expect(color.colorPalette.team.value).to.equal('#8FF5F7') // hex light cyan
       expect(color.colorPalette.user.value).to.equal('#50D3D5') // hex cyan
-      expect(color.colorPalette.name.value).to.equal('#FF8DD3') // hex magenta
+      expect(color.colorPalette.name.value).to.equal('#FF22DD') // hex magenta (palette shows magenta, but function uses pink)
       expect(color.colorPalette.info.value).to.equal(43) // ANSI256 teal
       expect(color.colorPalette.inactive.value).to.equal(248) // ANSI256 gray
+      expect(color.colorPalette.gold.value).to.equal(220) // ANSI256 gold
     })
 
     it('should have correct color names', function () {
@@ -183,11 +194,12 @@ describe('colors', function () {
       expect(color.colorPalette.success.name).to.equal('green')
       expect(color.colorPalette.failure.name).to.equal('red')
       expect(color.colorPalette.warning.name).to.equal('orange')
-      expect(color.colorPalette.team.name).to.equal('cyan')
+      expect(color.colorPalette.team.name).to.equal('light cyan')
       expect(color.colorPalette.user.name).to.equal('cyan')
       expect(color.colorPalette.name.name).to.equal('magenta')
       expect(color.colorPalette.info.name).to.equal('teal')
       expect(color.colorPalette.inactive.name).to.equal('gray')
+      expect(color.colorPalette.gold.name).to.equal('gold')
     })
   })
 })
