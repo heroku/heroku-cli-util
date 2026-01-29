@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.4.0-beta.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.4.0-beta.0...heroku-cli-util-v10.4.0-beta.1) (2026-01-23)
+
+
+### Miscellaneous Chores
+
+* release 10.4.0-beta.1 ([8648b4c](https://github.com/heroku/heroku-cli-util/commit/8648b4c5243bc306845d8ce25e324cdad8bd577e))
+* update branch from main ([#276](https://github.com/heroku/heroku-cli-util/issues/276)) ([58c6038](https://github.com/heroku/heroku-cli-util/commit/58c6038fb6c250987932dd1409ffb15a5baff992))
+
 ## [10.4.0-beta.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.3.0-beta.0...heroku-cli-util-v10.4.0-beta.0) (2026-01-20)
 
 
