@@ -1,5 +1,29 @@
 # Changelog
 
+## [10.4.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.3.0...heroku-cli-util-v10.4.0) (2026-01-29)
+
+
+### Features
+
+* adding utility functions from 'heroku-cli-plugin-data-beta' (W-20610130) ([#262](https://github.com/heroku/heroku-cli-util/issues/262)) ([9f5588c](https://github.com/heroku/heroku-cli-util/commit/9f5588ca11cb3713898896f0de22069fc007d918))
+* shared confirmCommand refactor (W-20449538) ([#273](https://github.com/heroku/heroku-cli-util/issues/273)) ([8ea6f64](https://github.com/heroku/heroku-cli-util/commit/8ea6f6442ae0092ddfd0e1c8b74303953f906727))
+* update color definitions to use ANSI256 codes and add conditional Unicode display ([#274](https://github.com/heroku/heroku-cli-util/issues/274)) ([22a49e8](https://github.com/heroku/heroku-cli-util/commit/22a49e8de2606097afe0d30445c49621e652fdfa))
+
+
+### Bug Fixes
+
+* **deps:** bump lodash from 4.17.21 to 4.17.23 ([#278](https://github.com/heroku/heroku-cli-util/issues/278)) ([c82f524](https://github.com/heroku/heroku-cli-util/commit/c82f52490ae76831dd2ce9694b083c0cef6627cd))
+
+
+### Continuous Integration
+
+* adding token for release on push PRs to trigger ci ([#266](https://github.com/heroku/heroku-cli-util/issues/266)) ([1033d2c](https://github.com/heroku/heroku-cli-util/commit/1033d2cfbd0bfc9d39dfb3b5cfb291b60a7793fc))
+
+
+### Miscellaneous Chores
+
+* onboard shared workflows ([#272](https://github.com/heroku/heroku-cli-util/issues/272)) ([c1ff948](https://github.com/heroku/heroku-cli-util/commit/c1ff9487f237cbe7ebb5f2546061ca77781fe83e))
+
 ## [10.3.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.2.0...heroku-cli-util-v10.3.0) (2026-01-09)
 
 
