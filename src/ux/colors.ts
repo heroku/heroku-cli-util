@@ -1,5 +1,5 @@
 /* eslint-disable import/no-named-as-default-member */
-import ansi from 'ansis'
+import ansis from 'ansis'
 
 /**
  * Color constants for Heroku CLI output
@@ -58,46 +58,126 @@ const COLORS = {
 
 // Helper function to apply color based on type (number = ANSI256, string = hex)
 const colorize = (color: number | string) =>
-  typeof color === 'number' ? ansi.fg(color) : ansi.hex(color)
+  typeof color === 'number' ? ansis.fg(color) : ansis.hex(color)
 
 const bgColorize = (color: number | string) =>
-  typeof color === 'number' ? ansi.bg(color) : ansi.bgHex(color)
+  typeof color === 'number' ? ansis.bg(color) : ansis.bgHex(color)
 
 // Check if terminal supports at least ANSI256 (level >= 2)
 // Level values: 0=no color, 1=ANSI16, 2=ANSI256, 3=TrueColor
-const supportsAnsi256 = ansi.level >= 2
+const supportsAnsi256 = ansis.level >= 2
 
 // Helper function for purple color that falls back to ANSI16 magenta when only ANSI16 is supported
 const purpleColorize = () =>
-  supportsAnsi256 ? ansi.fg(COLORS.PURPLE) : ansi.magenta
+  supportsAnsi256 ? ansis.fg(COLORS.PURPLE) : ansis.magenta
+
+/** Theme name: 'heroku' (default) or 'simple' (ANSI 8 only). Set via HEROKU_THEME env. */
+export type ThemeName = 'heroku' | 'simple'
+
+const THEME_ENV = 'HEROKU_THEME'
+
+/**
+ * Resolves active theme from HEROKU_THEME; defaults to 'heroku'.
+ * @returns The active theme name.
+ */
+export function getTheme(): ThemeName {
+  const v = process.env[THEME_ENV]?.toLowerCase().trim()
+  if (v === 'simple') return 'simple'
+  return 'heroku'
+}
+
+interface ColorTheme {
+  addon: (text: string) => string
+  app: (text: string) => string
+  attachment: (text: string) => string
+  code: (text: string) => string
+  command: (text: string) => string
+  datastore: (text: string) => string
+  failure: (text: string) => string
+  inactive: (text: string) => string
+  info: (text: string) => string
+  label: (text: string) => string
+  name: (text: string) => string
+  pipeline: (text: string) => string
+  space: (text: string) => string
+  success: (text: string) => string
+  team: (text: string) => string
+  user: (text: string) => string
+  warning: (text: string) => string
+}
+
+const herokuTheme: ColorTheme = {
+  addon: (text: string) => colorize(COLORS.YELLOW)(text),
+  app: (text: string) => purpleColorize()(`${supportsAnsi256 ? '⬢ ' : ''}${text}`),
+  attachment: (text: string) => colorize(COLORS.GOLD)(text),
+  code: (text: string) =>
+    bgColorize(COLORS.CODE_BG).fg(COLORS.CODE_FG as number).bold(`${text}`),
+  command: (text: string) =>
+    bgColorize(COLORS.CODE_BG).fg(COLORS.CODE_FG as number).bold(` $ ${text} `),
+  datastore: (text: string) => colorize(COLORS.YELLOW)(`${supportsAnsi256 ? '⛁ ' : ''}${text}`),
+  failure: (text: string) => colorize(COLORS.RED)(text),
+  inactive: (text: string) => colorize(COLORS.GRAY)(text),
+  info: (text: string) => colorize(COLORS.TEAL)(text),
+  label: (text: string) => ansis.bold(text),
+  name: (text: string) => colorize(COLORS.PINK)(text),
+  pipeline: (text: string) => colorize(COLORS.MAGENTA)(text),
+  space: (text: string) => colorize(COLORS.BLUE)(`${supportsAnsi256 ? '⬡ ' : ''}${text}`),
+  success: (text: string) => colorize(COLORS.GREEN)(text),
+  team: (text: string) => colorize(COLORS.CYAN_LIGHT)(text),
+  user: (text: string) => colorize(COLORS.CYAN)(text),
+  warning: (text: string) => colorize(COLORS.ORANGE)(text),
+}
+
+/** Simple theme: ANSI 8 colors only, no symbols. */
+const simpleTheme: ColorTheme = {
+  addon: (text: string) => ansis.yellow(text),
+  app: (text: string) => ansis.magenta(text),
+  attachment: (text: string) => ansis.yellow(text),
+  code: (text: string) => ansis.bold(text),
+  command: (text: string) => ansis.bold(` $ ${text} `),
+  datastore: (text: string) => ansis.yellow(text),
+  failure: (text: string) => ansis.red(text),
+  inactive: (text: string) => ansis.gray(text),
+  info: (text: string) => ansis.cyan(text),
+  label: (text: string) => ansis.bold(text),
+  name: (text: string) => ansis.magenta(text),
+  pipeline: (text: string) => ansis.magenta(text),
+  space: (text: string) => ansis.cyan(text),
+  success: (text: string) => ansis.green(text),
+  team: (text: string) => ansis.cyan(text),
+  user: (text: string) => ansis.cyan(text),
+  warning: (text: string) => ansis.yellow(text),
+}
+
+const activeTheme = (): ColorTheme => (getTheme() === 'simple' ? simpleTheme : herokuTheme)
 
 // Colors for entities on the Heroku platform
-export const app = (text: string) => purpleColorize()(`${supportsAnsi256 ? '⬢ ' : ''}${text}`)
-export const pipeline = (text: string) => colorize(COLORS.MAGENTA)(text)
-export const space = (text: string) => colorize(COLORS.BLUE)(`${supportsAnsi256 ? '⬡ ' : ''}${text}`)
-export const datastore = (text: string) => colorize(COLORS.YELLOW)(`${supportsAnsi256 ? '⛁ ' : ''}${text}`)
-export const addon = (text: string) => colorize(COLORS.YELLOW)(text)
-export const attachment = (text: string) => colorize(COLORS.GOLD)(text)
-export const name = (text: string) => colorize(COLORS.PINK)(text)
+export const app = (text: string) => activeTheme().app(text)
+export const pipeline = (text: string) => activeTheme().pipeline(text)
+export const space = (text: string) => activeTheme().space(text)
+export const datastore = (text: string) => activeTheme().datastore(text)
+export const addon = (text: string) => activeTheme().addon(text)
+export const attachment = (text: string) => activeTheme().attachment(text)
+export const name = (text: string) => activeTheme().name(text)
 
 // Status colors
-export const success = (text: string) => colorize(COLORS.GREEN)(text)
+export const success = (text: string) => activeTheme().success(text)
 export const enabled = success
-export const failure = (text: string) => colorize(COLORS.RED)(text)
+export const failure = (text: string) => activeTheme().failure(text)
 export const error = failure
-export const warning = (text: string) => colorize(COLORS.ORANGE)(text)
+export const warning = (text: string) => activeTheme().warning(text)
 
 // User/Team colors
-export const team = (text: string) => colorize(COLORS.CYAN_LIGHT)(text)
-export const user = (text: string) => colorize(COLORS.CYAN)(text)
+export const team = (text: string) => activeTheme().team(text)
+export const user = (text: string) => activeTheme().user(text)
 
 // General purpose colors
-export const label = (text: string) => ansi.bold(text)
-export const info = (text: string) => colorize(COLORS.TEAL)(text)
-export const inactive = (text: string) => colorize(COLORS.GRAY)(text)
+export const label = (text: string) => activeTheme().label(text)
+export const info = (text: string) => activeTheme().info(text)
+export const inactive = (text: string) => activeTheme().inactive(text)
 export const disabled = inactive
-export const command = (text: string) => bgColorize(COLORS.CODE_BG).fg(COLORS.CODE_FG as number).bold(` $ ${text} `)
-export const code = (text: string) => bgColorize(COLORS.CODE_BG).fg(COLORS.CODE_FG as number).bold(`${text}`)
+export const command = (text: string) => activeTheme().command(text)
+export const code = (text: string) => activeTheme().code(text)
 export const snippet = code
 
 /**
