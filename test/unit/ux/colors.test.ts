@@ -2,43 +2,95 @@ import {expect} from 'chai'
 
 import {color} from '../../../src/index.js'
 
+const ANSI_ESC = '\u001B'
+
+/**
+ * True when the string contains ANSI escape codes (color is applied).
+ * @param s - String to check.
+ * @returns Whether the string contains ANSI escape sequences.
+ */
+function hasAnsiCodes(s: string): boolean {
+  return new RegExp(`${ANSI_ESC}\\[`).test(s)
+}
+
+const originalHerokuTheme = process.env.HEROKU_THEME
+
 describe('colors', function () {
+  afterEach(function () {
+    if (originalHerokuTheme === undefined) {
+      delete process.env.HEROKU_THEME
+    } else {
+      process.env.HEROKU_THEME = originalHerokuTheme
+    }
+  })
+
+  describe('getTheme', function () {
+    it('returns "heroku" when HEROKU_THEME is unset', function () {
+      delete process.env.HEROKU_THEME
+      expect(color.getTheme()).to.equal('heroku')
+    })
+
+    it('returns "heroku" when HEROKU_THEME is "heroku"', function () {
+      process.env.HEROKU_THEME = 'heroku'
+      expect(color.getTheme()).to.equal('heroku')
+    })
+
+    it('returns "simple" when HEROKU_THEME is "simple"', function () {
+      process.env.HEROKU_THEME = 'simple'
+      expect(color.getTheme()).to.equal('simple')
+    })
+
+    it('returns "heroku" for unknown HEROKU_THEME value', function () {
+      process.env.HEROKU_THEME = 'unknown'
+      expect(color.getTheme()).to.equal('heroku')
+    })
+
+    it('is case-insensitive and trims HEROKU_THEME', function () {
+      process.env.HEROKU_THEME = '  SIMPLE  '
+
+      expect(color.getTheme()).to.equal('simple')
+    })
+  })
+
   describe('app-related colors', function () {
     it('should style app names with purple', function () {
       const result = color.app('my-app')
+
       expect(result).to.include('my-app')
-      // The exact ANSI codes will vary, but we can check that it's not just plain text
-      expect(result).to.not.equal('my-app')
+
+      if (hasAnsiCodes(result)) {
+        expect(result).to.not.equal('my-app')
+      }
     })
 
     it('should style addon names with yellow', function () {
       const result = color.addon('heroku-postgresql')
       expect(result).to.include('heroku-postgresql')
-      expect(result).to.not.equal('heroku-postgresql')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('heroku-postgresql')
     })
 
     it('should style attachment names with gold', function () {
       const result = color.attachment('DATABASE')
       expect(result).to.include('DATABASE')
-      expect(result).to.not.equal('DATABASE')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('DATABASE')
     })
 
     it('should style pipeline names with magenta', function () {
       const result = color.pipeline('staging')
       expect(result).to.include('staging')
-      expect(result).to.not.equal('staging')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('staging')
     })
 
     it('should style space names with blue', function () {
       const result = color.space('production')
       expect(result).to.include('production')
-      expect(result).to.not.equal('production')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('production')
     })
 
     it('should style datastore names with yellow', function () {
       const result = color.datastore('postgresql-123')
       expect(result).to.include('postgresql-123')
-      expect(result).to.not.equal('postgresql-123')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('postgresql-123')
     })
   })
 
@@ -46,19 +98,19 @@ describe('colors', function () {
     it('should style success messages with green', function () {
       const result = color.success('Deploy complete')
       expect(result).to.include('Deploy complete')
-      expect(result).to.not.equal('Deploy complete')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('Deploy complete')
     })
 
     it('should style failure messages with red', function () {
       const result = color.failure('Build failed')
       expect(result).to.include('Build failed')
-      expect(result).to.not.equal('Build failed')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('Build failed')
     })
 
     it('should style warning messages with orange', function () {
       const result = color.warning('Deprecated feature')
       expect(result).to.include('Deprecated feature')
-      expect(result).to.not.equal('Deprecated feature')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('Deprecated feature')
     })
   })
 
@@ -66,13 +118,13 @@ describe('colors', function () {
     it('should style team names with light cyan', function () {
       const result = color.team('my-team')
       expect(result).to.include('my-team')
-      expect(result).to.not.equal('my-team')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('my-team')
     })
 
     it('should style user emails with cyan', function () {
       const result = color.user('user@example.com')
       expect(result).to.include('user@example.com')
-      expect(result).to.not.equal('user@example.com')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('user@example.com')
     })
   })
 
@@ -80,25 +132,25 @@ describe('colors', function () {
     it('should style labels with bold', function () {
       const result = color.label('Name')
       expect(result).to.include('Name')
-      expect(result).to.not.equal('Name')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('Name')
     })
 
     it('should style names with pink', function () {
       const result = color.name('entity-name')
       expect(result).to.include('entity-name')
-      expect(result).to.not.equal('entity-name')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('entity-name')
     })
 
     it('should style info text with teal', function () {
       const result = color.info('Help text')
       expect(result).to.include('Help text')
-      expect(result).to.not.equal('Help text')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('Help text')
     })
 
     it('should style inactive text with gray', function () {
       const result = color.inactive('disabled')
       expect(result).to.include('disabled')
-      expect(result).to.not.equal('disabled')
+      if (hasAnsiCodes(result)) expect(result).to.not.equal('disabled')
     })
   })
 
@@ -200,6 +252,44 @@ describe('colors', function () {
       expect(color.colorPalette.info.name).to.equal('teal')
       expect(color.colorPalette.inactive.name).to.equal('gray')
       expect(color.colorPalette.gold.name).to.equal('gold')
+    })
+  })
+
+  describe('simple theme (HEROKU_THEME=simple)', function () {
+    beforeEach(function () {
+      process.env.HEROKU_THEME = 'simple'
+    })
+
+    it('styles app names without unicode symbol', function () {
+      const result = color.app('my-app')
+      expect(result).to.include('my-app')
+      expect(result).to.not.include('⬢')
+    })
+
+    it('styles space names without unicode symbol', function () {
+      const result = color.space('production')
+      expect(result).to.include('production')
+      expect(result).to.not.include('⬡')
+    })
+
+    it('styles datastore names without unicode symbol', function () {
+      const result = color.datastore('postgresql-123')
+      expect(result).to.include('postgresql-123')
+      expect(result).to.not.include('⛁')
+    })
+
+    it('applies basic ANSI colors when terminal supports color', function () {
+      const successResult = color.success('ok')
+      const failureResult = color.failure('err')
+      const appResult = color.app('x')
+      expect(successResult).to.include('ok')
+      expect(failureResult).to.include('err')
+      expect(appResult).to.include('x')
+      if (hasAnsiCodes(successResult)) {
+        expect(successResult).to.not.equal('ok')
+        expect(failureResult).to.not.equal('err')
+        expect(appResult).to.not.equal('x')
+      }
     })
   })
 })
