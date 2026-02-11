@@ -49,7 +49,7 @@
     "@heroku-cli/command": "^12.0.0",
     "@heroku/http-call": "^5.5.0",
     "@oclif/core": "^4.3.0",
-    "@oclif/table": "0.4.14",
+    "@oclif/table": "0.5.2",
     "ansis": "^4.1.0",
     "debug": "^4.4.0",
     "inquirer": "^12.6.1",
