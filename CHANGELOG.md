@@ -1,5 +1,24 @@
 # Changelog
 
+## [10.5.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.4.0...heroku-cli-util-v10.5.0) (2026-02-12)
+
+
+### Features
+
+* **colors:** add HEROKU_THEME with heroku and simple (ANSI 8) themes ([#284](https://github.com/heroku/heroku-cli-util/issues/284)) ([373b521](https://github.com/heroku/heroku-cli-util/commit/373b52154b5d92e25dc614b08606512df034ce61))
+
+
+### Bug Fixes
+
+* **deps:** bump @oclif/core from 4.5.4 to 4.8.0 ([#250](https://github.com/heroku/heroku-cli-util/issues/250)) ([a9fc936](https://github.com/heroku/heroku-cli-util/commit/a9fc9369ffc193b2de65e9134833752455fcc92d))
+* **deps:** bump @oclif/table from 0.4.14 to 0.5.1 ([#269](https://github.com/heroku/heroku-cli-util/issues/269)) ([c6039f4](https://github.com/heroku/heroku-cli-util/commit/c6039f48fcd06897e8805952c7a74477798a0748))
+* **deps:** bump ansis from 4.1.0 to 4.2.0 ([#270](https://github.com/heroku/heroku-cli-util/issues/270)) ([a17b0ba](https://github.com/heroku/heroku-cli-util/commit/a17b0baaddbd2f51a5523810d93e4dafb7ddbc7e))
+
+
+### Miscellaneous Chores
+
+* update PR template ([#282](https://github.com/heroku/heroku-cli-util/issues/282)) ([31072c6](https://github.com/heroku/heroku-cli-util/commit/31072c669cce75ddb22392308f6d44f3dfd4010f))
+
 ## [10.4.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.3.0...heroku-cli-util-v10.4.0) (2026-01-29)
 
 
