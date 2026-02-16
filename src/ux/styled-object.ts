@@ -24,13 +24,18 @@ export function styledObject(obj: unknown, keys?: string[]) {
   if (typeof obj === 'boolean') return obj.toString()
 
   const output: string[] = []
-  const keyLengths = Object.keys(obj).map(key => key.toString().length)
+
+  // Sort object by key
+  const sortedObj = Object.fromEntries(Object.entries(obj).sort((a, b) => a[0].localeCompare(b[0])))
+
+  // Calculate the maximum key length for alignment
+  const keyLengths = Object.keys(sortedObj).map(key => key.toString().length)
   const maxKeyLength = Math.max(...keyLengths) + 2
 
   const logKeyValue = (key: string, value: unknown): string =>
     `${color.label(key)}:` + ' '.repeat(maxKeyLength - key.length - 1) + prettyPrint(value)
 
-  for (const [key, value] of Object.entries(obj)) {
+  for (const [key, value] of Object.entries(sortedObj)) {
     if (keys && !keys.includes(key)) continue
     if (Array.isArray(value)) {
       if (value.length > 0) {
