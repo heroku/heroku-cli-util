@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.6.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.5.0...heroku-cli-util-v10.6.0) (2026-02-16)
+
+
+### Features
+
+* sort styled-object output by key ([#288](https://github.com/heroku/heroku-cli-util/issues/288)) ([646f99f](https://github.com/heroku/heroku-cli-util/commit/646f99f88f62bff304b5159005f4dc269585f1b0))
+
 ## [10.5.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.4.0...heroku-cli-util-v10.5.0) (2026-02-12)
 
 
