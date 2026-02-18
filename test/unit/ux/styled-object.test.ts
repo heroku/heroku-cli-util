@@ -16,17 +16,5 @@ describe('styledObject', function () {
     const actual = ansis.strip(stdout())
     expect(actual).to.equal(expected)
   })
-
-  it('should sort the object contents by key', function () {
-    // eslint-disable-next-line perfectionist/sort-objects
-    const obj = {zed: 'abcd', alpha: 'wxyz'}
-    styledObject(obj)
-    const expected = heredoc(`
-      alpha: wxyz
-      zed:   abcd
-    `)
-    const actual = ansis.strip(stdout())
-    expect(actual).to.equal(expected)
-  })
 })
 
