@@ -33,7 +33,7 @@
     "eslint-config-oclif": "^5.0.0",
     "eslint-config-oclif-typescript": "^3.1.14",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-mocha": "^10.4.3",
+    "eslint-plugin-mocha": "^11.2.0",
     "mocha": "^10.8.2",
     "mock-stdin": "^1.0.0",
     "nock": "^13.2.9",
