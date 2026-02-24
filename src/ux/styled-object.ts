@@ -24,14 +24,22 @@ export function styledObject(obj: unknown, keys?: string[]) {
   if (typeof obj === 'boolean') return obj.toString()
 
   const output: string[] = []
-  const keyLengths = Object.keys(obj).map(key => key.toString().length)
-  const maxKeyLength = Math.max(...keyLengths) + 2
+  const keysToIterate = keys || Object.keys(obj)
+
+  // Only calculate max key length for keys that will actually be displayed
+  const displayableKeys = keysToIterate.filter(key => {
+    const value = (obj as Record<string, unknown>)[key]
+    return value !== null && value !== undefined && (!Array.isArray(value) || value.length > 0)
+  })
+  const keyLengths = displayableKeys.map(key => key.toString().length)
+  const maxKeyLength = keyLengths.length > 0 ? Math.max(...keyLengths) + 2 : 0
 
   const logKeyValue = (key: string, value: unknown): string =>
     `${color.label(key)}:` + ' '.repeat(maxKeyLength - key.length - 1) + prettyPrint(value)
 
-  for (const [key, value] of Object.entries(obj)) {
-    if (keys && !keys.includes(key)) continue
+  for (const key of keysToIterate) {
+    const value = (obj as Record<string, unknown>)[key]
+    if (value === null || value === undefined) continue
     if (Array.isArray(value)) {
       if (value.length > 0) {
         output.push(logKeyValue(key, value[0]))
@@ -39,7 +47,7 @@ export function styledObject(obj: unknown, keys?: string[]) {
           output.push(' '.repeat(maxKeyLength) + prettyPrint(e))
         }
       }
-    } else if (value !== null && value !== undefined) {
+    } else {
       output.push(logKeyValue(key, value))
     }
   }

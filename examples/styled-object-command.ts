@@ -17,8 +17,9 @@ export default class StyledObjectCommand extends Command {
       version: '1.0.0',
     }
 
-    // Display the data using styledObject
-    styledObject(data)
+    // Display the data using styledObject with custom key ordering
+    // The keys array determines the display order
+    styledObject(data, ['name', 'version', 'features', 'config'])
   }
 }
 
