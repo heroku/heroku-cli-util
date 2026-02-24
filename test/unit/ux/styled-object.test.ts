@@ -41,7 +41,10 @@ describe('styledObject', function () {
   })
 
   it('should skip undefined and null values', function () {
-    const obj = {baz: 42, foo: 'bar', empty: null, missing: undefined}
+    const obj = {
+      // eslint-disable-next-line perfectionist/sort-objects
+      baz: 42, foo: 'bar', empty: null, missing: undefined,
+    }
     styledObject(obj, ['foo', 'empty', 'baz', 'missing'])
     const expected = heredoc(`
       foo: bar
