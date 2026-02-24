@@ -1,5 +1,23 @@
 # Changelog
 
+## [10.6.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.5.0...heroku-cli-util-v10.6.0) (2026-02-24)
+
+
+### Features
+
+* sort styled-object output by key ([#288](https://github.com/heroku/heroku-cli-util/issues/288)) ([646f99f](https://github.com/heroku/heroku-cli-util/commit/646f99f88f62bff304b5159005f4dc269585f1b0))
+
+
+### Bug Fixes
+
+* **deps:** bump @heroku-cli/command from 12.1.1 to 12.1.2 ([#297](https://github.com/heroku/heroku-cli-util/issues/297)) ([4b3590d](https://github.com/heroku/heroku-cli-util/commit/4b3590db5d71a66e6d24a10e7ec32af683f28f3b))
+* styledObject should respect keys array order ([#292](https://github.com/heroku/heroku-cli-util/issues/292)) ([2c1f7b3](https://github.com/heroku/heroku-cli-util/commit/2c1f7b33a2367cf8c320e620a72f980ebb7109a0))
+
+
+### Miscellaneous Chores
+
+* **deps-dev:** bump the dev-patch-minor-dependencies group with 3 updates ([#293](https://github.com/heroku/heroku-cli-util/issues/293)) ([85dd7c0](https://github.com/heroku/heroku-cli-util/commit/85dd7c08039c9744482456bfe4907410cb44f47d))
+
 ## [10.5.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.4.0...heroku-cli-util-v10.5.0) (2026-02-12)
 
 
