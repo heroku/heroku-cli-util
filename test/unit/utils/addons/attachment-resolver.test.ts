@@ -30,7 +30,6 @@ describe('AddonAttachmentResolver#resolve', function () {
   })
 
   afterEach(function () {
-    // eslint-disable-next-line import/no-named-as-default-member
     nock.cleanAll()
   })
 

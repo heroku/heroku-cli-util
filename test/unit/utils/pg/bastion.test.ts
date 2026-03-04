@@ -101,7 +101,6 @@ describe('bastion', function () {
     afterEach(function () {
       process.env = env
       sinon.restore()
-      // eslint-disable-next-line import/no-named-as-default-member
       nock.cleanAll()
     })
 
