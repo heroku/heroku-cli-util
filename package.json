@@ -16,7 +16,7 @@
   ],
   "devDependencies": {
     "@heroku-cli/schema": "^2.0.0",
-    "@heroku-cli/test-utils": "0.1.1",
+    "@heroku-cli/test-utils": "^0.1.1",
     "@types/chai": "^4.3.13",
     "@types/chai-as-promised": "^8.0.2",
     "@types/debug": "^4.1.12",
@@ -29,12 +29,10 @@
     "c8": "^7.7.0",
     "chai": "^4.4.1",
     "chai-as-promised": "^8.0.1",
-    "eslint": "^8.57.0",
-    "eslint-config-oclif": "^5.0.0",
-    "eslint-config-oclif-typescript": "^3.1.14",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-mocha": "^10.4.3",
-    "mocha": "^10.8.2",
+    "eslint": "^9",
+    "eslint-config-oclif": "^6.0.144",
+    "eslint-plugin-mocha": "^11.2.0",
+    "mocha": "^11",
     "mock-stdin": "^1.0.0",
     "nock": "^13.2.9",
     "open": "^11",
@@ -64,9 +62,13 @@
     "build": "npm run clean && tsc",
     "clean": "rm -rf dist",
     "example": "sh examples/run.sh",
-    "lint": "eslint . --ext .ts --config .eslintrc.cjs",
+    "lint": "eslint .",
+    "posttest": "npm run lint",
     "prepare": "npm run build",
     "test": "c8 mocha --forbid-only \"test/**/*.test.ts\"",
     "test:local": "c8 mocha \"${npm_config_file:-test/**/*.test.+(ts|tsx)}\""
+  },
+  "overrides": {
+    "serialize-javascript": "^7.0.3"
   }
 }

@@ -40,7 +40,6 @@ describe('config-vars', function () {
 
     afterEach(function () {
       sinon.restore()
-      // eslint-disable-next-line import/no-named-as-default-member
       nock.cleanAll()
     })
 
