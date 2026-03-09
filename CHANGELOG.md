@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.6.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.6.0...heroku-cli-util-v10.6.1) (2026-03-09)
+
+
+### Bug Fixes
+
+* address high security vulns reported by Dependabot ([#300](https://github.com/heroku/heroku-cli-util/issues/300)) ([1896d00](https://github.com/heroku/heroku-cli-util/commit/1896d00402b3221ab7d547d9762697b365a97941))
+
 ## [10.6.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.5.0...heroku-cli-util-v10.6.0) (2026-02-24)
 
 
