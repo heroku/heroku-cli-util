@@ -44,7 +44,7 @@
     "typescript": "^5.4.0"
   },
   "dependencies": {
-    "@heroku-cli/command": "^12.0.0",
+    "@heroku-cli/command": "^12.2.0",
     "@heroku/http-call": "^5.5.0",
     "@oclif/core": "^4.3.0",
     "@oclif/table": "0.5.2",
