@@ -271,3 +271,53 @@ export const miniDatabaseAttachment = {
   name: 'HEROKU_POSTGRESQL_WHITE',
   namespace: null,
 } as ExtendedAddonAttachment
+
+export const advancedPrivateDatabaseAttachment = {
+  addon: {
+    app: {
+      id: 'app-1',
+      name: 'my-app',
+    },
+    id: 'addon-10',
+    name: 'postgresql-oblique-12345',
+    plan: {
+      id: 'advanced-private',
+      name: 'heroku-postgresql:advanced-private',
+    },
+  },
+  app: {
+    id: 'app-1',
+    name: 'my-app',
+  },
+  config_vars: [
+    'ADVANCED_PRIVATE_URL',
+  ],
+  id: 'attachment-14',
+  name: 'ADVANCED_PRIVATE',
+  namespace: null,
+} as ExtendedAddonAttachment
+
+export const advancedShieldDatabaseAttachment = {
+  addon: {
+    app: {
+      id: 'app-1',
+      name: 'my-app',
+    },
+    id: 'addon-10',
+    name: 'postgresql-adjacent-12345',
+    plan: {
+      id: 'advanced-shield',
+      name: 'heroku-postgresql:advanced-shield',
+    },
+  },
+  app: {
+    id: 'app-1',
+    name: 'my-app',
+  },
+  config_vars: [
+    'ADVANCED_SHIELD_URL',
+  ],
+  id: 'attachment-15',
+  name: 'ADVANCED_SHIELD',
+  namespace: null,
+} as ExtendedAddonAttachment

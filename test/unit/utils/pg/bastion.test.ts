@@ -1,5 +1,4 @@
-/* eslint-disable camelcase */
-
+/* eslint-disable camelcase, prefer-arrow-callback, import/no-named-as-default-member */
 import {APIClient} from '@heroku-cli/command'
 import {Config} from '@oclif/core'
 import * as chai from 'chai'
@@ -16,6 +15,8 @@ import {
   sshTunnel,
 } from '../../../../src/utils/pg/bastion.js'
 import {
+  advancedPrivateDatabaseAttachment,
+  advancedShieldDatabaseAttachment,
   defaultAttachment,
   developerAddonAttachment,
   privateDatabaseAttachment,
@@ -39,9 +40,14 @@ chai.use(chaiAsPromised)
 
 describe('bastion', function () {
   describe('bastionKeyPlan', function () {
-    it('returns true for attachments with plan names containing "private"', function () {
+    it('returns true for Classic Private database attachments', function () {
       const result = bastionKeyPlan(privateDatabaseAttachment)
       expect(result).to.be.true
+    })
+
+    it('returns false for Advanced Private database attachments', function () {
+      const result = bastionKeyPlan(advancedPrivateDatabaseAttachment)
+      expect(result).to.be.false
     })
 
     it('returns false for attachments with plan names not containing "private"', function () {
@@ -49,8 +55,13 @@ describe('bastion', function () {
       expect(result).to.be.false
     })
 
-    it('returns false for shield database attachments', function () {
+    it('returns false for Classic Shield database attachments', function () {
       const result = bastionKeyPlan(shieldDatabaseAttachment)
+      expect(result).to.be.false
+    })
+
+    it('returns false for Advanced Shield databases', function () {
+      const result = bastionKeyPlan(advancedShieldDatabaseAttachment)
       expect(result).to.be.false
     })
 
@@ -59,7 +70,7 @@ describe('bastion', function () {
       expect(result).to.be.false
     })
 
-    it('returns true for attachments with "private" only in the plan name', function () {
+    it('returns true for attachments with plans that start with "private" only', function () {
       const attachmentWithPrivateInAddonServiceSlug = {
         ...defaultAttachment,
         addon: {
@@ -71,19 +82,19 @@ describe('bastion', function () {
         },
       }
 
-      const attachmentWithPrivateAtEnd = {
+      const attachmentWithPrivateAtStartOfPlanName = {
         ...defaultAttachment,
         addon: {
           ...defaultAttachment.addon,
           plan: {
             ...defaultAttachment.addon.plan,
-            name: 'heroku-postgresql:other-private-plan',
+            name: 'heroku-postgresql:private-something',
           },
         },
       }
 
       expect(bastionKeyPlan(attachmentWithPrivateInAddonServiceSlug)).to.be.false
-      expect(bastionKeyPlan(attachmentWithPrivateAtEnd)).to.be.true
+      expect(bastionKeyPlan(attachmentWithPrivateAtStartOfPlanName)).to.be.true
     })
   })
 
@@ -113,8 +124,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://api.data.heroku.com')
-        .get('/client/v11/databases/addon-5/bastion')
-        .reply(200, bastionConfigResponse)
+      .get('/client/v11/databases/addon-5/bastion')
+      .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -134,8 +145,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://api.data.heroku.com')
-        .get('/client/v11/databases/addon-5/bastion')
-        .reply(200, bastionConfigResponse)
+      .get('/client/v11/databases/addon-5/bastion')
+      .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -152,8 +163,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://api.data.heroku.com')
-        .get('/client/v11/databases/addon-5/bastion')
-        .reply(200, bastionConfigResponse)
+      .get('/client/v11/databases/addon-5/bastion')
+      .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -168,8 +179,8 @@ describe('bastion', function () {
       const bastionConfigResponse = {}
 
       const api = nock('https://api.data.heroku.com')
-        .get('/client/v11/databases/addon-5/bastion')
-        .reply(200, bastionConfigResponse)
+      .get('/client/v11/databases/addon-5/bastion')
+      .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -187,8 +198,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://api.data.heroku.com')
-        .get('/client/v11/databases/addon-5/bastion')
-        .reply(200, bastionConfigResponse)
+      .get('/client/v11/databases/addon-5/bastion')
+      .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -208,8 +219,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://custom-data-api.heroku.com')
-        .get('/client/v11/databases/addon-5/bastion')
-        .reply(200, bastionConfigResponse)
+      .get('/client/v11/databases/addon-5/bastion')
+      .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -232,8 +243,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://custom-postgresql-api.heroku.com')
-        .get('/client/v11/databases/addon-5/bastion')
-        .reply(200, bastionConfigResponse)
+      .get('/client/v11/databases/addon-5/bastion')
+      .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -257,8 +268,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://data-api.heroku.com')
-        .get('/client/v11/databases/addon-5/bastion')
-        .reply(200, bastionConfigResponse)
+      .get('/client/v11/databases/addon-5/bastion')
+      .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -274,11 +285,11 @@ describe('bastion', function () {
       process.env = {}
 
       const api = nock('https://api.data.heroku.com')
-        .get('/client/v11/databases/addon-5/bastion')
-        .reply(404, {id: 'not_found', message: 'Couldn\'t find that database.', resource: 'database'})
+      .get('/client/v11/databases/addon-5/bastion')
+      .reply(404, {id: 'not_found', message: 'Couldn\'t find that database.', resource: 'database'})
 
       await expect(fetchBastionConfig(heroku, privateDatabaseAttachment.addon))
-        .to.be.rejectedWith('Couldn\'t find that database.')
+      .to.be.rejectedWith('Couldn\'t find that database.')
 
       api.done()
     })
