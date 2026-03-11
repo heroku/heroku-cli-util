@@ -11,7 +11,21 @@
  * ([see here](https://github.com/heroku/cli/blob/b79f2c93d6f21eafd9d93983bcd377e4bc7f8438/packages/cli/src/commands/pg/psql.ts#L32)).
  */
 export class NotFound extends Error {
-  public readonly body = {id: 'not_found', message: 'Couldn\'t find that addon.'}
-  public readonly message = 'Couldn\'t find that addon.'
   public readonly statusCode = 404
+
+  constructor(public readonly resource: string = 'addon') {
+    super()
+  }
+
+  public get body() {
+    return {id: 'not_found', message: `Couldn't find that ${this.resource}.`, resource: this.resource}
+  }
+
+  public get http() {
+    return {body: this.body, statusCode: this.statusCode}
+  }
+
+  public get message() {
+    return this.body.message
+  }
 }

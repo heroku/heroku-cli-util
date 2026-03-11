@@ -2,6 +2,10 @@
 import type {ExtendedAddon} from '../../src/types/pg/platform-api.js'
 
 export const advancedDatabase: ExtendedAddon = {
+  addon_service: {
+    id: 'addon-service-1',
+    name: 'heroku-postgresql',
+  },
   app: {
     id: 'app-1',
     name: 'my-app',
