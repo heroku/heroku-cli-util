@@ -25,7 +25,7 @@ const pgDebug = debug('pg')
  * @returns True if the attachment belongs to a non-shield Private Space, false otherwise
  */
 export function bastionKeyPlan(attachment: ExtendedAddonAttachment): boolean {
-  return Boolean(/private/.test(attachment.addon.plan.name.split(':', 2)[1]))
+  return Boolean(attachment.addon.plan.name.split(':', 2)[1].startsWith('private'))
 }
 
 /**
@@ -131,9 +131,9 @@ function baseEnv(connectionDetails: ConnectionDetails): NodeJS.ProcessEnv {
 
   const baseEnv = {
     PGAPPNAME: 'psql non-interactive',
-    PGSSLMODE: (
-      !connectionDetails.host || connectionDetails.host === 'localhost'
-    ) ? 'prefer' : 'require',
+    PGSSLMODE: (!connectionDetails.host || connectionDetails.host === 'localhost')
+      ? 'prefer'
+      : 'require',
     ...process.env,
   }
 
@@ -226,8 +226,6 @@ class Timeout {
 
   /**
    * Cancels the timeout.
-   *
-   * @returns void
    */
   cancel(): void {
     this.events.emit('cancelled')
@@ -238,7 +236,7 @@ class Timeout {
    *
    * @returns Promise that resolves to void when cancelled or rejects with an error when timeout occurs
    */
-  async promise(): Promise<void> | never {
+  async promise(): never | Promise<void> {
     this.timer = setTimeout(() => this.events.emit('timeout'), this.timeout)
 
     try {
