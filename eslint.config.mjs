@@ -24,7 +24,7 @@ export default [
       },
     },
     rules: {
-      '@stylistic/function-paren-newline': 'warn',
+      '@stylistic/function-paren-newline': ['warn', 'consistent'],
       '@stylistic/indent': 'warn',
       '@stylistic/indent-binary-ops': 'warn',
       '@stylistic/lines-between-class-members': 'warn',

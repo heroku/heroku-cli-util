@@ -10,7 +10,7 @@ export interface AddonAttachmentResolverOptions {
   namespace?: string
 }
 export default class AddonAttachmentResolver {
-  private readonly attachmentHeaders: Readonly<{ Accept: string, 'Accept-Inclusion': string }> = {
+  private readonly attachmentHeaders: Readonly<{Accept: string, 'Accept-Inclusion': string}> = {
     Accept: 'application/vnd.heroku+json; version=3.sdk',
     'Accept-Inclusion': 'addon:plan,config_vars',
   }
@@ -22,14 +22,28 @@ export default class AddonAttachmentResolver {
     attachmentId: string,
     options: AddonAttachmentResolverOptions = {},
   ): Promise<ExtendedAddonAttachment>  {
-    const {body: attachments} = await this.heroku.post<ExtendedAddonAttachment[]>(
-      '/actions/addon-attachments/resolve', {
-        // eslint-disable-next-line camelcase
-        body: {addon_attachment: attachmentId, addon_service: options.addonService, app: appId},
-        headers: this.attachmentHeaders,
+    const {addonService, namespace} = options
+    let attachments: ExtendedAddonAttachment[] = [];
+
+    /* eslint-disable camelcase */
+    ({body: attachments} = await this.heroku.post<ExtendedAddonAttachment[]>('/actions/addon-attachments/resolve', {
+      body: {
+        addon_attachment: attachmentId,
+        // We would pass the add-on service slug here for Platform API to filter the attachments by
+        // add-on service, but the resolvers won't allow alpha add-ons to be found.
+        // addon_service: addonService,
+        app: appId,
       },
-    )
-    return this.singularize(attachments, options.namespace)
+      headers: this.attachmentHeaders,
+    }))
+    /* eslint-enable camelcase */
+
+    // We implement the add-on service filtering logic here if the parameter is provided.
+    if (addonService) {
+      attachments = attachments.filter(attachment => attachment.addon.plan.name.split(':', 2)[0] === addonService)
+    }
+
+    return this.singularize(attachments, namespace)
   }
 
   private singularize(attachments: ExtendedAddonAttachment[], namespace?: null | string) {
