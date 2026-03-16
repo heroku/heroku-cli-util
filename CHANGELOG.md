@@ -1,5 +1,14 @@
 # Changelog
 
+## [10.6.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.6.0...heroku-cli-util-v10.6.1) (2026-03-16)
+
+
+### Bug Fixes
+
+* address high security vulns reported by Dependabot ([#300](https://github.com/heroku/heroku-cli-util/issues/300)) ([1896d00](https://github.com/heroku/heroku-cli-util/commit/1896d00402b3221ab7d547d9762697b365a97941))
+* bug in function 'bastionKeyPlan' (W-21546042) ([#307](https://github.com/heroku/heroku-cli-util/issues/307)) ([9b864a8](https://github.com/heroku/heroku-cli-util/commit/9b864a8be1d4e8dfebdd423d67dcaf273f6d9ac9))
+* resolution for dev add-ons (W-21510586) ([#304](https://github.com/heroku/heroku-cli-util/issues/304)) ([0425de7](https://github.com/heroku/heroku-cli-util/commit/0425de72ebe2d69551a19751b1cc36e966e11018))
+
 ## [10.6.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.5.0...heroku-cli-util-v10.6.0) (2026-02-24)
 
 
