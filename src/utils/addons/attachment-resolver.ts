@@ -59,17 +59,17 @@ export default class AddonAttachmentResolver {
     }
 
     switch (matches.length) {
-    case 0: {
-      throw new NotFound()
-    }
+      case 0: {
+        throw new NotFound()
+      }
 
-    case 1: {
-      return matches[0]
-    }
+      case 1: {
+        return matches[0]
+      }
 
-    default: {
-      throw new AmbiguousError(matches, 'addon_attachment')
-    }
+      default: {
+        throw new AmbiguousError(matches, 'addon_attachment')
+      }
     }
   }
 }

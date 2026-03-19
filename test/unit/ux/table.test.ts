@@ -30,8 +30,7 @@ describe('table', function () {
       table(data, columns, {
         noStyle: true,
         sort: {age: 'asc'},
-      }),
-    )
+      }))
     // Should be sorted by age in ascending order
     expect(removeAllWhitespace(stdout)).to.include(removeAllWhitespace('Age   Name'))
     expect(removeAllWhitespace(stdout)).to.include(removeAllWhitespace('25    Bob'))

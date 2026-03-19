@@ -28,8 +28,7 @@ describe('confirmCommand', function () {
 
   it('should not error or prompt with confirm flag match', async function () {
     const {stderr, stdout} = await captureOutput(() =>
-      confirmCommand({comparison: 'myapp', confirmation: 'myapp'}),
-    )
+      confirmCommand({comparison: 'myapp', confirmation: 'myapp'}))
     expect(stderr).to.equal('')
     expect(stdout).to.equal('')
   })
@@ -44,8 +43,7 @@ describe('confirmCommand', function () {
   it('errs on confirm prompt match', async function () {
     promptFunction.resolves('myapp')
     const {stderr, stdout} = await captureOutput(() =>
-      confirmCommand({comparison: 'myapp', promptFunction}),
-    )
+      confirmCommand({comparison: 'myapp', promptFunction}))
     expect(stderr).to.contain('Warning: Destructive Action')
     expect(stdout).to.equal('')
   })
@@ -53,8 +51,7 @@ describe('confirmCommand', function () {
   it('displays custom warning message', async function () {
     promptFunction.resolves('myapp')
     const {stderr, stdout} = await captureOutput(() =>
-      confirmCommand({comparison: 'myapp', promptFunction, warningMessage: 'custom message'}),
-    )
+      confirmCommand({comparison: 'myapp', promptFunction, warningMessage: 'custom message'}))
     expect(stderr).to.contain('custom message')
     expect(stdout).to.equal('')
   })

@@ -98,10 +98,10 @@
     "clean": "rm -rf dist",
     "example": "sh examples/run.sh",
     "lint": "eslint .",
+    "lint:fix": "eslint --fix",
     "posttest": "npm run lint",
     "prepare": "npm run build",
-    "test": "c8 mocha --forbid-only \"test/**/*.test.ts\"",
-    "test:local": "c8 mocha \"${npm_config_file:-test/**/*.test.+(ts|tsx)}\""
+    "test": "npm run build && c8 --check-coverage mocha --forbid-only \"test/**/*.test.ts\""
   },
   "overrides": {
     "serialize-javascript": "^7.0.3"

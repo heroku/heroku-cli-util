@@ -1,5 +1,5 @@
-import type {HTTP} from '@heroku/http-call'
 import type {APIClient} from '@heroku-cli/command'
+import type {HTTP} from '@heroku/http-call'
 
 import type {ExtendedAddonAttachment} from '../../types/pg/platform-api.js'
 
@@ -61,11 +61,9 @@ export function getConfigVarNameFromAttachment(
     .filter(cvn => config[cvn]?.startsWith('postgres://'))
 
   if (connStringConfigVarNames.length === 0) {
-    throw new Error(
-      `No config vars found for ${attachment.name}; perhaps they were removed as a side effect of`
+    throw new Error(`No config vars found for ${attachment.name}; perhaps they were removed as a side effect of`
       + ` ${color.command('heroku rollback')}? Use ${color.command('heroku addons:attach')} to create a new attachment and `
-      + `then ${color.command('heroku addons:detach')} to remove the current attachment.`,
-    )
+      + `then ${color.command('heroku addons:detach')} to remove the current attachment.`)
   }
 
   // Generate the default config var name and return it if it contains a database URL connection string.

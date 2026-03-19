@@ -195,9 +195,7 @@ export async function sshTunnel(
     ])
   } catch (error: unknown) {
     pgDebug(error)
-    throw new Error(
-      `Unable to establish a secure tunnel to your database: ${(error as Error).message}.`,
-    )
+    throw new Error(`Unable to establish a secure tunnel to your database: ${(error as Error).message}.`)
   } finally {
     timeoutInstance.cancel()
   }

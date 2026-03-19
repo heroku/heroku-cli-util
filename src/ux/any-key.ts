@@ -17,7 +17,8 @@ function readChar(): Promise<string> {
 export async function anykey(message?: string): Promise<string> {
   const {isRaw, isTTY} = process.stdin
   if (!message) {
-    message = isTTY ? `Press any key to continue or ${color.yellow('q')} to exit`
+    message = isTTY
+      ? `Press any key to continue or ${color.yellow('q')} to exit`
       : `Press enter to continue or ${color.yellow('q')} to exit`
   }
 

@@ -15,12 +15,11 @@ const pgDebug = debug('pg')
 
 export default class DatabaseResolver {
   private readonly addonAttachmentResolver: AddonAttachmentResolver
-  private readonly addonHeaders: Readonly<{ Accept: string, 'Accept-Expansion': string }> = {
+  private readonly addonHeaders: Readonly<{Accept: string, 'Accept-Expansion': string}> = {
     Accept: 'application/vnd.heroku+json; version=3.sdk',
     'Accept-Expansion': 'addon_service,plan',
   }
-
-  private readonly attachmentHeaders: Readonly<{ Accept: string, 'Accept-Inclusion': string }> = {
+  private readonly attachmentHeaders: Readonly<{Accept: string, 'Accept-Inclusion': string}> = {
     Accept: 'application/vnd.heroku+json; version=3.sdk',
     'Accept-Inclusion': 'addon:plan,config_vars',
   }
@@ -62,10 +61,10 @@ export default class DatabaseResolver {
    * @returns Promise resolving to all Heroku Postgres databases
    * @throws {Error} When no legacy database add-on exists on the app
    */
-  public async getAllLegacyDatabases(app: string): Promise<Array<{attachment_names?: string[]} & ExtendedAddonAttachment['addon']>> {
+  public async getAllLegacyDatabases(app: string): Promise<Array<ExtendedAddonAttachment['addon'] & {attachment_names?: string[]}>> {
     pgDebug(`fetching all legacy databases on ${app}`)
     const allAttachments = await this.allLegacyDatabaseAttachments(app)
-    const addons: Array<{attachment_names?: string[]} & ExtendedAddonAttachment['addon']> = []
+    const addons: Array<ExtendedAddonAttachment['addon'] & {attachment_names?: string[]}> = []
     for (const attachment of allAttachments) {
       if (!addons.some(a => a.id === attachment.addon.id)) {
         addons.push(attachment.addon)
@@ -153,9 +152,7 @@ export default class DatabaseResolver {
     // return the first attachment when all ambiguous attachments are equivalent (basically target the same database)
     if (matches.every(match => first.addon.id === match.addon.id && first.app.id === match.app.id)) {
       const config = await this.getConfigFn(this.heroku, first.app.name)
-      if (matches.every(
-        match => config[getConfigVarName(first.config_vars)] === config[getConfigVarName(match.config_vars)],
-      )) {
+      if (matches.every(match => config[getConfigVarName(first.config_vars)] === config[getConfigVarName(match.config_vars)])) {
         return first
       }
     }
@@ -310,9 +307,9 @@ export default class DatabaseResolver {
    * @returns Promise resolving to either a single match, multiple matches with error, or no matches with error
    */
   private async getAttachmentsViaResolver(appId: string, attachmentId: string, namespace?: string): Promise<
-    {error: AmbiguousError, matches: ExtendedAddonAttachment[]} |
-    {error: HerokuAPIError, matches: null} |
-    {error: undefined, matches: ExtendedAddonAttachment[]}
+    {error: AmbiguousError, matches: ExtendedAddonAttachment[]}
+    | {error: HerokuAPIError, matches: null}
+    | {error: undefined, matches: ExtendedAddonAttachment[]}
   > {
     debug(`fetching ${attachmentId} on ${appId}`)
 

@@ -28,13 +28,13 @@ describe('PsqlService', function () {
   let connectionDetails: ConnectionDetails
   let mockGetPsqlConfigs: sinon.SinonStub
   let mockSpawn: sinon.SinonStub
-  let mockChildProcess: {killed: boolean} & ChildProcess
+  let mockChildProcess: ChildProcess & {killed: boolean}
   let psqlConfigs: PsqlConfigs
 
   // Helper function to create a mock child process
   function createMockChildProcess() {
     // eslint-disable-next-line unicorn/prefer-event-target
-    const childProcess = new EventEmitter() as {killed: boolean} & ChildProcess
+    const childProcess = new EventEmitter() as ChildProcess & {killed: boolean}
     childProcess.stdout = new Readable({
       read() {},
     })
@@ -245,9 +245,7 @@ describe('PsqlService', function () {
 
       it('handles tunnel creation failure', async function () {
         const file = 'statements.sql'
-        const tunnelError = new Error(
-          'Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.',
-        )
+        const tunnelError = new Error('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
         mockTunnelFn = sinon.stub().rejects(tunnelError)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
@@ -256,9 +254,7 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(filePromise)
-          .to.be.rejectedWith(
-            'Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.',
-          )
+          .to.be.rejectedWith('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
       })
 
       it('handles psql failure while tunnel is active', async function () {
@@ -356,10 +352,8 @@ describe('PsqlService', function () {
 
         // Attempt file execution and expect it to throw
         await expect(filePromise)
-          .to.be.rejectedWith(
-            'The local psql command could not be located. For help installing psql, see '
-            + 'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup',
-          )
+          .to.be.rejectedWith('The local psql command could not be located. For help installing psql, see '
+            + 'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup')
       })
     })
   })
@@ -544,9 +538,7 @@ describe('PsqlService', function () {
 
       it('handles tunnel creation failure', async function () {
         const query = 'SELECT 1;'
-        const tunnelError = new Error(
-          'Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.',
-        )
+        const tunnelError = new Error('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
         mockTunnelFn = sinon.stub().rejects(tunnelError)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
@@ -555,9 +547,7 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(queryPromise)
-          .to.be.rejectedWith(
-            'Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.',
-          )
+          .to.be.rejectedWith('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
       })
 
       it('handles psql failure while tunnel is active', async function () {
@@ -655,10 +645,8 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(queryPromise)
-          .to.be.rejectedWith(
-            'The local psql command could not be located. For help installing psql, see '
-            + 'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup',
-          )
+          .to.be.rejectedWith('The local psql command could not be located. For help installing psql, see '
+            + 'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup')
       })
     })
   })
@@ -812,9 +800,7 @@ describe('PsqlService', function () {
       })
 
       it('handles tunnel creation failure', async function () {
-        const tunnelError = new Error(
-          'Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.',
-        )
+        const tunnelError = new Error('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
         mockTunnelFn = sinon.stub().rejects(tunnelError)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
@@ -822,9 +808,7 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(sessionPromise)
-          .to.be.rejectedWith(
-            'Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.',
-          )
+          .to.be.rejectedWith('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
       })
 
       it('handles psql failure while tunnel is active', async function () {
@@ -1080,10 +1064,8 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(sessionPromise)
-          .to.be.rejectedWith(
-            'The local psql command could not be located. For help installing psql, see '
-            + 'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup',
-          )
+          .to.be.rejectedWith('The local psql command could not be located. For help installing psql, see '
+            + 'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup')
       })
     })
   })

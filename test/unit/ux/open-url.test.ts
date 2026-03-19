@@ -35,16 +35,14 @@ describe('openUrl', function () {
       context('without browser or action arguments', function () {
         it('shows the URL that will be opened for in the default browser', async function () {
           const {stdout} = await captureOutput(() =>
-            openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}),
-          )
+            openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
 
           expect(ansis.strip(stdout)).to.contain(`Opening ${url} in your default browser…`)
         })
 
         it('attempts to open the default browser to the url argument', async function () {
           await captureOutput(() =>
-            openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}),
-          )
+            openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
 
           expect(urlOpenerSpy.calledWith(url, {wait: false})).to.equal(true)
         })
@@ -53,16 +51,14 @@ describe('openUrl', function () {
       context('with browser argument', function () {
         it('shows the URL that will be opened in the specified browser', async function () {
           const {stdout} = await captureOutput(() =>
-            openUrl(url, 'firefox', undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}),
-          )
+            openUrl(url, 'firefox', undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
 
           expect(ansis.strip(stdout)).to.contain(`Opening ${url} in firefox browser…`)
         })
 
         it('attempts to open the specified browser to the url argument', async function () {
           await captureOutput(() =>
-            openUrl(url, 'firefox', undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}),
-          )
+            openUrl(url, 'firefox', undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
 
           expect(urlOpenerSpy.calledWith(url, {app: {name: 'firefox'}, wait: false})).to.equal(true)
         })
@@ -71,8 +67,7 @@ describe('openUrl', function () {
       context('with action argument', function () {
         it('shows the action to be performed', async function () {
           await captureOutput(() =>
-            openUrl(url, undefined, 'view something', {anykey: anyKeySpy, urlOpener: urlOpenerSpy}),
-          )
+            openUrl(url, undefined, 'view something', {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
 
           expect(anyKeySpy.calledWithMatch(/to view something/)).to.be.true
         })
@@ -92,8 +87,7 @@ describe('openUrl', function () {
 
       it('shows a warning', async function () {
         const {stderr} = await captureOutput(() =>
-          openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}),
-        )
+          openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
 
         expect(urlOpenerSpy.calledOnce).to.be.true
         expect(ansis.strip(stderr)).to.contain('Error: error')
@@ -115,8 +109,7 @@ describe('openUrl', function () {
 
       it('shows a warning', async function () {
         const {stderr} = await captureOutput(() =>
-          openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}),
-        )
+          openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
 
         expect(urlOpenerSpy.calledOnce).to.be.true
         expect(ansis.strip(stderr)).not.to.contain('Error: error')
@@ -145,13 +138,10 @@ describe('openUrl', function () {
 
       it('shows a warning only once', async function () {
         const {stderr} = await captureOutput(() =>
-          openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}),
-        )
+          openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
 
         expect(urlOpenerSpy.calledOnce).to.be.true
-        expect(ansis.strip(stderr)).not.to.match(
-          /(We can't open your default browser.*We can't open your default browser)/s,
-        )
+        expect(ansis.strip(stderr)).not.to.match(/(We can't open your default browser.*We can't open your default browser)/s)
       })
     })
   })
@@ -167,8 +157,7 @@ describe('openUrl', function () {
     it('doesn\'t attempt to open the browser', async function () {
       try {
         await captureOutput(() =>
-          openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}),
-        )
+          openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
       } catch (error: unknown) {
         const {message, oclif} = error as Errors.CLIError
         expect(message).to.equal('quit')
