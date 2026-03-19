@@ -19,24 +19,38 @@ npm install @heroku/heroku-cli-util
 
 ## Usage
 
-You can import the utilities you need from the main exports.
+Import only the utilities you need for better performance and smaller bundle sizes.
+
+```js
+import * as color from '@heroku/heroku-cli-util/color';
+import { confirm, table } from '@heroku/heroku-cli-util/hux';
+import { DatabaseResolver } from '@heroku/heroku-cli-util/utils/pg';
+import { AddonResolver } from '@heroku/heroku-cli-util/utils/addons';
+```
+
+**Available import paths:**
+- `@heroku/heroku-cli-util/color` - Color utilities
+- `@heroku/heroku-cli-util/hux` - UX utilities (prompts, tables, output formatting)
+- `@heroku/heroku-cli-util/utils` - All utility functions
+- `@heroku/heroku-cli-util/utils/pg` - PostgreSQL-specific utilities
+- `@heroku/heroku-cli-util/utils/addons` - Addon-specific utilities
 
 ### Output Utilities
 
 ```js
-import { hux } from '@heroku/heroku-cli-util';
+import { styledHeader, styledJSON, styledObject, table, wait } from '@heroku/heroku-cli-util/hux';
 
 // Styled header
-hux.styledHeader('My CLI Header');
+styledHeader('My CLI Header');
 
 // Styled JSON
-hux.styledJSON({ foo: 'bar' });
+styledJSON({ foo: 'bar' });
 
 // Styled object
-hux.styledObject({ foo: 'bar' });
+styledObject({ foo: 'bar' });
 
 // Table output
-hux.table([
+table([
   {name: 'Alice', age: 30},
   {name: 'Bob', age: 25},
 ], {
@@ -45,7 +59,7 @@ hux.table([
 });
 
 // Wait indicator
-const stop = hux.wait('Processing...');
+const stop = wait('Processing...');
 // ...do async work...
 stop();
 ```
@@ -53,16 +67,16 @@ stop();
 ### User Interaction
 
 ```js
-import { hux } from '@heroku/heroku-cli-util';
+import { prompt, confirm } from '@heroku/heroku-cli-util/hux';
 
-const name = await hux.prompt('What is your name?');
-const proceed = await hux.confirm('Continue?');
+const name = await prompt('What is your name?');
+const proceed = await confirm('Continue?');
 ```
 
 ### Colors
 
 ```js
-import { color } from '@heroku/heroku-cli-util';
+import * as color from '@heroku/heroku-cli-util/color';
 
 // App-related colors
 console.log(color.app('my-awesome-app'));        // Purple, bold with app icon
@@ -93,21 +107,21 @@ See the [COLORS.md](docs/COLORS.md) documentation for the complete color palette
 #### Error Classes
 
 ```js
-import { utils } from '@heroku/heroku-cli-util';
+import { AmbiguousError, NotFound } from '@heroku/heroku-cli-util/utils';
 
 // Error types
 try {
-  throw new utils.errors.AmbiguousError([{ name: 'foo' }, { name: 'bar' }], 'addon');
+  throw new AmbiguousError([{ name: 'foo' }, { name: 'bar' }], 'addon');
 } catch (err) {
-  if (err instanceof utils.errors.AmbiguousError) {
+  if (err instanceof AmbiguousError) {
     console.error('Ambiguous:', err.message);
   }
 }
 
 try {
-  throw new utils.errors.NotFound();
+  throw new NotFound();
 } catch (err) {
-  if (err instanceof utils.errors.NotFound) {
+  if (err instanceof NotFound) {
     console.error('Not found:', err.message);
   }
 }
@@ -155,16 +169,25 @@ import type {
 ### Database and Utility Helpers
 
 ```js
-import { utils } from '@heroku/heroku-cli-util';
+import { DatabaseResolver, PsqlService, getHost, getPsqlConfigs } from '@heroku/heroku-cli-util/utils/pg';
+import { AddonResolver, isPostgresAddon } from '@heroku/heroku-cli-util/utils/addons';
 
-// Get Heroku Postgres database connection details (requires APIClient from @heroku-cli/command)
-// const db = await utils.pg.databases(herokuApiClient, 'my-app', 'DATABASE_URL');
+// Resolve a database from an app (requires APIClient from @heroku-cli/command)
+const resolver = new DatabaseResolver(herokuApiClient, app, db);
+const database = await resolver.resolve();
 
 // Get Heroku Postgres host
-const host = utils.pg.host();
+const host = getHost();
 
-// Run a query (requires a ConnectionDetails object)
-// const result = await utils.pg.psql.exec(db, 'SELECT 1');
+// Create a PSQL service
+const psql = new PsqlService(database);
+
+// Check if addon is PostgreSQL
+const isPg = isPostgresAddon(addon);
+
+// Resolve an addon
+const addonResolver = new AddonResolver(herokuApiClient, app, addonName);
+const addon = await addonResolver.resolve();
 ```
 
 ## Development

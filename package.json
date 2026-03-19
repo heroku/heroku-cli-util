@@ -11,6 +11,43 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./color": {
+      "types": "./dist/ux/colors.d.ts",
+      "import": "./dist/ux/colors.js",
+      "default": "./dist/ux/colors.js"
+    },
+    "./colors": {
+      "types": "./dist/ux/colors.d.ts",
+      "import": "./dist/ux/colors.js",
+      "default": "./dist/ux/colors.js"
+    },
+    "./hux": {
+      "types": "./dist/ux/index.d.ts",
+      "import": "./dist/ux/index.js",
+      "default": "./dist/ux/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "default": "./dist/utils/index.js"
+    },
+    "./utils/pg": {
+      "types": "./dist/utils/pg/index.d.ts",
+      "import": "./dist/utils/pg/index.js",
+      "default": "./dist/utils/pg/index.js"
+    },
+    "./utils/addons": {
+      "types": "./dist/utils/addons/index.d.ts",
+      "import": "./dist/utils/addons/index.js",
+      "default": "./dist/utils/addons/index.js"
+    }
+  },
   "files": [
     "dist"
   ],
