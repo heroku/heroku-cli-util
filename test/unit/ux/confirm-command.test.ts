@@ -1,5 +1,4 @@
-/* eslint-disable prefer-arrow-callback */
-import {stderr, stdout} from '@heroku-cli/test-utils'
+import {captureOutput} from '@heroku-cli/test-utils'
 import ansis from 'ansis'
 import {expect} from 'chai'
 import sinon from 'sinon'
@@ -27,10 +26,12 @@ describe('confirmCommand', function () {
     sinon.restore()
   })
 
-  it('doesn\'t error or prompt with confirm flag match', async function () {
-    await confirmCommand({comparison: 'myapp', confirmation: 'myapp'})
-    expect(stderr()).to.equal('')
-    expect(stdout()).to.equal('')
+  it('should not error or prompt with confirm flag match', async function () {
+    const {stderr, stdout} = await captureOutput(() =>
+      confirmCommand({comparison: 'myapp', confirmation: 'myapp'}),
+    )
+    expect(stderr).to.equal('')
+    expect(stdout).to.equal('')
   })
 
   it('errs on confirm flag mismatch', async function () {
@@ -42,16 +43,20 @@ describe('confirmCommand', function () {
 
   it('errs on confirm prompt match', async function () {
     promptFunction.resolves('myapp')
-    await confirmCommand({comparison: 'myapp', promptFunction})
-    expect(stderr()).to.contain('Warning: Destructive Action')
-    expect(stdout()).to.equal('')
+    const {stderr, stdout} = await captureOutput(() =>
+      confirmCommand({comparison: 'myapp', promptFunction}),
+    )
+    expect(stderr).to.contain('Warning: Destructive Action')
+    expect(stdout).to.equal('')
   })
 
   it('displays custom warning message', async function () {
     promptFunction.resolves('myapp')
-    await confirmCommand({comparison: 'myapp', promptFunction, warningMessage: 'custom message'})
-    expect(stderr()).to.contain('custom message')
-    expect(stdout()).to.equal('')
+    const {stderr, stdout} = await captureOutput(() =>
+      confirmCommand({comparison: 'myapp', promptFunction, warningMessage: 'custom message'}),
+    )
+    expect(stderr).to.contain('custom message')
+    expect(stdout).to.equal('')
   })
 
   it('errs on confirm prompt mismatch', async function () {

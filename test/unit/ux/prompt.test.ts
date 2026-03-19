@@ -1,4 +1,4 @@
-import {stdout} from '@heroku-cli/test-utils'
+import {captureOutput} from '@heroku-cli/test-utils'
 import ansis from 'ansis'
 import {expect} from 'chai'
 import {stdin as mockStdin} from 'mock-stdin'
@@ -17,12 +17,14 @@ describe('prompt', function () {
   })
 
   it('should print the prompt and return the entered value', async function () {
-    setTimeout(() => {
-      stdin.send('test-value\n')
-    }, 10)
-    const result = await prompt('Enter something')
-    const output = ansis.strip(stdout())
+    const {stdout} = await captureOutput(async () => {
+      setTimeout(() => {
+        stdin.send('test-value\n')
+      }, 10)
+      const result = await prompt('Enter something')
+      expect(result).to.equal('test-value')
+    })
+    const output = ansis.strip(stdout)
     expect(output).to.include('Enter something')
-    expect(result).to.equal('test-value')
   })
 })
