@@ -3,6 +3,7 @@ import {Errors} from '@oclif/core'
 import ansis from 'ansis'
 import {expect} from 'chai'
 import childProcess from 'node:child_process'
+import open from 'open'
 import sinon from 'sinon'
 
 import {anykey} from '../../../src/ux/any-key.js'
@@ -26,7 +27,7 @@ describe('openUrl', function () {
   context('when the user accepts the prompt to open the browser', function () {
     beforeEach(function () {
       urlOpenerSpy = sinon.spy((..._args: Parameters<typeof open>) => ({
-        on(_: string, _cb: ErrorCallback) {},
+        on(_: string, _cb: CallableFunction) {},
       } as unknown as childProcess.ChildProcess))
       anyKeySpy = sinon.spy((..._args: Parameters<typeof anykey>) => Promise.resolve('\n'))
     })
@@ -149,7 +150,7 @@ describe('openUrl', function () {
   context('when the user rejects the prompt to open the browser', function () {
     beforeEach(function () {
       urlOpenerSpy = sinon.spy((..._args: Parameters<typeof open>) => ({
-        on(_: string, _cb: ErrorCallback) {},
+        on(_: string, _cb: CallableFunction) {},
       } as unknown as childProcess.ChildProcess))
       anyKeySpy = sinon.spy((..._args: Parameters<typeof anykey>) => Promise.reject(new Error('quit')))
     })

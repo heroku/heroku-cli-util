@@ -30,5 +30,3 @@ jobs:
       - run: npm ci --legacy-peer-deps
       - name: unit tests
         run: npm test
-      - name: linting
-        run: yarn lint

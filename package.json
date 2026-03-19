@@ -63,7 +63,7 @@
     "@types/sinon-chai": "^4.0.0",
     "@types/tmp": "^0.2.6",
     "@types/tunnel-ssh": "4.1.1",
-    "c8": "^7.7.0",
+    "c8": "^11.0.0",
     "chai": "^5.3.3",
     "chai-as-promised": "^8.0.2",
     "eslint": "^9",
@@ -101,7 +101,7 @@
     "lint:fix": "eslint --fix",
     "posttest": "npm run lint",
     "prepare": "npm run build",
-    "test": "npm run build && c8 --check-coverage mocha --forbid-only \"test/**/*.test.ts\""
+    "test": "npm run build && c8 --all --check-coverage --reporter=lcov --reporter=text-summary mocha --forbid-only \"test/**/*.test.ts\""
   },
   "overrides": {
     "serialize-javascript": "^7.0.3"

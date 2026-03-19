@@ -656,7 +656,7 @@ describe('PsqlService', function () {
       beforeEach(function () {
         connectionDetails = defaultConnectionDetails
         // Deep clone the psql configs to avoid mutating the original object
-        psqlConfigs = JSON.parse(JSON.stringify(defaultPsqlConfigs)) as PsqlConfigs
+        psqlConfigs = structuredClone(defaultPsqlConfigs) as PsqlConfigs
         mockGetPsqlConfigs.returns(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
         delete process.env.HEROKU_PSQL_HISTORY // Reset environment variable
@@ -747,7 +747,7 @@ describe('PsqlService', function () {
       beforeEach(function () {
         connectionDetails = privateDatabaseConnectionDetails
         // Deep clone the psql configs to avoid mutating the original object
-        psqlConfigs = JSON.parse(JSON.stringify(privateDatabasePsqlConfigs)) as PsqlConfigs
+        psqlConfigs = structuredClone(privateDatabasePsqlConfigs) as PsqlConfigs
         mockGetPsqlConfigs.returns(psqlConfigs)
         mockTunnelServer = createMockTunnelServer()
         delete process.env.HEROKU_PSQL_HISTORY // Reset environment variable
@@ -865,7 +865,7 @@ describe('PsqlService', function () {
       beforeEach(function () {
         connectionDetails = defaultConnectionDetails
         // Deep clone the psql configs to avoid mutating the original object
-        psqlConfigs = JSON.parse(JSON.stringify(defaultPsqlConfigs)) as PsqlConfigs
+        psqlConfigs = structuredClone(defaultPsqlConfigs) as PsqlConfigs
         mockGetPsqlConfigs.returns(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
         delete process.env.HEROKU_PSQL_HISTORY // Reset environment variable
@@ -921,7 +921,7 @@ describe('PsqlService', function () {
       beforeEach(function () {
         connectionDetails = defaultConnectionDetails
         // Deep clone the psql configs to avoid mutating the original object
-        psqlConfigs = JSON.parse(JSON.stringify(defaultPsqlConfigs)) as PsqlConfigs
+        psqlConfigs = structuredClone(defaultPsqlConfigs) as PsqlConfigs
         mockGetPsqlConfigs.returns(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
         delete process.env.HEROKU_PSQL_HISTORY // Reset environment variable
@@ -977,7 +977,7 @@ describe('PsqlService', function () {
       beforeEach(function () {
         connectionDetails = defaultConnectionDetails
         // Deep clone the psql configs to avoid mutating the original object
-        psqlConfigs = JSON.parse(JSON.stringify(defaultPsqlConfigs)) as PsqlConfigs
+        psqlConfigs = structuredClone(defaultPsqlConfigs) as PsqlConfigs
         mockGetPsqlConfigs.returns(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
         delete process.env.HEROKU_PSQL_HISTORY // Reset environment variable

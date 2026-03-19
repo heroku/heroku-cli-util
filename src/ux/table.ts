@@ -25,14 +25,16 @@ export function table<T extends Record<string, unknown>>(
   const {printLine, ...tableOptions} = options || {}
 
   printTable({
-    ...(tableOptions?.noStyle ? {} : {
-      borderColor: 'whiteBright',
-      borderStyle: 'headers-only-with-underline',
-      headerOptions: {
-        bold: true,
-        color: 'white', // or 'reset' to use default terminal color
-      },
-    }),
+    ...(tableOptions?.noStyle
+      ? {}
+      : {
+        borderColor: 'whiteBright',
+        borderStyle: 'headers-only-with-underline',
+        headerOptions: {
+          bold: true,
+          color: 'white', // or 'reset' to use default terminal color
+        },
+      }),
     ...tableOptions,
     columns: cols,
     data: d as T[],
