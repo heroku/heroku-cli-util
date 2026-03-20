@@ -51,26 +51,35 @@ export async function confirmCommand({
 
   if (confirmation) {
     if (confirmation === comparison) return
-    throw new Error(`Confirmation ${color.bold.red(confirmation)} did not match ${color.bold.red(comparison)}. ${abortedMessage}`)
+    throw new Error(`Confirmation ${color.warning(confirmation)} did not match ${color.info(comparison)}. ${abortedMessage}`)
   }
 
   if (!warningMessage) {
-    warningMessage = heredoc`
+    warningMessage = heredoc(`
       Destructive Action
-      This command will affect the app ${color.bold.red(comparison)}
-    `
+      This command will affect the app ${color.app(comparison)}
+    `).trimEnd()
   }
 
   ux.warn(warningMessage)
   process.stderr.write('\n')
 
-  const entered = await promptFunction(
-    `To proceed, type ${color.bold.red(comparison)} or re-run this command with ${color.bold.red(`--confirm ${comparison}`)}`,
-    {required: true},
-  )
-  if (entered === comparison) {
-    return
-  }
+  try {
+    const entered = await promptFunction(
+      `To proceed, type ${color.warning(comparison)} or re-run this command with ${color.code(`--confirm ${comparison}`)}`,
+      {required: true},
+    )
+    if (entered === comparison) {
+      return
+    }
 
-  throw new Error(`Confirmation did not match ${color.bold.red(comparison)}. ${abortedMessage}`)
+    throw new Error(`Confirmation did not match ${color.info(comparison)}. ${abortedMessage}`)
+  } catch (error: unknown) {
+    const err = error as Error
+    if (err.name === 'ExitPromptError' && err.message.includes('SIGINT')) {
+      throw new Error(`Cancelled with ${color.warning('CTRL+C')}. ${abortedMessage}`)
+    }
+
+    throw error
+  }
 }
