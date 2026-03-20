@@ -4,7 +4,6 @@ import {color} from '../src/index.js'
 
 export default class ColorDemoCommand extends Command {
   static description = 'Demo of the new Heroku CLI color palette using ansis'
-
   static examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> app',

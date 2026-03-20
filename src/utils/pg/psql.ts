@@ -2,9 +2,9 @@ import {ux} from '@oclif/core'
 import debug from 'debug'
 import {
   type ChildProcess,
+  spawn,
   type SpawnOptions,
   type SpawnOptionsWithStdioTuple,
-  spawn,
 } from 'node:child_process'
 import {EventEmitter, once} from 'node:events'
 import fs from 'node:fs'
@@ -24,6 +24,7 @@ const pgDebug = debug('pg')
  */
 export class Tunnel {
   private readonly events: EventEmitter
+
   /**
    * Creates a new Tunnel instance.
    *
@@ -401,10 +402,8 @@ export default class PsqlService {
       pgDebug('psql process error', error)
       const {code} = error as {code: string}
       if (code === 'ENOENT') {
-        errorToThrow = new Error(
-          'The local psql command could not be located. For help installing psql, see '
-          + 'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup',
-        )
+        errorToThrow = new Error('The local psql command could not be located. For help installing psql, see '
+          + 'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup')
       }
     }
 

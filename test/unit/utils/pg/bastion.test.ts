@@ -1,4 +1,4 @@
-/* eslint-disable camelcase, prefer-arrow-callback, import/no-named-as-default-member */
+/* eslint-disable camelcase, import/no-named-as-default-member */
 import {APIClient} from '@heroku-cli/command'
 import {Config} from '@oclif/core'
 import * as chai from 'chai'
@@ -124,8 +124,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://api.data.heroku.com')
-      .get('/client/v11/databases/addon-5/bastion')
-      .reply(200, bastionConfigResponse)
+        .get('/client/v11/databases/addon-5/bastion')
+        .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -145,8 +145,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://api.data.heroku.com')
-      .get('/client/v11/databases/addon-5/bastion')
-      .reply(200, bastionConfigResponse)
+        .get('/client/v11/databases/addon-5/bastion')
+        .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -163,8 +163,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://api.data.heroku.com')
-      .get('/client/v11/databases/addon-5/bastion')
-      .reply(200, bastionConfigResponse)
+        .get('/client/v11/databases/addon-5/bastion')
+        .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -179,8 +179,8 @@ describe('bastion', function () {
       const bastionConfigResponse = {}
 
       const api = nock('https://api.data.heroku.com')
-      .get('/client/v11/databases/addon-5/bastion')
-      .reply(200, bastionConfigResponse)
+        .get('/client/v11/databases/addon-5/bastion')
+        .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -198,8 +198,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://api.data.heroku.com')
-      .get('/client/v11/databases/addon-5/bastion')
-      .reply(200, bastionConfigResponse)
+        .get('/client/v11/databases/addon-5/bastion')
+        .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -219,8 +219,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://custom-data-api.heroku.com')
-      .get('/client/v11/databases/addon-5/bastion')
-      .reply(200, bastionConfigResponse)
+        .get('/client/v11/databases/addon-5/bastion')
+        .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -243,8 +243,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://custom-postgresql-api.heroku.com')
-      .get('/client/v11/databases/addon-5/bastion')
-      .reply(200, bastionConfigResponse)
+        .get('/client/v11/databases/addon-5/bastion')
+        .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -268,8 +268,8 @@ describe('bastion', function () {
       }
 
       const api = nock('https://data-api.heroku.com')
-      .get('/client/v11/databases/addon-5/bastion')
-      .reply(200, bastionConfigResponse)
+        .get('/client/v11/databases/addon-5/bastion')
+        .reply(200, bastionConfigResponse)
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
@@ -285,11 +285,11 @@ describe('bastion', function () {
       process.env = {}
 
       const api = nock('https://api.data.heroku.com')
-      .get('/client/v11/databases/addon-5/bastion')
-      .reply(404, {id: 'not_found', message: 'Couldn\'t find that database.', resource: 'database'})
+        .get('/client/v11/databases/addon-5/bastion')
+        .reply(404, {id: 'not_found', message: 'Couldn\'t find that database.', resource: 'database'})
 
       await expect(fetchBastionConfig(heroku, privateDatabaseAttachment.addon))
-      .to.be.rejectedWith('Couldn\'t find that database.')
+        .to.be.rejectedWith('Couldn\'t find that database.')
 
       api.done()
     })
@@ -614,9 +614,7 @@ describe('bastion', function () {
         // Advance time to trigger timeout
         clock.tick(100)
 
-        await expect(tunnelPromise).to.be.rejectedWith(
-          'Unable to establish a secure tunnel to your database: Establishing a secure tunnel timed out.',
-        )
+        await expect(tunnelPromise).to.be.rejectedWith('Unable to establish a secure tunnel to your database: Establishing a secure tunnel timed out.')
         expect(createTunnelStub).to.have.been.calledOnce
       })
 
@@ -631,9 +629,7 @@ describe('bastion', function () {
         // Advance time without triggering timeout
         clock.tick(10)
 
-        await expect(tunnelPromise).to.be.rejectedWith(
-          'Unable to establish a secure tunnel to your database: SSH connection failed.',
-        )
+        await expect(tunnelPromise).to.be.rejectedWith('Unable to establish a secure tunnel to your database: SSH connection failed.')
         expect(createTunnelStub).to.have.been.calledOnceWith(dbTunnelConfig)
       })
 
@@ -647,9 +643,7 @@ describe('bastion', function () {
         // Advance time without triggering timeout
         clock.tick(10)
 
-        await expect(tunnelPromise).to.be.rejectedWith(
-          'Unable to establish a secure tunnel to your database: Error.',
-        )
+        await expect(tunnelPromise).to.be.rejectedWith('Unable to establish a secure tunnel to your database: Error.')
         expect(createTunnelStub).to.have.been.calledOnceWith(dbTunnelConfig)
       })
 

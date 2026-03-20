@@ -4,7 +4,7 @@ import * as Heroku from '@heroku-cli/schema'
 // HyperSchema, but that's not easy due to API variants and some other header-selectable serialization expansion
 // options like `Accept-Inclusion` and `Accept-Expansion`.
 type DeepRequired<T> = T extends object
-  ? { [K in keyof T]-?: DeepRequired<T[K]> }
+  ? {[K in keyof T]-?: DeepRequired<T[K]>}
   : T;
 
 /**
@@ -16,49 +16,49 @@ type AddonDescriptor = DeepRequired<Heroku.AddOnAttachment>['addon']
  * This is the modified type for the `addon` property when the request to Platform API includes the value `addon:plan`
  * in the `Accept-Inclusion` header.
  */
-type AddonDescriptorWithPlanInclusion = {
+type AddonDescriptorWithPlanInclusion = AddonDescriptor & {
   plan: {
     id: string,
     name: string,
   }
-} & AddonDescriptor
+}
 
 /**
  * This is the modified type for the `AddOnAttachment` type when the request to Platform API includes the value
  * `config_vars` in the `Accept-Inclusion` header.
  */
-type AddonAttachmentWithConfigVarsInclusion = {
+type AddonAttachmentWithConfigVarsInclusion = DeepRequired<Heroku.AddOnAttachment> & {
   config_vars: string[]
-} & DeepRequired<Heroku.AddOnAttachment>
+}
 
 /**
  * This is the modified type for the `AddOnAttachment` we use on these lib functions because all requests made to
  * Platform API to get add-on attachments, either through the Add-on Attachment List endpoint or the
  * add-on attachment resolver action endpoint, include the header `Accept-Inclusion: addon:plan,config_vars`.
  */
-export type ExtendedAddonAttachment = {
+export type ExtendedAddonAttachment = AddonAttachmentWithConfigVarsInclusion & {
   addon: AddonDescriptorWithPlanInclusion
-} & AddonAttachmentWithConfigVarsInclusion
+}
 
 /**
  * This is the modified type for the `AddOn` we use on these lib functions because all requests made to
  * Platform API to get add-ons, either through the Add-on List endpoint or the add-on resolver action endpoint,
  * include the header `Accept-Expansion: addon_service,plan`.
  */
-export type ExtendedAddon = {
+export type ExtendedAddon = DeepRequired<Heroku.AddOn> & {
   addon_service: DeepRequired<Heroku.AddOnService>,
   plan: DeepRequired<Heroku.Plan>,
-} & DeepRequired<Heroku.AddOn>
+}
 
 /**
  * The next two types need review and cleanup. They're not used anywhere in this codebase yet.
  */
 
-export type AddOnWithRelatedData = {
+export type AddOnWithRelatedData = AddonDescriptor & {
   attachment_names?: string[],
   links?: Link[],
   plan: DeepRequired<Heroku.AddOn['plan']>
-} & AddonDescriptor
+}
 
 export type Link = {
   attachment_name?: string,

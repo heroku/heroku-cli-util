@@ -33,16 +33,14 @@ export function alignColumns(arrays: string[][]): string[] {
 
   // calculate width for each column based on max visual length of entries
   const columnWidths = arrays[0].map((_, colIndex) =>
-    Math.max(...arrays.map(row => visualLength(row[colIndex]))),
-  )
+    Math.max(...arrays.map(row => visualLength(row[colIndex]))))
 
   // align rows by padding to max length
   const alignedRows = arrays.map(row =>
     row.map((cell, colIndex) => {
       const paddingLength = columnWidths[colIndex] - visualLength(cell)
       return cell + ' '.repeat(paddingLength) // Add necessary padding to each cell
-    }).join(' '),
-  )
+    }).join(' '))
 
   return alignedRows
 }

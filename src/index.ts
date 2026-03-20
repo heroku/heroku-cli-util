@@ -21,8 +21,8 @@ import PsqlService from './utils/pg/psql.js'
 import {ago} from './ux/ago.js'
 import {alignColumns} from './ux/align-columns.js'
 import {anykey} from './ux/any-key.js'
-import {confirm} from './ux/confirm.js'
 import {confirmCommand} from './ux/confirm-command.js'
+import {confirm} from './ux/confirm.js'
 import {toHumanReadableDataSize} from './ux/data-size.js'
 import {formatPrice} from './ux/format-price.js'
 import {openUrl} from './ux/open-url.js'
@@ -51,9 +51,8 @@ export const utils = {
     NotFound, // This should be NotFoundError for consistency, but we're keeping it for backwards compatibility
   },
   pg: {
-    DatabaseResolver,
-    PsqlService,
     addonService: getAddonService,
+    DatabaseResolver,
     host: getHost,
     isAdvancedDatabase,
     isAdvancedPrivateDatabase,
@@ -66,6 +65,7 @@ export const utils = {
       getPsqlConfigs,
       sshTunnel,
     },
+    PsqlService,
   },
 }
 

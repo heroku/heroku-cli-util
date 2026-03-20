@@ -2,7 +2,7 @@ import {Server} from 'node:net'
 
 import type {ExtendedAddonAttachment} from './platform-api.js'
 
-export type ConnectionDetails = {
+export type ConnectionDetails = BastionConfig & {
   _tunnel?: Server
   attachment?: ExtendedAddonAttachment
   database: string
@@ -12,7 +12,7 @@ export type ConnectionDetails = {
   port: string
   url: string
   user: string
-} & BastionConfig
+}
 
 export interface TunnelConfig {
   dstHost: string

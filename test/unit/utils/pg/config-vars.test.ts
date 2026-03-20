@@ -13,7 +13,7 @@ import {
   getConfigVarName,
   getConfigVarNameFromAttachment,
 } from '../../../../src/utils/pg/config-vars.js'
-import {HEROKU_API, defaultAttachment, shieldDatabaseAttachment} from '../../../fixtures/attachment-mocks.js'
+import {defaultAttachment, HEROKU_API, shieldDatabaseAttachment} from '../../../fixtures/attachment-mocks.js'
 import {
   emptyAppConfigVars,
   myAppConfigVars,

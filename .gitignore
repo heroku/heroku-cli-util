@@ -6,11 +6,9 @@
 /tmp
 /node_modules
 oclif.manifest.json
-
+.claude
 pnpm-lock.yaml
 .pnp.*
-.yarn/*
-yarn.lock
 
 .jshint*
 coverage

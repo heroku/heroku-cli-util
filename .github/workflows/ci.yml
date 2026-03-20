@@ -2,6 +2,19 @@ name: Test
 on: [push, workflow_dispatch]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+          cache: npm
+      - run: npm ci
+      - name: linting
+        run: npm run lint
+
   test:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -17,5 +30,3 @@ jobs:
       - run: npm ci --legacy-peer-deps
       - name: unit tests
         run: npm test
-      - name: linting
-        run: yarn lint
