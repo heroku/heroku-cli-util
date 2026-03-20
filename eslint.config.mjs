@@ -24,6 +24,7 @@ export default [
       },
     },
     rules: {
+      'jsdoc/require-returns-check': 'off'
     },
   },
 ]
