@@ -99,7 +99,6 @@
     "example": "sh examples/run.sh",
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
-    "posttest": "npm run lint",
     "prepare": "npm run build",
     "test": "npm run build && c8 --all --check-coverage --reporter=lcov --reporter=text-summary mocha --forbid-only \"test/**/*.test.ts\""
   },
