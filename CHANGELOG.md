@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.7.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.6.1...heroku-cli-util-v10.7.0) (2026-03-24)
+
+
+### Features
+
+* add granular module exports and upgrade test infrastructure ([#310](https://github.com/heroku/heroku-cli-util/issues/310)) ([d955d5d](https://github.com/heroku/heroku-cli-util/commit/d955d5d01bc6751948a0223f6d761cc5e77c5041))
+
+
+### Bug Fixes
+
+* address issue with ExitPromptError being thrown on 'confirmCommand' (W-21653079) ([#309](https://github.com/heroku/heroku-cli-util/issues/309)) ([43ad4f1](https://github.com/heroku/heroku-cli-util/commit/43ad4f19b0f43c6a7a76695e77a63296d7d484df))
+
 ## [10.6.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.6.0...heroku-cli-util-v10.6.1) (2026-03-16)
 
 
