@@ -1,4 +1,4 @@
-import {Errors} from '@oclif/core'
+import {error} from '@oclif/core/errors'
 
 import * as color from './colors.js'
 
@@ -32,8 +32,8 @@ export async function anykey(message?: string): Promise<string> {
     process.stderr.write('\n')
   }
 
-  if (char === 'q') Errors.error('quit')
-  if (char === '\u0003') Errors.error('ctrl-c')
+  if (char === 'q') error('quit')
+  if (char === '\u0003') error('ctrl-c')
 
   return char
 }

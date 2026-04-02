@@ -71,7 +71,6 @@
     "mocha": "^11",
     "mock-stdin": "^1.0.0",
     "nock": "^14.0.11",
-    "open": "^11",
     "sinon": "^20.0.0",
     "sinon-chai": "^4.0.1",
     "tmp": "^0.2.5",
@@ -86,6 +85,7 @@
     "ansis": "^4.1.0",
     "debug": "^4.4.0",
     "inquirer": "^12.6.1",
+    "open": "^11",
     "printf": "^0.6.1",
     "tsheredoc": "^1.0.1",
     "tunnel-ssh": "5.2.0"

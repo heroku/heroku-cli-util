@@ -1,4 +1,4 @@
-import {ux} from '@oclif/core'
+import {ux} from '@oclif/core/ux'
 import tsheredoc from 'tsheredoc'
 
 import * as color from './colors.js'

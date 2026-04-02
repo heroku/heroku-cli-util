@@ -1,5 +1,3 @@
-import inquirer from 'inquirer'
-
 type PromptOptions = {
   default?: string
   required?: boolean
@@ -7,7 +5,9 @@ type PromptOptions = {
 }
 
 export async function prompt(name: string, options?: PromptOptions): Promise<string> {
-  const {answer} = await (inquirer as any).prompt([{
+  const inquirer = await import('inquirer')
+
+  const {answer} = await (inquirer.default as any).prompt([{
     default: options?.default,
     message: name,
     name: 'answer',
