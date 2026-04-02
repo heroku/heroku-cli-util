@@ -3,7 +3,6 @@ import type {APIClient} from '@heroku-cli/command'
 import debug from 'debug'
 import {EventEmitter} from 'node:events'
 import {Server} from 'node:net'
-import * as tunnelSsh from 'tunnel-ssh'
 
 import {ExtendedAddonAttachment} from '../../types/pg/platform-api.js'
 import {
@@ -257,6 +256,8 @@ class Timeout {
  * @returns Promise that resolves to the created local TCP Server
  */
 async function createSSHTunnelAdapter(config: TunnelConfig): Promise<Server> {
+  const tunnelSsh = await import('tunnel-ssh')
+
   const tunnelOptions = {
     autoClose: true,
     reconnectOnError: false,

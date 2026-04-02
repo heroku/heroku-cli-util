@@ -1,7 +1,4 @@
-import {ux} from '@oclif/core'
-import {createPromptModule} from 'inquirer'
-
-const prompt = createPromptModule()
+import {ux} from '@oclif/core/ux'
 
 export type PromptInputs<T> = {
   /**
@@ -16,6 +13,9 @@ export const confirm = async (message: string, {
   defaultAnswer = false,
   ms = 10_000,
 }: PromptInputs<boolean> = {}): Promise<boolean> => {
+  const {createPromptModule} = await import('inquirer')
+  const prompt = createPromptModule()
+
   let timeoutId: NodeJS.Timeout | undefined
 
   const promptPromise = prompt([{
