@@ -75,6 +75,31 @@ export type ThemeName = 'heroku' | 'simple'
 
 const THEME_ENV = 'HEROKU_THEME'
 
+function parseForceColor(value: string | undefined): number | undefined {
+  if (value === undefined) return undefined
+  const normalized = value.trim().toLowerCase()
+  if (normalized === '' || normalized === 'true') return 1
+  if (normalized === 'false') return 0
+  const parsed = Number.parseInt(normalized, 10)
+  if (Number.isNaN(parsed)) return undefined
+  if (parsed <= 0) return 0
+  if (parsed >= 3) return 3
+  return parsed
+}
+
+export function resolveColorLevel(env: NodeJS.ProcessEnv, stdoutIsTTY: boolean, detectedLevel: number): number {
+  const noColor = env.NO_COLOR
+  if (typeof noColor === 'string' && noColor !== '') return 0
+
+  const forceColor = parseForceColor(env.FORCE_COLOR)
+  if (typeof forceColor === 'number') return forceColor
+
+  if (!stdoutIsTTY) return 0
+  return detectedLevel
+}
+
+ansis.level = resolveColorLevel(process.env, Boolean(process.stdout?.isTTY), ansis.level)
+
 /**
  * Resolves active theme from HEROKU_THEME; defaults to 'heroku'.
  * @returns The active theme name.

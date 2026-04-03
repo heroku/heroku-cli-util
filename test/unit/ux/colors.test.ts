@@ -52,6 +52,33 @@ describe('colors', function () {
     })
   })
 
+  describe('resolveColorLevel', function () {
+    it('disables color when stdout is not a TTY', function () {
+      const level = color.resolveColorLevel({}, false, 3)
+      expect(level).to.equal(0)
+    })
+
+    it('keeps detected level when stdout is a TTY and no env overrides are set', function () {
+      const level = color.resolveColorLevel({}, true, 2)
+      expect(level).to.equal(2)
+    })
+
+    it('disables color when NO_COLOR is set', function () {
+      const level = color.resolveColorLevel({NO_COLOR: '1'}, true, 3)
+      expect(level).to.equal(0)
+    })
+
+    it('forces color when FORCE_COLOR is set', function () {
+      const level = color.resolveColorLevel({FORCE_COLOR: '1'}, false, 0)
+      expect(level).to.equal(1)
+    })
+
+    it('disables color when FORCE_COLOR is 0', function () {
+      const level = color.resolveColorLevel({FORCE_COLOR: '0'}, true, 3)
+      expect(level).to.equal(0)
+    })
+  })
+
   describe('app-related colors', function () {
     it('should style app names with purple', function () {
       const result = color.app('my-app')
