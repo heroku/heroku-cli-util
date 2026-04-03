@@ -1,5 +1,42 @@
 # Changelog
 
+## [10.8.0-beta.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.7.0-beta.0...heroku-cli-util-v10.8.0-beta.0) (2026-04-03)
+
+
+### Features
+
+* add color system ([#253](https://github.com/heroku/heroku-cli-util/issues/253)) ([169725a](https://github.com/heroku/heroku-cli-util/commit/169725a599228370725096819df3002554783b00))
+* add granular module exports and upgrade test infrastructure ([#310](https://github.com/heroku/heroku-cli-util/issues/310)) ([d955d5d](https://github.com/heroku/heroku-cli-util/commit/d955d5d01bc6751948a0223f6d761cc5e77c5041))
+* adding utility functions from 'heroku-cli-plugin-data-beta' (W-20610130) ([#262](https://github.com/heroku/heroku-cli-util/issues/262)) ([9f5588c](https://github.com/heroku/heroku-cli-util/commit/9f5588ca11cb3713898896f0de22069fc007d918))
+* backport changes from v9 branch to main (W-19890189) ([#240](https://github.com/heroku/heroku-cli-util/issues/240)) ([2ad585c](https://github.com/heroku/heroku-cli-util/commit/2ad585ce4ac1dfbe7265bbacda40100efec75b94))
+* **colors:** add HEROKU_THEME with heroku and simple (ANSI 8) themes ([#284](https://github.com/heroku/heroku-cli-util/issues/284)) ([373b521](https://github.com/heroku/heroku-cli-util/commit/373b52154b5d92e25dc614b08606512df034ce61))
+* disable colors by default when output is not a TTY and add basic colors to exports ([#320](https://github.com/heroku/heroku-cli-util/issues/320)) ([589999b](https://github.com/heroku/heroku-cli-util/commit/589999bb7c531380be9732833b53af6b52acdc2a))
+* shared confirmCommand refactor (W-20449538) ([#273](https://github.com/heroku/heroku-cli-util/issues/273)) ([8ea6f64](https://github.com/heroku/heroku-cli-util/commit/8ea6f6442ae0092ddfd0e1c8b74303953f906727))
+* sort styled-object output by key ([#288](https://github.com/heroku/heroku-cli-util/issues/288)) ([646f99f](https://github.com/heroku/heroku-cli-util/commit/646f99f88f62bff304b5159005f4dc269585f1b0))
+* update color definitions to use ANSI256 codes and add conditional Unicode display ([#274](https://github.com/heroku/heroku-cli-util/issues/274)) ([22a49e8](https://github.com/heroku/heroku-cli-util/commit/22a49e8de2606097afe0d30445c49621e652fdfa))
+
+
+### Bug Fixes
+
+* address high security vulns reported by Dependabot ([#300](https://github.com/heroku/heroku-cli-util/issues/300)) ([1896d00](https://github.com/heroku/heroku-cli-util/commit/1896d00402b3221ab7d547d9762697b365a97941))
+* address issue with ExitPromptError being thrown on 'confirmCommand' (W-21653079) ([#309](https://github.com/heroku/heroku-cli-util/issues/309)) ([43ad4f1](https://github.com/heroku/heroku-cli-util/commit/43ad4f19b0f43c6a7a76695e77a63296d7d484df))
+* bug in function 'bastionKeyPlan' (W-21546042) ([#307](https://github.com/heroku/heroku-cli-util/issues/307)) ([9b864a8](https://github.com/heroku/heroku-cli-util/commit/9b864a8be1d4e8dfebdd423d67dcaf273f6d9ac9))
+* **deps:** bump @heroku-cli/command from 12.1.1 to 12.1.2 ([#297](https://github.com/heroku/heroku-cli-util/issues/297)) ([4b3590d](https://github.com/heroku/heroku-cli-util/commit/4b3590db5d71a66e6d24a10e7ec32af683f28f3b))
+* **deps:** bump @oclif/core from 4.5.4 to 4.8.0 ([#250](https://github.com/heroku/heroku-cli-util/issues/250)) ([a9fc936](https://github.com/heroku/heroku-cli-util/commit/a9fc9369ffc193b2de65e9134833752455fcc92d))
+* **deps:** bump @oclif/table from 0.4.14 to 0.5.1 ([#269](https://github.com/heroku/heroku-cli-util/issues/269)) ([c6039f4](https://github.com/heroku/heroku-cli-util/commit/c6039f48fcd06897e8805952c7a74477798a0748))
+* **deps:** bump ansis from 4.1.0 to 4.2.0 ([#270](https://github.com/heroku/heroku-cli-util/issues/270)) ([a17b0ba](https://github.com/heroku/heroku-cli-util/commit/a17b0baaddbd2f51a5523810d93e4dafb7ddbc7e))
+* **deps:** bump lodash from 4.17.21 to 4.17.23 ([#278](https://github.com/heroku/heroku-cli-util/issues/278)) ([c82f524](https://github.com/heroku/heroku-cli-util/commit/c82f52490ae76831dd2ce9694b083c0cef6627cd))
+* remove unneeded debug statements ([#254](https://github.com/heroku/heroku-cli-util/issues/254)) ([2bb45bf](https://github.com/heroku/heroku-cli-util/commit/2bb45bf26e77987a2240d2cb59f74097780e47c6))
+* resolution for dev add-ons (W-21510586) ([#304](https://github.com/heroku/heroku-cli-util/issues/304)) ([0425de7](https://github.com/heroku/heroku-cli-util/commit/0425de72ebe2d69551a19751b1cc36e966e11018))
+* styledObject should respect keys array order ([#292](https://github.com/heroku/heroku-cli-util/issues/292)) ([2c1f7b3](https://github.com/heroku/heroku-cli-util/commit/2c1f7b33a2367cf8c320e620a72f980ebb7109a0))
+* Update how types are exported ([#236](https://github.com/heroku/heroku-cli-util/issues/236)) ([5563b34](https://github.com/heroku/heroku-cli-util/commit/5563b3431c10766ba60ea1f83a22543d793e6b43))
+* **W-20270674:** allow getAttachment to find matches via config vars ([#248](https://github.com/heroku/heroku-cli-util/issues/248)) ([0d400a7](https://github.com/heroku/heroku-cli-util/commit/0d400a7b4335f7c6e52ab1d3b869207f96516837))
+
+
+### Performance Improvements
+
+* implement lazy loading for heavy dependencies ([#318](https://github.com/heroku/heroku-cli-util/issues/318)) ([3e4eefb](https://github.com/heroku/heroku-cli-util/commit/3e4eefbcf98d6e34235893883cc1ed3dc416345d))
+
 ## [10.7.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.6.1...heroku-cli-util-v10.7.0) (2026-03-24)
 
 
