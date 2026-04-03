@@ -1,4 +1,35 @@
-import ansis from 'ansis'
+import defaultAnsis, {Ansis} from 'ansis'
+
+/**
+ * Check if colors should be enabled based on TTY and environment variables.
+ * Colors are disabled by default when output is redirected (not a TTY),
+ * unless FORCE_COLOR is explicitly set.
+ * @returns true if colors should be enabled
+ */
+function shouldEnableColors(): boolean {
+  // If FORCE_COLOR is set, let ansis handle it completely
+  if (process.env.FORCE_COLOR !== undefined) {
+    return true // use default ansis instance with its auto-detection
+  }
+
+  // If NO_COLOR is set, disable colors
+  if (process.env.NO_COLOR !== undefined && process.env.NO_COLOR !== '0') {
+    return false
+  }
+
+  // When output is redirected (not a TTY), disable colors by default
+  if (!process.stdout.isTTY) {
+    return false
+  }
+
+  return defaultAnsis.level > 0
+}
+
+// Determine if colors are enabled, and create ansis instance with appropriate level
+const colorsEnabled = shouldEnableColors()
+// Create an ansis instance with level 0 (no colors) when colors are disabled
+// This ensures all ansis methods return plain strings without ANSI codes
+const ansis = colorsEnabled ? defaultAnsis : new Ansis(0)
 
 /**
  * Color constants for Heroku CLI output
@@ -89,42 +120,69 @@ interface ColorTheme {
   addon: (text: string) => string
   app: (text: string) => string
   attachment: (text: string) => string
+  blue: (text: string) => string
+  bold: (text: string) => string
   code: (text: string) => string
   command: (text: string) => string
+  cyan: (text: string) => string
   datastore: (text: string) => string
   failure: (text: string) => string
+  gold: (text: string) => string
+  gray: (text: string) => string
+  green: (text: string) => string
   inactive: (text: string) => string
   info: (text: string) => string
   label: (text: string) => string
+  magenta: (text: string) => string
   name: (text: string) => string
+  orange: (text: string) => string
+  pink: (text: string) => string
   pipeline: (text: string) => string
+  purple: (text: string) => string
+  red: (text: string) => string
   space: (text: string) => string
   success: (text: string) => string
+  teal: (text: string) => string
   team: (text: string) => string
   user: (text: string) => string
   warning: (text: string) => string
+  yellow: (text: string) => string
 }
 
 const herokuTheme: ColorTheme = {
   addon: (text: string) => colorize(COLORS.YELLOW)(text),
   app: (text: string) => purpleColorize()(`${supportsAnsi256 ? '⬢ ' : ''}${text}`),
   attachment: (text: string) => colorize(COLORS.GOLD)(text),
+  blue: (text: string) => colorize(COLORS.BLUE)(text),
+  bold: (text: string) => ansis.bold(text),
   code: (text: string) =>
     bgColorize(COLORS.CODE_BG).fg(COLORS.CODE_FG as number).bold(`${text}`),
   command: (text: string) =>
     bgColorize(COLORS.CODE_BG).fg(COLORS.CODE_FG as number).bold(` $ ${text} `),
+  cyan: (text: string) => colorize(COLORS.CYAN)(text),
   datastore: (text: string) => colorize(COLORS.YELLOW)(`${supportsAnsi256 ? '⛁ ' : ''}${text}`),
   failure: (text: string) => colorize(COLORS.RED)(text),
+  gold: (text: string) => colorize(COLORS.GOLD)(text),
+  gray: (text: string) => colorize(COLORS.GRAY)(text),
+  green: (text: string) => colorize(COLORS.GREEN)(text),
   inactive: (text: string) => colorize(COLORS.GRAY)(text),
   info: (text: string) => colorize(COLORS.TEAL)(text),
   label: (text: string) => ansis.bold(text),
+  magenta: (text: string) => colorize(COLORS.MAGENTA)(text),
   name: (text: string) => colorize(COLORS.PINK)(text),
+
+  orange: (text: string) => colorize(COLORS.ORANGE)(text),
+  pink: (text: string) => colorize(COLORS.PINK)(text),
   pipeline: (text: string) => colorize(COLORS.MAGENTA)(text),
+  purple: (text: string) => purpleColorize()(text),
+  red: (text: string) => colorize(COLORS.RED)(text),
   space: (text: string) => colorize(COLORS.BLUE)(`${supportsAnsi256 ? '⬡ ' : ''}${text}`),
   success: (text: string) => colorize(COLORS.GREEN)(text),
+  teal: (text: string) => colorize(COLORS.TEAL)(text),
   team: (text: string) => colorize(COLORS.CYAN_LIGHT)(text),
   user: (text: string) => colorize(COLORS.CYAN)(text),
   warning: (text: string) => colorize(COLORS.ORANGE)(text),
+  yellow: (text: string) => colorize(COLORS.YELLOW)(text),
 }
 
 /** Simple theme: ANSI 8 colors only, no symbols. */
@@ -132,20 +190,33 @@ const simpleTheme: ColorTheme = {
   addon: (text: string) => ansis.yellow(text),
   app: (text: string) => ansis.magenta(text),
   attachment: (text: string) => ansis.yellow(text),
+  blue: (text: string) => ansis.blue(text),
+  bold: (text: string) => ansis.bold(text),
   code: (text: string) => ansis.bold(text),
   command: (text: string) => ansis.bold(` $ ${text} `),
+  cyan: (text: string) => ansis.cyan(text),
   datastore: (text: string) => ansis.yellow(text),
   failure: (text: string) => ansis.red(text),
+  gold: (text: string) => ansis.yellow(text),
+  gray: (text: string) => ansis.gray(text),
+  green: (text: string) => ansis.green(text),
   inactive: (text: string) => ansis.gray(text),
   info: (text: string) => ansis.cyan(text),
   label: (text: string) => ansis.bold(text),
+  magenta: (text: string) => ansis.magenta(text),
   name: (text: string) => ansis.magenta(text),
+  orange: (text: string) => ansis.yellow(text),
+  pink: (text: string) => ansis.magenta(text),
   pipeline: (text: string) => ansis.magenta(text),
+  purple: (text: string) => ansis.magenta(text),
+  red: (text: string) => ansis.red(text),
   space: (text: string) => ansis.cyan(text),
   success: (text: string) => ansis.green(text),
+  teal: (text: string) => ansis.cyan(text),
   team: (text: string) => ansis.cyan(text),
   user: (text: string) => ansis.cyan(text),
   warning: (text: string) => ansis.yellow(text),
+  yellow: (text: string) => ansis.yellow(text),
 }
 
 const activeTheme = (): ColorTheme => (getTheme() === 'simple' ? simpleTheme : herokuTheme)
@@ -179,6 +250,21 @@ export const command = (text: string) => activeTheme().command(text)
 export const code = (text: string) => activeTheme().code(text)
 export const snippet = code
 
+// Basic color functions
+export const blue = (text: string) => activeTheme().blue(text)
+export const bold = (text: string) => activeTheme().bold(text)
+export const cyan = (text: string) => activeTheme().cyan(text)
+export const gold = (text: string) => activeTheme().gold(text)
+export const gray = (text: string) => activeTheme().gray(text)
+export const green = (text: string) => activeTheme().green(text)
+export const magenta = (text: string) => activeTheme().magenta(text)
+export const orange = (text: string) => activeTheme().orange(text)
+export const pink = (text: string) => activeTheme().pink(text)
+export const purple = (text: string) => activeTheme().purple(text)
+export const red = (text: string) => activeTheme().red(text)
+export const teal = (text: string) => activeTheme().teal(text)
+export const yellow = (text: string) => activeTheme().yellow(text)
+
 /**
  * Color palette for reference
  * Shows ANSI256 codes for most colors, hex values for magenta, red, and cyan
@@ -211,8 +297,8 @@ export const colorPalette = {
 export {COLORS}
 
 /**
- * Re-export everything from ansis as a passthrough
- * This gives access to all ansis functionality while adding our custom colors
+ * Re-export the configured ansis instance with custom TTY detection
+ * Use color.ansis.bold(), color.ansis.red(), etc. for direct ansis styling
+ * These methods respect the custom shouldEnableColors() logic
  */
-export * from 'ansis'
-export {default as ansi} from 'ansis'
+export {ansis}

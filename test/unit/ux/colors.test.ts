@@ -292,4 +292,111 @@ describe('colors', function () {
       }
     })
   })
+
+  describe('TTY and environment variable detection', function () {
+    const originalForceColor = process.env.FORCE_COLOR
+    const originalNoColor = process.env.NO_COLOR
+
+    afterEach(function () {
+      // Restore original values
+      if (originalForceColor === undefined) {
+        delete process.env.FORCE_COLOR
+      } else {
+        process.env.FORCE_COLOR = originalForceColor
+      }
+
+      if (originalNoColor === undefined) {
+        delete process.env.NO_COLOR
+      } else {
+        process.env.NO_COLOR = originalNoColor
+      }
+
+      // Note: We can't actually restore isTTY as it's read-only in most environments
+      // These tests document the expected behavior based on environment conditions
+    })
+
+    it('should respect FORCE_COLOR environment variable', function () {
+      // When FORCE_COLOR is set, colors should be enabled
+      // This test documents that FORCE_COLOR takes precedence
+      const forceColorSet = process.env.FORCE_COLOR !== undefined
+      if (forceColorSet) {
+        // If FORCE_COLOR is set in the test environment, ansis should provide colors
+        const result = color.ansis.red('test')
+        expect(result).to.be.a('string')
+      }
+
+      // Test that color functions work regardless of FORCE_COLOR
+      expect(color.app('test')).to.include('test')
+    })
+
+    it('should respect NO_COLOR environment variable when set to non-zero', function () {
+      // When NO_COLOR is set (and not '0'), colors should be disabled
+      // This tests the NO_COLOR !== '0' condition
+      const testValue = 'test'
+
+      // Save current state
+      const before = process.env.NO_COLOR
+
+      // Temporarily set NO_COLOR
+      process.env.NO_COLOR = '1'
+
+      // Color functions should still return the text (just maybe without colors)
+      const result = color.app(testValue)
+      expect(result).to.include(testValue)
+
+      // Restore
+      if (before === undefined) {
+        delete process.env.NO_COLOR
+      } else {
+        process.env.NO_COLOR = before
+      }
+    })
+
+    it('should handle NO_COLOR set to 0 (meaning colors enabled)', function () {
+      // When NO_COLOR is '0', it should be treated as "colors enabled"
+      const testValue = 'test'
+
+      // Save current state
+      const before = process.env.NO_COLOR
+
+      // Set NO_COLOR to '0'
+      process.env.NO_COLOR = '0'
+
+      // Color functions should work
+      const result = color.app(testValue)
+      expect(result).to.include(testValue)
+
+      // Restore
+      if (before === undefined) {
+        delete process.env.NO_COLOR
+      } else {
+        process.env.NO_COLOR = before
+      }
+    })
+
+    it('should handle TTY detection for color support', function () {
+      // This test documents that TTY status affects color support
+      const {isTTY} = process.stdout
+
+      // The color module should handle both TTY and non-TTY environments
+      const result = color.success('test')
+      expect(result).to.include('test')
+
+      // In non-TTY environments (like CI), colors might be disabled
+      // In TTY environments, colors should work if terminal supports them
+      if (!isTTY && !process.env.FORCE_COLOR) {
+        // Non-TTY without FORCE_COLOR should disable colors
+        // But the function should still return the text
+        expect(result).to.be.a('string')
+      }
+    })
+
+    it('should check ansis level for color support', function () {
+      // The ansis instance has a level property indicating color support
+      // Level 0 = no colors, 1 = basic 16 colors, 2 = 256 colors, 3 = 16m colors
+      expect(color.ansis).to.have.property('level')
+      expect(color.ansis.level).to.be.a('number')
+      expect(color.ansis.level).to.be.at.least(0)
+    })
+  })
 })

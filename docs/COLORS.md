@@ -7,11 +7,16 @@ This document describes the new color system for the Heroku CLI, implemented usi
 ```typescript
 import {color} from '@heroku/heroku-cli-util'
 
+// Semantic Heroku colors
 console.log(color.app('my-awesome-app'))
 console.log(color.addon('heroku-postgresql'))
 console.log(color.success('Deploy complete'))
 console.log(color.team('my-team'))
-console.log(color.orange('Custom orange color'))
+
+// Direct ansis styling (bold, colors, etc.)
+console.log(color.ansis.bold('bold text'))
+console.log(color.ansis.red('red text'))
+console.log(color.ansis.hex('#FF6B6B')('custom hex color'))
 ```
 
 ## Color Definitions

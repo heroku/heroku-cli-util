@@ -14,4 +14,4 @@ if [ ! -f "examples/$COMMAND-command.ts" ]; then
   exit 1
 fi
 
-node --import ./examples/register.mjs "examples/$COMMAND-command.ts" "$@"
+npx tsx "examples/$COMMAND-command.ts" "$@"
