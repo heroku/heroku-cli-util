@@ -8,8 +8,6 @@ import ansis, {Ansis} from 'ansis'
  */
 function shouldEnableColors(): boolean {
   // If FORCE_COLOR is set, let ansis handle it completely
-  // ansis will process FORCE_COLOR=0/1/2/3/false/true according to its own logic
-  // and may enable colors even without TTY if COLORTERM=truecolor is set
   if (process.env.FORCE_COLOR !== undefined) {
     return true // use default ansis instance with its auto-detection
   }
@@ -20,12 +18,10 @@ function shouldEnableColors(): boolean {
   }
 
   // When output is redirected (not a TTY), disable colors by default
-  // This ensures `heroku logs > file.txt` doesn't contain ANSI codes
   if (!process.stdout.isTTY) {
     return false
   }
 
-  // For TTY output, trust ansis auto-detection
   return ansis.level > 0
 }
 
