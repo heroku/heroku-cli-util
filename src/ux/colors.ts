@@ -242,14 +242,8 @@ export const colorPalette = {
 export {COLORS}
 
 /**
- * Re-export all ansis methods for backward compatibility
- * These use the default ansis instance with its built-in color detection
+ * Re-export the configured ansis instance with custom TTY detection
+ * Use color.ansis.bold(), color.ansis.red(), etc. for direct ansis styling
+ * These methods respect the custom shouldEnableColors() logic
  */
-export * from 'ansis'
-
-/**
- * Re-export the configured ansis instance
- * This gives access to all ansis functionality while respecting TTY detection
- * Use color.ansi.* methods if you want to respect the custom TTY detection logic
- */
-export {ansis as ansi}
+export {ansis}

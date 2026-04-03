@@ -320,8 +320,8 @@ describe('colors', function () {
       // This test documents that FORCE_COLOR takes precedence
       const forceColorSet = process.env.FORCE_COLOR !== undefined
       if (forceColorSet) {
-        // If FORCE_COLOR is set in the test environment, ansi should provide colors
-        const result = color.ansi.red('test')
+        // If FORCE_COLOR is set in the test environment, ansis should provide colors
+        const result = color.ansis.red('test')
         expect(result).to.be.a('string')
       }
 
@@ -394,9 +394,9 @@ describe('colors', function () {
     it('should check ansis level for color support', function () {
       // The ansis instance has a level property indicating color support
       // Level 0 = no colors, 1 = basic 16 colors, 2 = 256 colors, 3 = 16m colors
-      expect(color.ansi).to.have.property('level')
-      expect(color.ansi.level).to.be.a('number')
-      expect(color.ansi.level).to.be.at.least(0)
+      expect(color.ansis).to.have.property('level')
+      expect(color.ansis.level).to.be.a('number')
+      expect(color.ansis.level).to.be.at.least(0)
     })
   })
 })
