@@ -18,8 +18,8 @@ export async function anykey(message?: string): Promise<string> {
   const {isRaw, isTTY} = process.stdin
   if (!message) {
     message = isTTY
-      ? `Press any key to continue or ${color.yellow('q')} to exit`
-      : `Press enter to continue or ${color.yellow('q')} to exit`
+      ? `Press any key to continue or ${color.ansi.yellow('q')} to exit`
+      : `Press enter to continue or ${color.ansi.yellow('q')} to exit`
   }
 
   if (isTTY) process.stdin.setRawMode(true)

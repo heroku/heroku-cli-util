@@ -314,7 +314,8 @@ describe('DatabaseResolver', function () {
           await new DatabaseResolver(heroku).getAttachment('app-no-addons', 'MAIN_DATABASE')
         } catch (error: unknown) {
           sinon.assert.calledWith(addonAttachmentResolveStub, 'app-no-addons', 'MAIN_DATABASE', {addonService: 'heroku-postgresql', namespace: undefined})
-          expect(ansis.strip((error as Error).message)).to.equal('⬢ app-no-addons has no databases')
+          // Symbol (⬢) is only included when TTY supports ANSI256, so just check the app name
+          expect(ansis.strip((error as Error).message)).to.match(/app-no-addons has no databases/)
         }
       })
 
@@ -348,7 +349,8 @@ describe('DatabaseResolver', function () {
           await new DatabaseResolver(heroku).getAttachment('my-app', 'app-no-addons::MAIN_DATABASE')
         } catch (error: unknown) {
           sinon.assert.calledWith(addonAttachmentResolveStub, 'app-no-addons', 'MAIN_DATABASE', {addonService: 'heroku-postgresql', namespace: undefined})
-          expect(ansis.strip((error as Error).message)).to.equal('⬢ app-no-addons has no databases')
+          // Symbol (⬢) is only included when TTY supports ANSI256, so just check the app name
+          expect(ansis.strip((error as Error).message)).to.match(/app-no-addons has no databases/)
         }
       })
 
