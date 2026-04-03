@@ -1,4 +1,4 @@
-import ansis, {Ansis} from 'ansis'
+import defaultAnsis, {Ansis} from 'ansis'
 
 /**
  * Check if colors should be enabled based on TTY and environment variables.
@@ -22,14 +22,14 @@ function shouldEnableColors(): boolean {
     return false
   }
 
-  return ansis.level > 0
+  return defaultAnsis.level > 0
 }
 
 // Determine if colors are enabled, and create ansis instance with appropriate level
 const colorsEnabled = shouldEnableColors()
 // Create an ansis instance with level 0 (no colors) when colors are disabled
 // This ensures all ansis methods return plain strings without ANSI codes
-const ansisInstance = colorsEnabled ? ansis : new Ansis(0)
+const ansis = colorsEnabled ? defaultAnsis : new Ansis(0)
 
 /**
  * Color constants for Heroku CLI output
@@ -88,18 +88,18 @@ const COLORS = {
 
 // Helper function to apply color based on type (number = ANSI256, string = hex)
 const colorize = (color: number | string) =>
-  typeof color === 'number' ? ansisInstance.fg(color) : ansisInstance.hex(color)
+  typeof color === 'number' ? ansis.fg(color) : ansis.hex(color)
 
 const bgColorize = (color: number | string) =>
-  typeof color === 'number' ? ansisInstance.bg(color) : ansisInstance.bgHex(color)
+  typeof color === 'number' ? ansis.bg(color) : ansis.bgHex(color)
 
 // Check if terminal supports at least ANSI256 (level >= 2)
 // Level values: 0=no color, 1=ANSI16, 2=ANSI256, 3=TrueColor
-const supportsAnsi256 = ansisInstance.level >= 2
+const supportsAnsi256 = ansis.level >= 2
 
 // Helper function for purple color that falls back to ANSI16 magenta when only ANSI16 is supported
 const purpleColorize = () =>
-  supportsAnsi256 ? ansisInstance.fg(COLORS.PURPLE) : ansisInstance.magenta
+  supportsAnsi256 ? ansis.fg(COLORS.PURPLE) : ansis.magenta
 
 /** Theme name: 'heroku' (default) or 'simple' (ANSI 8 only). Set via HEROKU_THEME env. */
 export type ThemeName = 'heroku' | 'simple'
@@ -148,7 +148,7 @@ const herokuTheme: ColorTheme = {
   failure: (text: string) => colorize(COLORS.RED)(text),
   inactive: (text: string) => colorize(COLORS.GRAY)(text),
   info: (text: string) => colorize(COLORS.TEAL)(text),
-  label: (text: string) => ansisInstance.bold(text),
+  label: (text: string) => ansis.bold(text),
   name: (text: string) => colorize(COLORS.PINK)(text),
   pipeline: (text: string) => colorize(COLORS.MAGENTA)(text),
   space: (text: string) => colorize(COLORS.BLUE)(`${supportsAnsi256 ? '⬡ ' : ''}${text}`),
@@ -160,23 +160,23 @@ const herokuTheme: ColorTheme = {
 
 /** Simple theme: ANSI 8 colors only, no symbols. */
 const simpleTheme: ColorTheme = {
-  addon: (text: string) => ansisInstance.yellow(text),
-  app: (text: string) => ansisInstance.magenta(text),
-  attachment: (text: string) => ansisInstance.yellow(text),
-  code: (text: string) => ansisInstance.bold(text),
-  command: (text: string) => ansisInstance.bold(` $ ${text} `),
-  datastore: (text: string) => ansisInstance.yellow(text),
-  failure: (text: string) => ansisInstance.red(text),
-  inactive: (text: string) => ansisInstance.gray(text),
-  info: (text: string) => ansisInstance.cyan(text),
-  label: (text: string) => ansisInstance.bold(text),
-  name: (text: string) => ansisInstance.magenta(text),
-  pipeline: (text: string) => ansisInstance.magenta(text),
-  space: (text: string) => ansisInstance.cyan(text),
-  success: (text: string) => ansisInstance.green(text),
-  team: (text: string) => ansisInstance.cyan(text),
-  user: (text: string) => ansisInstance.cyan(text),
-  warning: (text: string) => ansisInstance.yellow(text),
+  addon: (text: string) => ansis.yellow(text),
+  app: (text: string) => ansis.magenta(text),
+  attachment: (text: string) => ansis.yellow(text),
+  code: (text: string) => ansis.bold(text),
+  command: (text: string) => ansis.bold(` $ ${text} `),
+  datastore: (text: string) => ansis.yellow(text),
+  failure: (text: string) => ansis.red(text),
+  inactive: (text: string) => ansis.gray(text),
+  info: (text: string) => ansis.cyan(text),
+  label: (text: string) => ansis.bold(text),
+  name: (text: string) => ansis.magenta(text),
+  pipeline: (text: string) => ansis.magenta(text),
+  space: (text: string) => ansis.cyan(text),
+  success: (text: string) => ansis.green(text),
+  team: (text: string) => ansis.cyan(text),
+  user: (text: string) => ansis.cyan(text),
+  warning: (text: string) => ansis.yellow(text),
 }
 
 const activeTheme = (): ColorTheme => (getTheme() === 'simple' ? simpleTheme : herokuTheme)
@@ -245,4 +245,4 @@ export {COLORS}
  * Re-export the configured ansis instance
  * This gives access to all ansis functionality while respecting TTY detection
  */
-export {ansisInstance as ansi}
+export {ansis as ansi}
