@@ -121,6 +121,7 @@ interface ColorTheme {
   app: (text: string) => string
   attachment: (text: string) => string
   blue: (text: string) => string
+  bold: (text: string) => string
   code: (text: string) => string
   command: (text: string) => string
   cyan: (text: string) => string
@@ -153,6 +154,7 @@ const herokuTheme: ColorTheme = {
   app: (text: string) => purpleColorize()(`${supportsAnsi256 ? '⬢ ' : ''}${text}`),
   attachment: (text: string) => colorize(COLORS.GOLD)(text),
   blue: (text: string) => colorize(COLORS.BLUE)(text),
+  bold: (text: string) => ansis.bold(text),
   code: (text: string) =>
     bgColorize(COLORS.CODE_BG).fg(COLORS.CODE_FG as number).bold(`${text}`),
   command: (text: string) =>
@@ -189,6 +191,7 @@ const simpleTheme: ColorTheme = {
   app: (text: string) => ansis.magenta(text),
   attachment: (text: string) => ansis.yellow(text),
   blue: (text: string) => ansis.blue(text),
+  bold: (text: string) => ansis.bold(text),
   code: (text: string) => ansis.bold(text),
   command: (text: string) => ansis.bold(` $ ${text} `),
   cyan: (text: string) => ansis.cyan(text),
@@ -247,8 +250,9 @@ export const command = (text: string) => activeTheme().command(text)
 export const code = (text: string) => activeTheme().code(text)
 export const snippet = code
 
-// Basic color functions (respect active theme)
+// Basic color functions
 export const blue = (text: string) => activeTheme().blue(text)
+export const bold = (text: string) => activeTheme().bold(text)
 export const cyan = (text: string) => activeTheme().cyan(text)
 export const gold = (text: string) => activeTheme().gold(text)
 export const gray = (text: string) => activeTheme().gray(text)
