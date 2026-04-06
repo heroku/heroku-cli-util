@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.8.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.7.0...heroku-cli-util-v10.8.0) (2026-04-06)
+
+
+### Features
+
+* disable colors by default when output is not a TTY and add basic colors to exports ([#320](https://github.com/heroku/heroku-cli-util/issues/320)) ([589999b](https://github.com/heroku/heroku-cli-util/commit/589999bb7c531380be9732833b53af6b52acdc2a))
+
+
+### Performance Improvements
+
+* implement lazy loading for heavy dependencies ([#318](https://github.com/heroku/heroku-cli-util/issues/318)) ([3e4eefb](https://github.com/heroku/heroku-cli-util/commit/3e4eefbcf98d6e34235893883cc1ed3dc416345d))
+
 ## [10.7.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.6.1...heroku-cli-util-v10.7.0) (2026-03-24)
 
 
