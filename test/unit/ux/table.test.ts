@@ -1,6 +1,6 @@
 import {captureOutput} from '@heroku-cli/test-utils'
 import ansis from 'ansis'
-import {expect} from 'chai'
+import {describe, expect, it} from 'vitest'
 
 import {table} from '../../../src/ux/table.js'
 
@@ -14,9 +14,9 @@ describe('table', function () {
     ]
     const columns = {baz: {header: 'Baz'}, foo: {header: 'Foo'}}
     const {stdout} = await captureOutput(() => table(data, columns, {noStyle: true}))
-    expect(removeAllWhitespace(stdout)).to.include(removeAllWhitespace('Baz   Foo'))
-    expect(removeAllWhitespace(stdout)).to.include(removeAllWhitespace('42    bar'))
-    expect(removeAllWhitespace(stdout)).to.include(removeAllWhitespace('7     qux'))
+    expect(removeAllWhitespace(stdout)).toContain(removeAllWhitespace('Baz   Foo'))
+    expect(removeAllWhitespace(stdout)).toContain(removeAllWhitespace('42    bar'))
+    expect(removeAllWhitespace(stdout)).toContain(removeAllWhitespace('7     qux'))
   })
 
   it('should respect sort options', async function () {
@@ -32,9 +32,9 @@ describe('table', function () {
         sort: {age: 'asc'},
       }))
     // Should be sorted by age in ascending order
-    expect(removeAllWhitespace(stdout)).to.include(removeAllWhitespace('Age   Name'))
-    expect(removeAllWhitespace(stdout)).to.include(removeAllWhitespace('25    Bob'))
-    expect(removeAllWhitespace(stdout)).to.include(removeAllWhitespace('30    Alice'))
-    expect(removeAllWhitespace(stdout)).to.include(removeAllWhitespace('35    Charlie'))
+    expect(removeAllWhitespace(stdout)).toContain(removeAllWhitespace('Age   Name'))
+    expect(removeAllWhitespace(stdout)).toContain(removeAllWhitespace('25    Bob'))
+    expect(removeAllWhitespace(stdout)).toContain(removeAllWhitespace('30    Alice'))
+    expect(removeAllWhitespace(stdout)).toContain(removeAllWhitespace('35    Charlie'))
   })
 })

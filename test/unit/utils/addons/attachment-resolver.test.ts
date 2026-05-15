@@ -2,9 +2,10 @@
 import {APIClient} from '@heroku-cli/command'
 import {HerokuAPIError} from '@heroku-cli/command/lib/api-client.js'
 import {Config} from '@oclif/core'
-import * as chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import nock from 'nock'
+import {
+  afterEach, beforeEach, describe, expect, it,
+} from 'vitest'
 
 import {AmbiguousError} from '../../../../src/errors/ambiguous.js'
 import {NotFound} from '../../../../src/errors/not-found.js'
@@ -16,10 +17,6 @@ import {
   foreignAttachment,
   HEROKU_API,
 } from '../../../fixtures/attachment-mocks.js'
-
-const {expect} = chai
-
-chai.use(chaiAsPromised)
 
 describe('AddonAttachmentResolver#resolve', function () {
   let config: Config
@@ -42,7 +39,7 @@ describe('AddonAttachmentResolver#resolve', function () {
 
       const result = await new AddonAttachmentResolver(heroku).resolve(undefined, 'attachment-1')
 
-      expect(result).to.deep.equal(defaultAttachment)
+      expect(result).toEqual(defaultAttachment)
     })
 
     it('returns the resolved addon attachment if one matches by app and attachment name', async function () {
@@ -52,7 +49,7 @@ describe('AddonAttachmentResolver#resolve', function () {
 
       const result = await new AddonAttachmentResolver(heroku).resolve(undefined, 'my-app::DATABASE')
 
-      expect(result).to.deep.equal(defaultAttachment)
+      expect(result).toEqual(defaultAttachment)
     })
 
     it('returns the resolved addon attachment if one matches by app and config var name', async function () {
@@ -62,7 +59,7 @@ describe('AddonAttachmentResolver#resolve', function () {
 
       const result = await new AddonAttachmentResolver(heroku).resolve(undefined, 'my-app::DATABASE_URL')
 
-      expect(result).to.deep.equal(defaultAttachment)
+      expect(result).toEqual(defaultAttachment)
     })
 
     it('throws a not found error when trying to resolve only by attachment name', async function () {
@@ -74,9 +71,9 @@ describe('AddonAttachmentResolver#resolve', function () {
         await new AddonAttachmentResolver(heroku).resolve(undefined, 'DATABASE')
       } catch (error: unknown) {
         const apiError = error as HerokuAPIError
-        expect(apiError.body.id).to.equal('not_found')
-        expect(apiError.body.message).to.equal('Couldn\'t find that add on attachment.')
-        expect(apiError.http.statusCode).to.equal(404)
+        expect(apiError.body.id).toBe('not_found')
+        expect(apiError.body.message).toBe('Couldn\'t find that add on attachment.')
+        expect(apiError.http.statusCode).toBe(404)
       }
     })
 
@@ -89,9 +86,9 @@ describe('AddonAttachmentResolver#resolve', function () {
         await new AddonAttachmentResolver(heroku).resolve(undefined, 'DATABASE_URL')
       } catch (error: unknown) {
         const apiError = error as HerokuAPIError
-        expect(apiError.body.id).to.equal('not_found')
-        expect(apiError.body.message).to.equal('Couldn\'t find that add on attachment.')
-        expect(apiError.http.statusCode).to.equal(404)
+        expect(apiError.body.id).toBe('not_found')
+        expect(apiError.body.message).toBe('Couldn\'t find that add on attachment.')
+        expect(apiError.http.statusCode).toBe(404)
       }
     })
 
@@ -100,7 +97,7 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
 
-      await expect(new AddonAttachmentResolver(heroku).resolve(undefined, 'my-app::DATA')).to.be.rejectedWith(AmbiguousError)
+      await expect(new AddonAttachmentResolver(heroku).resolve(undefined, 'my-app::DATA')).rejects.toThrow(AmbiguousError)
     })
 
     it('throws an ambiguous error when multiple matches by app name and partial config var name', async function () {
@@ -108,7 +105,7 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
 
-      await expect(new AddonAttachmentResolver(heroku).resolve(undefined, 'my-app::BASE_URL')).to.be.rejectedWith(AmbiguousError)
+      await expect(new AddonAttachmentResolver(heroku).resolve(undefined, 'my-app::BASE_URL')).rejects.toThrow(AmbiguousError)
     })
   })
 
@@ -122,9 +119,9 @@ describe('AddonAttachmentResolver#resolve', function () {
         await new AddonAttachmentResolver(heroku).resolve('missing-app', 'whatever')
       } catch (error: unknown) {
         const apiError = error as HerokuAPIError
-        expect(apiError.body.id).to.equal('not_found')
-        expect(apiError.body.message).to.equal('Couldn\'t find that app.')
-        expect(apiError.http.statusCode).to.equal(404)
+        expect(apiError.body.id).toBe('not_found')
+        expect(apiError.body.message).toBe('Couldn\'t find that app.')
+        expect(apiError.http.statusCode).toBe(404)
       }
     })
 
@@ -137,9 +134,9 @@ describe('AddonAttachmentResolver#resolve', function () {
         await new AddonAttachmentResolver(heroku).resolve('my-app', foreignAttachment.id)
       } catch (error: unknown) {
         const apiError = error as HerokuAPIError
-        expect(apiError.body.id).to.equal('not_found')
-        expect(apiError.body.message).to.equal('Couldn\'t find that add on attachment.')
-        expect(apiError.http.statusCode).to.equal(404)
+        expect(apiError.body.id).toBe('not_found')
+        expect(apiError.body.message).toBe('Couldn\'t find that add on attachment.')
+        expect(apiError.http.statusCode).toBe(404)
       }
     })
 
@@ -152,9 +149,9 @@ describe('AddonAttachmentResolver#resolve', function () {
         await new AddonAttachmentResolver(heroku).resolve('my-app', 'PRIMARY_DB')
       } catch (error: unknown) {
         const apiError = error as HerokuAPIError
-        expect(apiError.body.id).to.equal('not_found')
-        expect(apiError.body.message).to.equal('Couldn\'t find that add on attachment.')
-        expect(apiError.http.statusCode).to.equal(404)
+        expect(apiError.body.id).toBe('not_found')
+        expect(apiError.body.message).toBe('Couldn\'t find that add on attachment.')
+        expect(apiError.http.statusCode).toBe(404)
       }
     })
 
@@ -170,9 +167,9 @@ describe('AddonAttachmentResolver#resolve', function () {
         await new AddonAttachmentResolver(heroku).resolve('my-app', 'my-other-app::DATABASE')
       } catch (error: unknown) {
         const apiError = error as HerokuAPIError
-        expect(apiError.body.id).to.equal('not_found')
-        expect(apiError.body.message).to.equal('Couldn\'t find that add on attachment.')
-        expect(apiError.http.statusCode).to.equal(404)
+        expect(apiError.body.id).toBe('not_found')
+        expect(apiError.body.message).toBe('Couldn\'t find that add on attachment.')
+        expect(apiError.http.statusCode).toBe(404)
       }
     })
 
@@ -183,7 +180,7 @@ describe('AddonAttachmentResolver#resolve', function () {
 
       const result = await new AddonAttachmentResolver(heroku).resolve('my-app', 'DATABASE')
 
-      expect(result).to.deep.equal(defaultAttachment)
+      expect(result).toEqual(defaultAttachment)
     })
 
     it('returns the resolved addon attachment if one matches exactly by config var name', async function () {
@@ -193,7 +190,7 @@ describe('AddonAttachmentResolver#resolve', function () {
 
       const result = await new AddonAttachmentResolver(heroku).resolve('my-app', 'DATABASE_URL')
 
-      expect(result).to.deep.equal(defaultAttachment)
+      expect(result).toEqual(defaultAttachment)
     })
 
     it('throws an ambiguous error when multiple matches by partial attachment name', async function () {
@@ -201,7 +198,7 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
 
-      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'DATA')).to.be.rejectedWith(AmbiguousError)
+      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'DATA')).rejects.toThrow(AmbiguousError)
     })
 
     it('throws an ambiguous error when multiple matches by partial config var name', async function () {
@@ -209,7 +206,7 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
 
-      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'BASE_URL')).to.be.rejectedWith(AmbiguousError)
+      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'BASE_URL')).rejects.toThrow(AmbiguousError)
     })
   })
 
@@ -219,7 +216,7 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
 
-      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'DATA', {namespace: 'missing'})).to.be.rejectedWith(NotFound)
+      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'DATA', {namespace: 'missing'})).rejects.toThrow(NotFound)
     })
 
     it('filters by namespace if one matches the provided name', async function () {
@@ -228,7 +225,7 @@ describe('AddonAttachmentResolver#resolve', function () {
         .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
 
       const result = await new AddonAttachmentResolver(heroku).resolve('my-app', 'DATA', {namespace: 'read-only'})
-      expect(result.namespace).to.equal('read-only')
+      expect(result.namespace).toBe('read-only')
     })
 
     it('throws an ambiguous error when multiple matches after filtering by namespace', async function () {
@@ -236,7 +233,7 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
 
-      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'BASE_URL', {namespace: undefined})).to.be.rejectedWith(AmbiguousError)
+      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'BASE_URL', {namespace: undefined})).rejects.toThrow(AmbiguousError)
     })
   })
 
@@ -250,8 +247,8 @@ describe('AddonAttachmentResolver#resolve', function () {
         await new AddonAttachmentResolver(heroku).resolve('my-app', 'DATABASE', {addonService: 'heroku-redis'})
       } catch (error: unknown) {
         const notFoundError = error as NotFound
-        expect(notFoundError.body.id).to.equal('not_found')
-        expect(notFoundError.body.message).to.equal('Couldn\'t find that addon.')
+        expect(notFoundError.body.id).toBe('not_found')
+        expect(notFoundError.body.message).toBe('Couldn\'t find that addon.')
       }
     })
 
@@ -262,7 +259,7 @@ describe('AddonAttachmentResolver#resolve', function () {
 
       const result = await new AddonAttachmentResolver(heroku).resolve('my-app', 'DATABASE_URL', {addonService: 'heroku-postgresql'})
 
-      expect(result).to.deep.equal(defaultAttachment)
+      expect(result).toEqual(defaultAttachment)
     })
 
     it('throws an ambiguous error when multiple matches for the same addon service', async function () {
@@ -270,7 +267,7 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(200, [defaultAttachment, credentialAttachment, followerAttachment])
 
-      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'BASE_URL', {addonService: 'heroku-postgresql'})).to.be.rejectedWith(AmbiguousError)
+      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'BASE_URL', {addonService: 'heroku-postgresql'})).rejects.toThrow(AmbiguousError)
     })
   })
 })

@@ -1,11 +1,11 @@
-/* eslint-disable camelcase, import/no-named-as-default-member */
+/* eslint-disable camelcase */
 import {APIClient} from '@heroku-cli/command'
 import {Config} from '@oclif/core'
-import * as chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import nock from 'nock'
 import {Server} from 'node:net'
-import sinon from 'sinon'
+import {
+  afterEach, beforeEach, describe, expect, it, vi,
+} from 'vitest'
 
 import {
   bastionKeyPlan,
@@ -34,40 +34,36 @@ import {
 } from '../../../fixtures/config-var-mocks.js'
 import {defaultPsqlConfigs, privateDatabasePsqlConfigs, shieldDatabasePsqlConfigs} from '../../../fixtures/psql-mocks.js'
 
-const {expect} = chai
-
-chai.use(chaiAsPromised)
-
 describe('bastion', function () {
   describe('bastionKeyPlan', function () {
     it('returns true for Classic Private database attachments', function () {
       const result = bastionKeyPlan(privateDatabaseAttachment)
-      expect(result).to.be.true
+      expect(result).toBe(true)
     })
 
     it('returns false for Advanced Private database attachments', function () {
       const result = bastionKeyPlan(advancedPrivateDatabaseAttachment)
-      expect(result).to.be.false
+      expect(result).toBe(false)
     })
 
     it('returns false for attachments with plan names not containing "private"', function () {
       const result = bastionKeyPlan(defaultAttachment)
-      expect(result).to.be.false
+      expect(result).toBe(false)
     })
 
     it('returns false for Classic Shield database attachments', function () {
       const result = bastionKeyPlan(shieldDatabaseAttachment)
-      expect(result).to.be.false
+      expect(result).toBe(false)
     })
 
     it('returns false for Advanced Shield databases', function () {
       const result = bastionKeyPlan(advancedShieldDatabaseAttachment)
-      expect(result).to.be.false
+      expect(result).toBe(false)
     })
 
     it('returns false for developer addon attachments', function () {
       const result = bastionKeyPlan(developerAddonAttachment)
-      expect(result).to.be.false
+      expect(result).toBe(false)
     })
 
     it('returns true for attachments with plans that start with "private" only', function () {
@@ -93,8 +89,8 @@ describe('bastion', function () {
         },
       }
 
-      expect(bastionKeyPlan(attachmentWithPrivateInAddonServiceSlug)).to.be.false
-      expect(bastionKeyPlan(attachmentWithPrivateAtStartOfPlanName)).to.be.true
+      expect(bastionKeyPlan(attachmentWithPrivateInAddonServiceSlug)).toBe(false)
+      expect(bastionKeyPlan(attachmentWithPrivateAtStartOfPlanName)).toBe(true)
     })
   })
 
@@ -111,7 +107,7 @@ describe('bastion', function () {
 
     afterEach(function () {
       process.env = env
-      sinon.restore()
+      vi.restoreAllMocks()
       nock.cleanAll()
     })
 
@@ -129,7 +125,7 @@ describe('bastion', function () {
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
-      expect(result).to.deep.equal({
+      expect(result).toEqual({
         bastionHost: '10.7.0.1',
         bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       })
@@ -150,7 +146,7 @@ describe('bastion', function () {
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
-      expect(result).to.deep.equal({})
+      expect(result).toEqual({})
 
       api.done()
     })
@@ -168,7 +164,7 @@ describe('bastion', function () {
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
-      expect(result).to.deep.equal({})
+      expect(result).toEqual({})
 
       api.done()
     })
@@ -184,7 +180,7 @@ describe('bastion', function () {
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
-      expect(result).to.deep.equal({})
+      expect(result).toEqual({})
 
       api.done()
     })
@@ -203,7 +199,7 @@ describe('bastion', function () {
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
-      expect(result).to.deep.equal({})
+      expect(result).toEqual({})
 
       api.done()
     })
@@ -224,7 +220,7 @@ describe('bastion', function () {
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
-      expect(result).to.deep.equal({
+      expect(result).toEqual({
         bastionHost: '10.7.0.1',
         bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       })
@@ -248,7 +244,7 @@ describe('bastion', function () {
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
-      expect(result).to.deep.equal({
+      expect(result).toEqual({
         bastionHost: '10.7.0.1',
         bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       })
@@ -273,7 +269,7 @@ describe('bastion', function () {
 
       const result = await fetchBastionConfig(heroku, privateDatabaseAttachment.addon)
 
-      expect(result).to.deep.equal({
+      expect(result).toEqual({
         bastionHost: '10.7.0.1',
         bastionKey: '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----',
       })
@@ -289,7 +285,7 @@ describe('bastion', function () {
         .reply(404, {id: 'not_found', message: 'Couldn\'t find that database.', resource: 'database'})
 
       await expect(fetchBastionConfig(heroku, privateDatabaseAttachment.addon))
-        .to.be.rejectedWith('Couldn\'t find that database.')
+        .rejects.toThrow('Couldn\'t find that database.')
 
       api.done()
     })
@@ -299,7 +295,7 @@ describe('bastion', function () {
     it('returns bastion config when both BASTION_KEY and BASTIONS are present', function () {
       const result = getBastionConfig(shieldDatabaseConfigVars, 'DATABASE')
 
-      expect(result).to.deep.equal({
+      expect(result).toEqual({
         bastionHost: '10.7.0.1',
         bastionKey: '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----',
       })
@@ -311,7 +307,7 @@ describe('bastion', function () {
 
       const result = getBastionConfig(configWithoutKey, 'DATABASE')
 
-      expect(result).to.deep.equal({})
+      expect(result).toEqual({})
     })
 
     it('returns empty object when BASTIONS is missing', function () {
@@ -320,7 +316,7 @@ describe('bastion', function () {
 
       const result = getBastionConfig(configWithoutBastions, 'DATABASE')
 
-      expect(result).to.deep.equal({})
+      expect(result).toEqual({})
     })
 
     it('returns empty object when BASTIONS is empty string', function () {
@@ -331,7 +327,7 @@ describe('bastion', function () {
 
       const result = getBastionConfig(configWithEmptyBastions, 'DATABASE')
 
-      expect(result).to.deep.equal({})
+      expect(result).toEqual({})
     })
 
     it('returns empty object when BASTION_KEY is empty string', function () {
@@ -342,7 +338,7 @@ describe('bastion', function () {
 
       const result = getBastionConfig(configWithEmptyKey, 'DATABASE')
 
-      expect(result).to.deep.equal({})
+      expect(result).toEqual({})
     })
 
     it('returns empty object when both BASTION_KEY and BASTIONS are empty', function () {
@@ -354,19 +350,19 @@ describe('bastion', function () {
 
       const result = getBastionConfig(configWithEmptyValues, 'DATABASE')
 
-      expect(result).to.deep.equal({})
+      expect(result).toEqual({})
     })
 
     it('returns empty object when config vars are completely empty', function () {
       const result = getBastionConfig(emptyAppConfigVars, 'DATABASE')
 
-      expect(result).to.deep.equal({})
+      expect(result).toEqual({})
     })
 
     it('returns empty object for non-shield database config vars', function () {
       const result = getBastionConfig(myAppConfigVars, 'MAIN_DATABASE')
 
-      expect(result).to.deep.equal({})
+      expect(result).toEqual({})
     })
 
     it('handles multiple bastion hosts and selects one randomly', function () {
@@ -377,8 +373,8 @@ describe('bastion', function () {
 
       const result = getBastionConfig(configWithMultipleBastions, 'DATABASE')
 
-      expect(result).to.have.property('bastionKey', '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----')
-      expect(['10.7.0.1', '10.7.0.2', '10.7.0.3']).to.include(result.bastionHost)
+      expect(result).toHaveProperty('bastionKey', '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----')
+      expect(['10.7.0.1', '10.7.0.2', '10.7.0.3']).toContain(result.bastionHost)
     })
 
     it('handles single bastion host without commas', function () {
@@ -389,7 +385,7 @@ describe('bastion', function () {
 
       const result = getBastionConfig(configWithSingleBastion, 'DATABASE')
 
-      expect(result).to.deep.equal({
+      expect(result).toEqual({
         bastionHost: '10.7.0.1',
         bastionKey: '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----',
       })
@@ -413,24 +409,24 @@ describe('bastion', function () {
         const result = getPsqlConfigs(defaultConnectionDetails)
 
         // Verify dbEnv structure
-        expect(result.dbEnv).to.have.property('PGDATABASE', 'db1')
-        expect(result.dbEnv).to.have.property('PGHOST', 'main-database.example.com')
-        expect(result.dbEnv).to.have.property('PGPASSWORD', 'password1')
-        expect(result.dbEnv).to.have.property('PGPORT', '5432')
-        expect(result.dbEnv).to.have.property('PGUSER', 'user1')
-        expect(result.dbEnv).to.have.property('PGAPPNAME', 'psql non-interactive')
-        expect(result.dbEnv).to.have.property('PGSSLMODE', 'require')
+        expect(result.dbEnv).toHaveProperty('PGDATABASE', 'db1')
+        expect(result.dbEnv).toHaveProperty('PGHOST', 'main-database.example.com')
+        expect(result.dbEnv).toHaveProperty('PGPASSWORD', 'password1')
+        expect(result.dbEnv).toHaveProperty('PGPORT', '5432')
+        expect(result.dbEnv).toHaveProperty('PGUSER', 'user1')
+        expect(result.dbEnv).toHaveProperty('PGAPPNAME', 'psql non-interactive')
+        expect(result.dbEnv).toHaveProperty('PGSSLMODE', 'require')
 
         // Verify dbTunnelConfig structure
-        expect(result.dbTunnelConfig).to.have.property('dstHost', 'main-database.example.com')
-        expect(result.dbTunnelConfig).to.have.property('dstPort', 5432)
-        expect(result.dbTunnelConfig).to.have.property('host', undefined)
-        expect(result.dbTunnelConfig).to.have.property('localHost', '127.0.0.1')
-        expect(result.dbTunnelConfig).to.have.property('localPort').that.is.a('number')
-        expect(result.dbTunnelConfig.localPort).to.be.at.least(49_152)
-        expect(result.dbTunnelConfig.localPort).to.be.at.most(65_535)
-        expect(result.dbTunnelConfig).to.have.property('privateKey', undefined)
-        expect(result.dbTunnelConfig).to.have.property('username', 'bastion')
+        expect(result.dbTunnelConfig).toHaveProperty('dstHost', 'main-database.example.com')
+        expect(result.dbTunnelConfig).toHaveProperty('dstPort', 5432)
+        expect(result.dbTunnelConfig).toHaveProperty('host')
+        expect(result.dbTunnelConfig).toHaveProperty('localHost', '127.0.0.1')
+        expect(result.dbTunnelConfig).toHaveProperty('localPort', expect.any(Number))
+        expect(result.dbTunnelConfig.localPort).toBeGreaterThanOrEqual(49_152)
+        expect(result.dbTunnelConfig.localPort).toBeLessThanOrEqual(65_535)
+        expect(result.dbTunnelConfig).toHaveProperty('privateKey')
+        expect(result.dbTunnelConfig).toHaveProperty('username', 'bastion')
       })
     })
 
@@ -439,30 +435,30 @@ describe('bastion', function () {
         const result = getPsqlConfigs(shieldDatabaseConnectionDetails)
 
         // Verify dbEnv structure - PGHOST and PGPORT should be adjusted for tunnel
-        expect(result.dbEnv).to.have.property('PGDATABASE', 'db1')
-        expect(result.dbEnv).to.have.property('PGHOST', '127.0.0.1') // Adjusted to tunnel local host
-        expect(result.dbEnv).to.have.property('PGPASSWORD', 'password7')
-        expect(result.dbEnv).to.have.property('PGPORT').that.is.a('string')
+        expect(result.dbEnv).toHaveProperty('PGDATABASE', 'db1')
+        expect(result.dbEnv).toHaveProperty('PGHOST', '127.0.0.1') // Adjusted to tunnel local host
+        expect(result.dbEnv).toHaveProperty('PGPASSWORD', 'password7')
+        expect(typeof result.dbEnv.PGPORT).toBe('string')
         const pgPort = Number.parseInt(result.dbEnv.PGPORT!, 10)
-        expect(pgPort).to.be.at.least(49_152)
-        expect(pgPort).to.be.at.most(65_535)
-        expect(result.dbEnv).to.have.property('PGUSER', 'user7')
-        expect(result.dbEnv).to.have.property('PGAPPNAME', 'psql non-interactive')
-        expect(result.dbEnv).to.have.property('PGSSLMODE', 'require')
+        expect(pgPort).toBeGreaterThanOrEqual(49_152)
+        expect(pgPort).toBeLessThanOrEqual(65_535)
+        expect(result.dbEnv).toHaveProperty('PGUSER', 'user7')
+        expect(result.dbEnv).toHaveProperty('PGAPPNAME', 'psql non-interactive')
+        expect(result.dbEnv).toHaveProperty('PGSSLMODE', 'require')
 
         // Verify dbTunnelConfig structure
-        expect(result.dbTunnelConfig).to.have.property('dstHost', 'shield-database.example.com')
-        expect(result.dbTunnelConfig).to.have.property('dstPort', 5432)
-        expect(result.dbTunnelConfig).to.have.property('host', '10.7.0.1')
-        expect(result.dbTunnelConfig).to.have.property('localHost', '127.0.0.1')
-        expect(result.dbTunnelConfig).to.have.property('localPort').that.is.a('number')
-        expect(result.dbTunnelConfig.localPort).to.be.at.least(49_152)
-        expect(result.dbTunnelConfig.localPort).to.be.at.most(65_535)
-        expect(result.dbTunnelConfig).to.have.property('privateKey', '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----')
-        expect(result.dbTunnelConfig).to.have.property('username', 'bastion')
+        expect(result.dbTunnelConfig).toHaveProperty('dstHost', 'shield-database.example.com')
+        expect(result.dbTunnelConfig).toHaveProperty('dstPort', 5432)
+        expect(result.dbTunnelConfig).toHaveProperty('host', '10.7.0.1')
+        expect(result.dbTunnelConfig).toHaveProperty('localHost', '127.0.0.1')
+        expect(result.dbTunnelConfig).toHaveProperty('localPort', expect.any(Number))
+        expect(result.dbTunnelConfig.localPort).toBeGreaterThanOrEqual(49_152)
+        expect(result.dbTunnelConfig.localPort).toBeLessThanOrEqual(65_535)
+        expect(result.dbTunnelConfig).toHaveProperty('privateKey', '-----BEGIN EC PRIVATE KEY-----\nshield-bastion-key\n-----END EC PRIVATE KEY-----')
+        expect(result.dbTunnelConfig).toHaveProperty('username', 'bastion')
 
         // Verify that localPort in dbEnv matches localPort in dbTunnelConfig
-        expect(result.dbEnv.PGPORT).to.equal(result.dbTunnelConfig.localPort!.toString())
+        expect(result.dbEnv.PGPORT).toBe(result.dbTunnelConfig.localPort!.toString())
       })
     })
 
@@ -471,37 +467,37 @@ describe('bastion', function () {
         const result = getPsqlConfigs(privateDatabaseConnectionDetails)
 
         // Verify dbEnv structure - PGHOST and PGPORT should be adjusted for tunnel
-        expect(result.dbEnv).to.have.property('PGDATABASE', 'db1')
-        expect(result.dbEnv).to.have.property('PGHOST', '127.0.0.1') // Adjusted to tunnel local host
-        expect(result.dbEnv).to.have.property('PGPASSWORD', 'password8')
-        expect(result.dbEnv).to.have.property('PGPORT').that.is.a('string')
+        expect(result.dbEnv).toHaveProperty('PGDATABASE', 'db1')
+        expect(result.dbEnv).toHaveProperty('PGHOST', '127.0.0.1') // Adjusted to tunnel local host
+        expect(result.dbEnv).toHaveProperty('PGPASSWORD', 'password8')
+        expect(typeof result.dbEnv.PGPORT).toBe('string')
         const pgPort = Number.parseInt(result.dbEnv.PGPORT!, 10)
-        expect(pgPort).to.be.at.least(49_152)
-        expect(pgPort).to.be.at.most(65_535)
-        expect(result.dbEnv).to.have.property('PGUSER', 'user8')
-        expect(result.dbEnv).to.have.property('PGAPPNAME', 'psql non-interactive')
-        expect(result.dbEnv).to.have.property('PGSSLMODE', 'require')
+        expect(pgPort).toBeGreaterThanOrEqual(49_152)
+        expect(pgPort).toBeLessThanOrEqual(65_535)
+        expect(result.dbEnv).toHaveProperty('PGUSER', 'user8')
+        expect(result.dbEnv).toHaveProperty('PGAPPNAME', 'psql non-interactive')
+        expect(result.dbEnv).toHaveProperty('PGSSLMODE', 'require')
 
         // Verify dbTunnelConfig structure
-        expect(result.dbTunnelConfig).to.have.property('dstHost', 'private-database.example.com')
-        expect(result.dbTunnelConfig).to.have.property('dstPort', 5432)
-        expect(result.dbTunnelConfig).to.have.property('host', '10.7.0.2')
-        expect(result.dbTunnelConfig).to.have.property('localHost', '127.0.0.1')
-        expect(result.dbTunnelConfig).to.have.property('localPort').that.is.a('number')
-        expect(result.dbTunnelConfig.localPort).to.be.at.least(49_152)
-        expect(result.dbTunnelConfig.localPort).to.be.at.most(65_535)
-        expect(result.dbTunnelConfig).to.have.property('privateKey', '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----')
-        expect(result.dbTunnelConfig).to.have.property('username', 'bastion')
+        expect(result.dbTunnelConfig).toHaveProperty('dstHost', 'private-database.example.com')
+        expect(result.dbTunnelConfig).toHaveProperty('dstPort', 5432)
+        expect(result.dbTunnelConfig).toHaveProperty('host', '10.7.0.2')
+        expect(result.dbTunnelConfig).toHaveProperty('localHost', '127.0.0.1')
+        expect(result.dbTunnelConfig).toHaveProperty('localPort', expect.any(Number))
+        expect(result.dbTunnelConfig.localPort).toBeGreaterThanOrEqual(49_152)
+        expect(result.dbTunnelConfig.localPort).toBeLessThanOrEqual(65_535)
+        expect(result.dbTunnelConfig).toHaveProperty('privateKey', '-----BEGIN EC PRIVATE KEY-----\nprivate-bastion-key\n-----END EC PRIVATE KEY-----')
+        expect(result.dbTunnelConfig).toHaveProperty('username', 'bastion')
 
         // Verify that localPort in dbEnv matches localPort in dbTunnelConfig
-        expect(result.dbEnv.PGPORT).to.equal(result.dbTunnelConfig.localPort!.toString())
+        expect(result.dbEnv.PGPORT).toBe(result.dbTunnelConfig.localPort!.toString())
       })
     })
 
     describe('SSL mode behavior', function () {
       it('sets PGSSLMODE to require for non-localhost hosts', function () {
         const result = getPsqlConfigs(defaultConnectionDetails)
-        expect(result.dbEnv.PGSSLMODE).to.equal('require')
+        expect(result.dbEnv.PGSSLMODE).toBe('require')
       })
 
       it('sets PGSSLMODE to prefer for localhost hosts', function () {
@@ -512,7 +508,7 @@ describe('bastion', function () {
 
         const result = getPsqlConfigs(localhostConnectionDetails)
 
-        expect(result.dbEnv.PGSSLMODE).to.equal('prefer')
+        expect(result.dbEnv.PGSSLMODE).toBe('prefer')
       })
     })
 
@@ -522,7 +518,7 @@ describe('bastion', function () {
 
         const result = getPsqlConfigs(defaultConnectionDetails)
 
-        expect(result.dbEnv).to.have.property('PGAPPNAME', 'my-custom-app')
+        expect(result.dbEnv).toHaveProperty('PGAPPNAME', 'my-custom-app')
       })
 
       it('preserves user-defined PGSSLMODE when present in process.env', function () {
@@ -530,7 +526,7 @@ describe('bastion', function () {
 
         const result = getPsqlConfigs(defaultConnectionDetails)
 
-        expect(result.dbEnv).to.have.property('PGSSLMODE', 'disable')
+        expect(result.dbEnv).toHaveProperty('PGSSLMODE', 'disable')
       })
 
       it('preserves both user-defined PGAPPNAME and PGSSLMODE when present in process.env', function () {
@@ -539,8 +535,8 @@ describe('bastion', function () {
 
         const result = getPsqlConfigs(defaultConnectionDetails)
 
-        expect(result.dbEnv).to.have.property('PGAPPNAME', 'my-custom-app')
-        expect(result.dbEnv).to.have.property('PGSSLMODE', 'verify-full')
+        expect(result.dbEnv).toHaveProperty('PGAPPNAME', 'my-custom-app')
+        expect(result.dbEnv).toHaveProperty('PGSSLMODE', 'verify-full')
       })
 
       it('uses default PGAPPNAME when not defined in process.env', function () {
@@ -548,7 +544,7 @@ describe('bastion', function () {
 
         const result = getPsqlConfigs(defaultConnectionDetails)
 
-        expect(result.dbEnv).to.have.property('PGAPPNAME', 'psql non-interactive')
+        expect(result.dbEnv).toHaveProperty('PGAPPNAME', 'psql non-interactive')
       })
 
       it('uses default PGSSLMODE when not defined in process.env', function () {
@@ -556,24 +552,22 @@ describe('bastion', function () {
 
         const result = getPsqlConfigs(defaultConnectionDetails)
 
-        expect(result.dbEnv).to.have.property('PGSSLMODE', 'require')
+        expect(result.dbEnv).toHaveProperty('PGSSLMODE', 'require')
       })
     })
   })
 
   describe('sshTunnel', function () {
-    let createTunnelStub: sinon.SinonStub<[unknown], Promise<Server>>
-    let clock: sinon.SinonFakeTimers
+    let createTunnelStub: ReturnType<typeof vi.fn>
 
     beforeEach(function () {
-      // Stub the tunnel creation function
-      createTunnelStub = sinon.stub()
-      clock = sinon.useFakeTimers()
+      createTunnelStub = vi.fn()
+      vi.useFakeTimers()
     })
 
     afterEach(function () {
-      sinon.restore()
-      clock.restore()
+      vi.restoreAllMocks()
+      vi.useRealTimers()
     })
 
     describe('when no bastion key is provided', function () {
@@ -583,28 +577,28 @@ describe('bastion', function () {
 
         const result = await sshTunnel(connectionDetails, dbTunnelConfig, 1000, createTunnelStub)
 
-        expect(result).to.be.undefined
-        expect(createTunnelStub).to.not.have.been.called
+        expect(result).toBeUndefined()
+        expect(createTunnelStub).not.toHaveBeenCalled()
       })
     })
 
     describe('when bastion key is provided', function () {
       it('successfully creates an SSH tunnel', async function () {
         const mockTunnelServer = {} as unknown as Server
-        createTunnelStub.resolves(mockTunnelServer)
+        createTunnelStub.mockResolvedValue(mockTunnelServer)
 
         const connectionDetails = privateDatabaseConnectionDetails
         const {dbTunnelConfig} = privateDatabasePsqlConfigs
 
         const tunnelPromise = sshTunnel(connectionDetails, dbTunnelConfig, 100, createTunnelStub)
 
-        expect(await tunnelPromise).to.equal(mockTunnelServer)
-        expect(createTunnelStub).to.have.been.calledOnceWith(dbTunnelConfig)
+        expect(await tunnelPromise).toBe(mockTunnelServer)
+        expect(createTunnelStub).toHaveBeenCalledExactlyOnceWith(dbTunnelConfig)
       })
 
       it('handles tunnel creation timeout', async function () {
         // Resolves to a promise that hangs forever
-        createTunnelStub.resolves(new Promise(() => {}) as unknown as Server)
+        createTunnelStub.mockResolvedValue(new Promise(() => {}) as unknown as Server)
 
         const connectionDetails = privateDatabaseConnectionDetails
         const {dbTunnelConfig} = privateDatabasePsqlConfigs
@@ -612,52 +606,52 @@ describe('bastion', function () {
         const tunnelPromise = sshTunnel(connectionDetails, dbTunnelConfig, 100, createTunnelStub)
 
         // Advance time to trigger timeout
-        clock.tick(100)
+        vi.advanceTimersByTime(100)
 
-        await expect(tunnelPromise).to.be.rejectedWith('Unable to establish a secure tunnel to your database: Establishing a secure tunnel timed out.')
-        expect(createTunnelStub).to.have.been.calledOnce
+        await expect(tunnelPromise).rejects.toThrow('Unable to establish a secure tunnel to your database: Establishing a secure tunnel timed out.')
+        expect(createTunnelStub).toHaveBeenCalledOnce()
       })
 
       it('handles tunnel creation error', async function () {
         const tunnelError = new Error('SSH connection failed')
-        createTunnelStub.rejects(tunnelError)
+        createTunnelStub.mockRejectedValue(tunnelError)
         const connectionDetails = privateDatabaseConnectionDetails
         const {dbTunnelConfig} = privateDatabasePsqlConfigs
 
         const tunnelPromise = sshTunnel(connectionDetails, dbTunnelConfig, 100, createTunnelStub)
 
         // Advance time without triggering timeout
-        clock.tick(10)
+        vi.advanceTimersByTime(10)
 
-        await expect(tunnelPromise).to.be.rejectedWith('Unable to establish a secure tunnel to your database: SSH connection failed.')
-        expect(createTunnelStub).to.have.been.calledOnceWith(dbTunnelConfig)
+        await expect(tunnelPromise).rejects.toThrow('Unable to establish a secure tunnel to your database: SSH connection failed.')
+        expect(createTunnelStub).toHaveBeenCalledExactlyOnceWith(dbTunnelConfig)
       })
 
       it('handles tunnel creation error with unknown error', async function () {
-        createTunnelStub.rejects()
+        createTunnelStub.mockRejectedValue(new Error('Error'))
         const connectionDetails = privateDatabaseConnectionDetails
         const {dbTunnelConfig} = privateDatabasePsqlConfigs
 
         const tunnelPromise = sshTunnel(connectionDetails, dbTunnelConfig, 100, createTunnelStub)
 
         // Advance time without triggering timeout
-        clock.tick(10)
+        vi.advanceTimersByTime(10)
 
-        await expect(tunnelPromise).to.be.rejectedWith('Unable to establish a secure tunnel to your database: Error.')
-        expect(createTunnelStub).to.have.been.calledOnceWith(dbTunnelConfig)
+        await expect(tunnelPromise).rejects.toThrow('Unable to establish a secure tunnel to your database: Error.')
+        expect(createTunnelStub).toHaveBeenCalledExactlyOnceWith(dbTunnelConfig)
       })
 
       it('works with shield database connection details', async function () {
         const mockTunnelServer = {} as unknown as Server
-        createTunnelStub.resolves(mockTunnelServer)
+        createTunnelStub.mockResolvedValue(mockTunnelServer)
 
         const connectionDetails = shieldDatabaseConnectionDetails
         const {dbTunnelConfig} = shieldDatabasePsqlConfigs
 
         const result = await sshTunnel(connectionDetails, dbTunnelConfig, 100, createTunnelStub)
 
-        expect(result).to.equal(mockTunnelServer)
-        expect(createTunnelStub).to.have.been.calledOnceWith(dbTunnelConfig)
+        expect(result).toBe(mockTunnelServer)
+        expect(createTunnelStub).toHaveBeenCalledExactlyOnceWith(dbTunnelConfig)
       })
     })
   })
