@@ -61,6 +61,7 @@
     "@vitest/coverage-v8": "^4.0.0",
     "eslint": "^9",
     "eslint-config-oclif": "^6.0.144",
+    "eslint-plugin-vitest": "^0.5.4",
     "mock-stdin": "^1.0.0",
     "nock": "^14.0.11",
     "tmp": "^0.2.5",
