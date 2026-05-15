@@ -27,6 +27,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci --legacy-peer-deps
+      - run: npm ci
       - name: unit tests
-        run: npm test
+        run: npm run test:coverage
