@@ -1,4 +1,4 @@
-import {expect} from 'chai'
+import {describe, expect, it} from 'vitest'
 
 import {alignColumns} from '../../../src/ux/align-columns.js'
 
@@ -6,7 +6,7 @@ describe('alignColumns', function () {
   it('returns an empty array when the input is an empty array', function () {
     const data: string[][] = []
     const result = alignColumns(data)
-    expect(result).to.deep.equal([])
+    expect(result).toEqual([])
   })
 
   it('aligns columns correctly without ANSI codes', function () {
@@ -25,7 +25,7 @@ describe('alignColumns', function () {
     ]
 
     const result = alignColumns(data)
-    expect(result).to.deep.equal(expected)
+    expect(result).toEqual(expected)
   })
 
   it('aligns columns correctly with ANSI color codes', function () {
@@ -44,7 +44,7 @@ describe('alignColumns', function () {
     ]
 
     const result = alignColumns(data)
-    expect(result).to.deep.equal(expected)
+    expect(result).toEqual(expected)
   })
 
   it('handles special characters in the strings correctly', function () {
@@ -63,7 +63,7 @@ describe('alignColumns', function () {
     ]
 
     const result = alignColumns(data)
-    expect(result).to.deep.equal(expected)
+    expect(result).toEqual(expected)
   })
 
   it('aligns columns correctly when some cells are empty', function () {
@@ -82,6 +82,6 @@ describe('alignColumns', function () {
     ]
 
     const result = alignColumns(data)
-    expect(result).to.deep.equal(expected)
+    expect(result).toEqual(expected)
   })
 })

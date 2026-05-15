@@ -1,4 +1,6 @@
-import {expect} from 'chai'
+import {
+  afterEach, beforeEach, describe, expect, it,
+} from 'vitest'
 
 import {
   getAddonService,
@@ -31,21 +33,21 @@ describe('addons/helpers', function () {
       const originalEnv = process.env
       delete process.env.HEROKU_POSTGRESQL_ADDON_NAME
       delete process.env.HEROKU_DATA_SERVICE
-      expect(getAddonService()).to.be.equal('heroku-postgresql')
+      expect(getAddonService()).toBe('heroku-postgresql')
       process.env = originalEnv
     })
 
     it('returns the value of the HEROKU_POSTGRESQL_ADDON_NAME environment variable if set', function () {
       const originalEnv = process.env
       process.env.HEROKU_POSTGRESQL_ADDON_NAME = 'heroku-postgresql-devname'
-      expect(getAddonService()).to.be.equal('heroku-postgresql-devname')
+      expect(getAddonService()).toBe('heroku-postgresql-devname')
       process.env = originalEnv
     })
 
     it('returns the value of the HEROKU_DATA_SERVICE environment variable if set', function () {
       const originalEnv = process.env
       process.env.HEROKU_DATA_SERVICE = 'heroku-postgresql-devname'
-      expect(getAddonService()).to.be.equal('heroku-postgresql-devname')
+      expect(getAddonService()).toBe('heroku-postgresql-devname')
       process.env = originalEnv
     })
 
@@ -53,7 +55,7 @@ describe('addons/helpers', function () {
       const originalEnv = process.env
       process.env.HEROKU_POSTGRESQL_ADDON_NAME = 'heroku-postgresql-devname1'
       process.env.HEROKU_DATA_SERVICE = 'heroku-postgresql-devname2'
-      expect(getAddonService()).to.be.equal('heroku-postgresql-devname1')
+      expect(getAddonService()).toBe('heroku-postgresql-devname1')
       process.env = originalEnv
     })
   })
@@ -73,354 +75,354 @@ describe('addons/helpers', function () {
 
     // Advanced Tier Databases
     it('returns true for an Advanced database', function () {
-      expect(isPostgresAddon(advancedDatabase)).to.be.true
+      expect(isPostgresAddon(advancedDatabase)).toBe(true)
     })
 
     it('returns true for an Advanced Private database', function () {
-      expect(isPostgresAddon(advancedPrivateDatabase)).to.be.true
+      expect(isPostgresAddon(advancedPrivateDatabase)).toBe(true)
     })
 
     it('returns true for an Advanced Shield database', function () {
-      expect(isPostgresAddon(advancedShieldDatabase)).to.be.true
+      expect(isPostgresAddon(advancedShieldDatabase)).toBe(true)
     })
 
     it('returns true for a Performance database', function () {
-      expect(isPostgresAddon(performanceDatabase)).to.be.true
+      expect(isPostgresAddon(performanceDatabase)).toBe(true)
     })
 
     // Essential Tier Databases
     it('returns true for an Essential database', function () {
-      expect(isPostgresAddon(essentialDatabase)).to.be.true
+      expect(isPostgresAddon(essentialDatabase)).toBe(true)
     })
 
     // Non-Advanced Tier Databases
     it('returns true for a Premium database', function () {
-      expect(isPostgresAddon(premiumDatabase)).to.be.true
+      expect(isPostgresAddon(premiumDatabase)).toBe(true)
     })
 
     it('returns true for a Private database', function () {
-      expect(isPostgresAddon(privateDatabase)).to.be.true
+      expect(isPostgresAddon(privateDatabase)).toBe(true)
     })
 
     it('returns true for a Shield database', function () {
-      expect(isPostgresAddon(shieldDatabase)).to.be.true
+      expect(isPostgresAddon(shieldDatabase)).toBe(true)
     })
 
     it('returns true for a Standard database', function () {
-      expect(isPostgresAddon(standardDatabase)).to.be.true
+      expect(isPostgresAddon(standardDatabase)).toBe(true)
     })
 
     // Legacy Essential Tier Databases
     it('returns true for a Dev database', function () {
-      expect(isPostgresAddon(devDatabase)).to.be.true
+      expect(isPostgresAddon(devDatabase)).toBe(true)
     })
 
     it('returns true for a Basic database', function () {
-      expect(isPostgresAddon(basicDatabase)).to.be.true
+      expect(isPostgresAddon(basicDatabase)).toBe(true)
     })
 
     it('returns true for a Mini database', function () {
-      expect(isPostgresAddon(miniDatabase)).to.be.true
+      expect(isPostgresAddon(miniDatabase)).toBe(true)
     })
 
     // Non-Postgres Add-ons
     it('returns false for a non-Postgres add-on', function () {
-      expect(isPostgresAddon(nonPostgresAddon)).to.be.false
+      expect(isPostgresAddon(nonPostgresAddon)).toBe(false)
     })
   })
 
   describe('isAdvancedDatabase', function () {
     // Advanced Tier Databases
     it('returns true for an Advanced database', function () {
-      expect(isAdvancedDatabase(advancedDatabase)).to.be.true
+      expect(isAdvancedDatabase(advancedDatabase)).toBe(true)
     })
 
     it('returns true for an Advanced Private database', function () {
-      expect(isAdvancedDatabase(advancedPrivateDatabase)).to.be.true
+      expect(isAdvancedDatabase(advancedPrivateDatabase)).toBe(true)
     })
 
     it('returns true for an Advanced Shield database', function () {
-      expect(isAdvancedDatabase(advancedShieldDatabase)).to.be.true
+      expect(isAdvancedDatabase(advancedShieldDatabase)).toBe(true)
     })
 
     it('returns true for a Performance database', function () {
-      expect(isAdvancedDatabase(performanceDatabase)).to.be.true
+      expect(isAdvancedDatabase(performanceDatabase)).toBe(true)
     })
 
     // Essential Tier Databases
     it('returns false for an Essential database', function () {
-      expect(isAdvancedDatabase(essentialDatabase)).to.be.false
+      expect(isAdvancedDatabase(essentialDatabase)).toBe(false)
     })
 
     // Non-Advanced Tier Databases
     it('returns false for a Premium database', function () {
-      expect(isAdvancedDatabase(premiumDatabase)).to.be.false
+      expect(isAdvancedDatabase(premiumDatabase)).toBe(false)
     })
 
     it('returns false for a Private database', function () {
-      expect(isAdvancedDatabase(privateDatabase)).to.be.false
+      expect(isAdvancedDatabase(privateDatabase)).toBe(false)
     })
 
     it('returns false for a Shield database', function () {
-      expect(isAdvancedDatabase(shieldDatabase)).to.be.false
+      expect(isAdvancedDatabase(shieldDatabase)).toBe(false)
     })
 
     it('returns false for a Standard database', function () {
-      expect(isAdvancedDatabase(standardDatabase)).to.be.false
+      expect(isAdvancedDatabase(standardDatabase)).toBe(false)
     })
 
     // Legacy Essential Tier Databases
     it('returns false for a Dev database', function () {
-      expect(isAdvancedDatabase(devDatabase)).to.be.false
+      expect(isAdvancedDatabase(devDatabase)).toBe(false)
     })
 
     it('returns false for a Basic database', function () {
-      expect(isAdvancedDatabase(basicDatabase)).to.be.false
+      expect(isAdvancedDatabase(basicDatabase)).toBe(false)
     })
 
     it('returns false for a Mini database', function () {
-      expect(isAdvancedDatabase(miniDatabase)).to.be.false
+      expect(isAdvancedDatabase(miniDatabase)).toBe(false)
     })
 
     // Non-Postgres Add-ons
     it('returns false for a non-Postgres add-on', function () {
-      expect(isAdvancedDatabase(nonPostgresAddon)).to.be.false
+      expect(isAdvancedDatabase(nonPostgresAddon)).toBe(false)
     })
   })
 
   describe('isAdvancedPrivateDatabase', function () {
     // Advanced Tier Databases
     it('returns false for an Advanced database in the Common Runtime', function () {
-      expect(isAdvancedPrivateDatabase(advancedDatabase)).to.be.false
+      expect(isAdvancedPrivateDatabase(advancedDatabase)).toBe(false)
     })
 
     it('returns true for an Advanced database in a Private Space', function () {
-      expect(isAdvancedPrivateDatabase(advancedPrivateDatabase)).to.be.true
+      expect(isAdvancedPrivateDatabase(advancedPrivateDatabase)).toBe(true)
     })
 
     it('returns true for an Advanced database in a Shield Private Space', function () {
-      expect(isAdvancedPrivateDatabase(advancedShieldDatabase)).to.be.true
+      expect(isAdvancedPrivateDatabase(advancedShieldDatabase)).toBe(true)
     })
 
     it('returns false for a Performance database in the Common Runtime', function () {
-      expect(isAdvancedPrivateDatabase(performanceDatabase)).to.be.false
+      expect(isAdvancedPrivateDatabase(performanceDatabase)).toBe(false)
     })
 
     // Essential Tier Databases
     it('returns false for an Essential database', function () {
-      expect(isAdvancedPrivateDatabase(essentialDatabase)).to.be.false
+      expect(isAdvancedPrivateDatabase(essentialDatabase)).toBe(false)
     })
 
     // Non-Advanced Tier Databases
     it('returns false for a Premium database', function () {
-      expect(isAdvancedPrivateDatabase(premiumDatabase)).to.be.false
+      expect(isAdvancedPrivateDatabase(premiumDatabase)).toBe(false)
     })
 
     it('returns false for a Private database', function () {
-      expect(isAdvancedPrivateDatabase(privateDatabase)).to.be.false
+      expect(isAdvancedPrivateDatabase(privateDatabase)).toBe(false)
     })
 
     it('returns false for a Shield database', function () {
-      expect(isAdvancedPrivateDatabase(shieldDatabase)).to.be.false
+      expect(isAdvancedPrivateDatabase(shieldDatabase)).toBe(false)
     })
 
     it('returns false for a Standard database', function () {
-      expect(isAdvancedPrivateDatabase(standardDatabase)).to.be.false
+      expect(isAdvancedPrivateDatabase(standardDatabase)).toBe(false)
     })
 
     // Legacy Essential Tier Databases
     it('returns false for a Dev database', function () {
-      expect(isAdvancedPrivateDatabase(devDatabase)).to.be.false
+      expect(isAdvancedPrivateDatabase(devDatabase)).toBe(false)
     })
 
     it('returns false for a Basic database', function () {
-      expect(isAdvancedPrivateDatabase(basicDatabase)).to.be.false
+      expect(isAdvancedPrivateDatabase(basicDatabase)).toBe(false)
     })
 
     it('returns false for a Mini database', function () {
-      expect(isAdvancedPrivateDatabase(miniDatabase)).to.be.false
+      expect(isAdvancedPrivateDatabase(miniDatabase)).toBe(false)
     })
 
     // Non-Postgres Add-ons
     it('returns false for a non-Postgres add-on', function () {
-      expect(isAdvancedPrivateDatabase(nonPostgresAddon)).to.be.false
+      expect(isAdvancedPrivateDatabase(nonPostgresAddon)).toBe(false)
     })
   })
 
   describe('isLegacyDatabase', function () {
     // Advanced Tier Databases
     it('returns false for an Advanced database', function () {
-      expect(isLegacyDatabase(advancedDatabase)).to.be.false
+      expect(isLegacyDatabase(advancedDatabase)).toBe(false)
     })
 
     it('returns false for an Advanced Private database', function () {
-      expect(isLegacyDatabase(advancedPrivateDatabase)).to.be.false
+      expect(isLegacyDatabase(advancedPrivateDatabase)).toBe(false)
     })
 
     it('returns false for an Advanced Shield database', function () {
-      expect(isLegacyDatabase(advancedShieldDatabase)).to.be.false
+      expect(isLegacyDatabase(advancedShieldDatabase)).toBe(false)
     })
 
     it('returns false for a Performance database', function () {
-      expect(isLegacyDatabase(performanceDatabase)).to.be.false
+      expect(isLegacyDatabase(performanceDatabase)).toBe(false)
     })
 
     // Essential Tier Databases
     it('returns true for an Essential database', function () {
-      expect(isLegacyDatabase(essentialDatabase)).to.be.true
+      expect(isLegacyDatabase(essentialDatabase)).toBe(true)
     })
 
     // Non-Advanced Tier Databases
     it('returns true for a Premium database', function () {
-      expect(isLegacyDatabase(premiumDatabase)).to.be.true
+      expect(isLegacyDatabase(premiumDatabase)).toBe(true)
     })
 
     it('returns true for a Private database', function () {
-      expect(isLegacyDatabase(privateDatabase)).to.be.true
+      expect(isLegacyDatabase(privateDatabase)).toBe(true)
     })
 
     it('returns true for a Shield database', function () {
-      expect(isLegacyDatabase(shieldDatabase)).to.be.true
+      expect(isLegacyDatabase(shieldDatabase)).toBe(true)
     })
 
     it('returns true for a Standard database', function () {
-      expect(isLegacyDatabase(standardDatabase)).to.be.true
+      expect(isLegacyDatabase(standardDatabase)).toBe(true)
     })
 
     // Legacy Essential Tier Databases
     it('returns true for a Dev database', function () {
-      expect(isLegacyDatabase(devDatabase)).to.be.true
+      expect(isLegacyDatabase(devDatabase)).toBe(true)
     })
 
     it('returns true for a Basic database', function () {
-      expect(isLegacyDatabase(basicDatabase)).to.be.true
+      expect(isLegacyDatabase(basicDatabase)).toBe(true)
     })
 
     it('returns true for a Mini database', function () {
-      expect(isLegacyDatabase(miniDatabase)).to.be.true
+      expect(isLegacyDatabase(miniDatabase)).toBe(true)
     })
 
     // Non-Postgres Add-ons
     it('returns false for a non-Postgres add-on', function () {
-      expect(isLegacyDatabase(nonPostgresAddon)).to.be.false
+      expect(isLegacyDatabase(nonPostgresAddon)).toBe(false)
     })
   })
 
   describe('isLegacyEssentialDatabase', function () {
     // Advanced Tier Databases
     it('returns false for an Advanced database', function () {
-      expect(isLegacyEssentialDatabase(advancedDatabase)).to.be.false
+      expect(isLegacyEssentialDatabase(advancedDatabase)).toBe(false)
     })
 
     it('returns false for an Advanced Private database', function () {
-      expect(isLegacyEssentialDatabase(advancedPrivateDatabase)).to.be.false
+      expect(isLegacyEssentialDatabase(advancedPrivateDatabase)).toBe(false)
     })
 
     it('returns false for an Advanced Shield database', function () {
-      expect(isLegacyEssentialDatabase(advancedShieldDatabase)).to.be.false
+      expect(isLegacyEssentialDatabase(advancedShieldDatabase)).toBe(false)
     })
 
     it('returns false for a Performance database', function () {
-      expect(isLegacyEssentialDatabase(performanceDatabase)).to.be.false
+      expect(isLegacyEssentialDatabase(performanceDatabase)).toBe(false)
     })
 
     // Essential Tier Databases
     it('returns false for an Essential database', function () {
-      expect(isLegacyEssentialDatabase(essentialDatabase)).to.be.false
+      expect(isLegacyEssentialDatabase(essentialDatabase)).toBe(false)
     })
 
     // Non-Advanced Tier Databases
     it('returns false for a Premium database', function () {
-      expect(isLegacyEssentialDatabase(premiumDatabase)).to.be.false
+      expect(isLegacyEssentialDatabase(premiumDatabase)).toBe(false)
     })
 
     it('returns false for a Private database', function () {
-      expect(isLegacyEssentialDatabase(privateDatabase)).to.be.false
+      expect(isLegacyEssentialDatabase(privateDatabase)).toBe(false)
     })
 
     it('returns false for a Shield database', function () {
-      expect(isLegacyEssentialDatabase(shieldDatabase)).to.be.false
+      expect(isLegacyEssentialDatabase(shieldDatabase)).toBe(false)
     })
 
     it('returns false for a Standard database', function () {
-      expect(isLegacyEssentialDatabase(standardDatabase)).to.be.false
+      expect(isLegacyEssentialDatabase(standardDatabase)).toBe(false)
     })
 
     // Legacy Essential Tier Databases
     it('returns true for a Dev database', function () {
-      expect(isLegacyEssentialDatabase(devDatabase)).to.be.true
+      expect(isLegacyEssentialDatabase(devDatabase)).toBe(true)
     })
 
     it('returns true for a Basic database', function () {
-      expect(isLegacyEssentialDatabase(basicDatabase)).to.be.true
+      expect(isLegacyEssentialDatabase(basicDatabase)).toBe(true)
     })
 
     it('returns true for a Mini database', function () {
-      expect(isLegacyEssentialDatabase(miniDatabase)).to.be.true
+      expect(isLegacyEssentialDatabase(miniDatabase)).toBe(true)
     })
 
     // Non-Postgres Add-ons
     it('returns false for a non-Postgres add-on', function () {
-      expect(isLegacyEssentialDatabase(nonPostgresAddon)).to.be.false
+      expect(isLegacyEssentialDatabase(nonPostgresAddon)).toBe(false)
     })
   })
 
   describe('isEssentialDatabase', function () {
     // Advanced Tier Databases
     it('returns false for an Advanced database', function () {
-      expect(isEssentialDatabase(advancedDatabase)).to.be.false
+      expect(isEssentialDatabase(advancedDatabase)).toBe(false)
     })
 
     it('returns false for an Advanced Private database', function () {
-      expect(isEssentialDatabase(advancedPrivateDatabase)).to.be.false
+      expect(isEssentialDatabase(advancedPrivateDatabase)).toBe(false)
     })
 
     it('returns false for an Advanced Shield database', function () {
-      expect(isEssentialDatabase(advancedShieldDatabase)).to.be.false
+      expect(isEssentialDatabase(advancedShieldDatabase)).toBe(false)
     })
 
     it('returns false for a Performance database', function () {
-      expect(isEssentialDatabase(performanceDatabase)).to.be.false
+      expect(isEssentialDatabase(performanceDatabase)).toBe(false)
     })
 
     // Essential Tier Databases
     it('returns true for an Essential database', function () {
-      expect(isEssentialDatabase(essentialDatabase)).to.be.true
+      expect(isEssentialDatabase(essentialDatabase)).toBe(true)
     })
 
     // Non-Advanced Tier Databases
     it('returns false for a Premium database', function () {
-      expect(isEssentialDatabase(premiumDatabase)).to.be.false
+      expect(isEssentialDatabase(premiumDatabase)).toBe(false)
     })
 
     it('returns false for a Private database', function () {
-      expect(isEssentialDatabase(privateDatabase)).to.be.false
+      expect(isEssentialDatabase(privateDatabase)).toBe(false)
     })
 
     it('returns false for a Shield database', function () {
-      expect(isEssentialDatabase(shieldDatabase)).to.be.false
+      expect(isEssentialDatabase(shieldDatabase)).toBe(false)
     })
 
     it('returns false for a Standard database', function () {
-      expect(isEssentialDatabase(standardDatabase)).to.be.false
+      expect(isEssentialDatabase(standardDatabase)).toBe(false)
     })
 
     // Legacy Essential Tier Databases
     it('returns false for a Dev database', function () {
-      expect(isEssentialDatabase(devDatabase)).to.be.false
+      expect(isEssentialDatabase(devDatabase)).toBe(false)
     })
 
     it('returns false for a Basic database', function () {
-      expect(isEssentialDatabase(basicDatabase)).to.be.false
+      expect(isEssentialDatabase(basicDatabase)).toBe(false)
     })
 
     it('returns false for a Mini database', function () {
-      expect(isEssentialDatabase(miniDatabase)).to.be.false
+      expect(isEssentialDatabase(miniDatabase)).toBe(false)
     })
 
     // Non-Postgres Add-ons
     it('returns false for a non-Postgres add-on', function () {
-      expect(isEssentialDatabase(nonPostgresAddon)).to.be.false
+      expect(isEssentialDatabase(nonPostgresAddon)).toBe(false)
     })
   })
 })

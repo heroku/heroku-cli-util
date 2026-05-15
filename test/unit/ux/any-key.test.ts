@@ -1,8 +1,10 @@
 import {captureOutput} from '@heroku-cli/test-utils'
 import {Errors} from '@oclif/core'
 import ansis from 'ansis'
-import {expect} from 'chai'
 import {stdin as mockStdin} from 'mock-stdin'
+import {
+  afterEach, beforeEach, describe, expect, it,
+} from 'vitest'
 
 import {anykey} from '../../../src/ux/any-key.js'
 
@@ -24,27 +26,27 @@ describe('anykey', function () {
   it('throws a \'quit\' error when the user enters \'q\'', async function () {
     const {stderr} = await captureOutput(async () => {
       const anyKeyPromise = anykey().catch((error: Errors.CLIError) => {
-        expect(error.message).to.equal('quit')
+        expect(error.message).toBe('quit')
       })
       await wait(2000)
       stdin.send('q')
       await anyKeyPromise
     })
     const output = ansis.strip(stderr)
-    expect(output).to.equal('Press enter to continue or q to exit')
+    expect(output).toBe('Press enter to continue or q to exit')
   })
 
   it('throws a \'ctrl-c\' error when the user enters \'ctrl-c\'', async function () {
     const {stderr} = await captureOutput(async () => {
       const anyKeyPromise = anykey().catch((error: Errors.CLIError) => {
-        expect(error.message).to.equal('ctrl-c')
+        expect(error.message).toBe('ctrl-c')
       })
       await wait(2000)
       stdin.send('\u0003')
       await anyKeyPromise
     })
     const output = ansis.strip(stderr)
-    expect(output).to.equal('Press enter to continue or q to exit')
+    expect(output).toBe('Press enter to continue or q to exit')
   })
 
   it('should return the key pressed by the user', async function () {
@@ -53,9 +55,9 @@ describe('anykey', function () {
       await wait(2000)
       stdin.send('a')
       const result = await anyKeyPromise
-      expect(result).to.equal('a')
+      expect(result).toBe('a')
     })
     const output = ansis.strip(stderr)
-    expect(output).to.equal('Press enter to continue or q to exit')
+    expect(output).toBe('Press enter to continue or q to exit')
   })
 })

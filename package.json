@@ -53,29 +53,21 @@
   ],
   "devDependencies": {
     "@heroku-cli/schema": "^2.0.0",
-    "@heroku-cli/test-utils": "^0.2.0",
-    "@types/chai": "^5.2.3",
-    "@types/chai-as-promised": "^8.0.2",
+    "@heroku-cli/test-utils": "^0.3.0",
     "@types/debug": "^4.1.12",
-    "@types/mocha": "^10.0.10",
     "@types/node": "^22.15.3",
-    "@types/sinon": "^20.0.0",
-    "@types/sinon-chai": "^4.0.0",
     "@types/tmp": "^0.2.6",
     "@types/tunnel-ssh": "4.1.1",
-    "c8": "^11.0.0",
-    "chai": "^5.3.3",
-    "chai-as-promised": "^8.0.2",
+    "@vitest/coverage-v8": "^4.0.0",
     "eslint": "^9",
     "eslint-config-oclif": "^6.0.144",
-    "mocha": "^11",
+    "eslint-plugin-vitest": "^0.5.4",
     "mock-stdin": "^1.0.0",
     "nock": "^14.0.11",
-    "sinon": "^20.0.0",
-    "sinon-chai": "^4.0.1",
     "tmp": "^0.2.5",
     "tsx": "^4.21.0",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "vitest": "^4.1.6"
   },
   "dependencies": {
     "@heroku-cli/command": "^12.2.0",
@@ -100,9 +92,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
     "prepare": "npm run build",
-    "test": "npm run build && c8 --all --check-coverage --reporter=lcov --reporter=text-summary mocha --forbid-only \"test/**/*.test.ts\""
-  },
-  "overrides": {
-    "serialize-javascript": "^7.0.3"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   }
 }

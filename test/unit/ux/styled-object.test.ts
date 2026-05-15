@@ -1,7 +1,7 @@
 import {captureOutput} from '@heroku-cli/test-utils'
 import ansis from 'ansis'
-import {expect} from 'chai'
 import tsheredoc from 'tsheredoc'
+import {describe, expect, it} from 'vitest'
 const heredoc = tsheredoc.default
 import {styledObject} from '../../../src/ux/styled-object.js'
 
@@ -16,7 +16,7 @@ describe('styledObject', function () {
       foo: bar
     `)
     const actual = ansis.strip(stdout)
-    expect(actual).to.equal(expected)
+    expect(actual).toBe(expected)
   })
 
   it('should respect the order of keys array when provided', async function () {
@@ -30,7 +30,7 @@ describe('styledObject', function () {
       baz: 42
     `)
     const actual = ansis.strip(stdout)
-    expect(actual).to.equal(expected)
+    expect(actual).toBe(expected)
   })
 
   it('should only display keys specified in keys array', async function () {
@@ -43,7 +43,7 @@ describe('styledObject', function () {
       baz: 42
     `)
     const actual = ansis.strip(stdout)
-    expect(actual).to.equal(expected)
+    expect(actual).toBe(expected)
   })
 
   it('should skip undefined and null values', async function () {
@@ -59,7 +59,6 @@ describe('styledObject', function () {
       baz: 42
     `)
     const actual = ansis.strip(stdout)
-    expect(actual).to.equal(expected)
+    expect(actual).toBe(expected)
   })
 })
-

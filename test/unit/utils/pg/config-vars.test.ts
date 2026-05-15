@@ -2,10 +2,10 @@
 
 import {APIClient} from '@heroku-cli/command'
 import {Config} from '@oclif/core'
-import * as chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import nock from 'nock'
-import sinon from 'sinon'
+import {
+  afterEach, beforeEach, describe, expect, it, vi,
+} from 'vitest'
 
 import {
   configVarsByAppIdCache,
@@ -20,10 +20,6 @@ import {
   myOtherAppConfigVars,
 } from '../../../fixtures/config-var-mocks.js'
 
-const {expect} = chai
-
-chai.use(chaiAsPromised)
-
 describe('config-vars', function () {
   beforeEach(function () {
     configVarsByAppIdCache.clear()
@@ -34,12 +30,12 @@ describe('config-vars', function () {
     let heroku: APIClient
 
     beforeEach(async function () {
-      config = await Config.load()
+      config = await Config.load(process.cwd())
       heroku = new APIClient(config)
     })
 
     afterEach(function () {
-      sinon.restore()
+      vi.restoreAllMocks()
       nock.cleanAll()
     })
 
@@ -51,7 +47,7 @@ describe('config-vars', function () {
 
         const result = await getConfig(heroku, 'my-app')
 
-        expect(result).to.deep.equal(myAppConfigVars)
+        expect(result).toEqual(myAppConfigVars)
         api.done()
       })
 
@@ -62,7 +58,7 @@ describe('config-vars', function () {
 
         const result = await getConfig(heroku, 'empty-app')
 
-        expect(result).to.deep.equal(emptyAppConfigVars)
+        expect(result).toEqual(emptyAppConfigVars)
         api.done()
       })
 
@@ -72,7 +68,7 @@ describe('config-vars', function () {
           .reply(404, {id: 'not_found', message: 'Couldn\'t find that app.', resource: 'app'})
 
         await expect(getConfig(heroku, 'my-app'))
-          .to.be.rejectedWith('Couldn\'t find that app.')
+          .rejects.toThrow('Couldn\'t find that app.')
 
         api.done()
       })
@@ -86,14 +82,14 @@ describe('config-vars', function () {
 
         // First call - should make API request
         const result1 = await getConfig(heroku, 'my-app')
-        expect(result1).to.deep.equal(myAppConfigVars)
+        expect(result1).toEqual(myAppConfigVars)
 
         // Verify API was only called once
         api.done()
 
         // Second call - should use cached result
         const result2 = await getConfig(heroku, 'my-app')
-        expect(result2).to.deep.equal(myAppConfigVars)
+        expect(result2).toEqual(myAppConfigVars)
       })
 
       it('caches different apps separately', async function () {
@@ -109,8 +105,8 @@ describe('config-vars', function () {
         const result1 = await getConfig(heroku, 'my-app')
         const result2 = await getConfig(heroku, 'my-other-app')
 
-        expect(result1).to.deep.equal(myAppConfigVars)
-        expect(result2).to.deep.equal(myOtherAppConfigVars)
+        expect(result1).toEqual(myAppConfigVars)
+        expect(result2).toEqual(myOtherAppConfigVars)
 
         api1.done()
         api2.done()
@@ -119,8 +115,8 @@ describe('config-vars', function () {
         const result1Cached = await getConfig(heroku, 'my-app')
         const result2Cached = await getConfig(heroku, 'my-other-app')
 
-        expect(result1Cached).to.deep.equal(myAppConfigVars)
-        expect(result2Cached).to.deep.equal(myOtherAppConfigVars)
+        expect(result1Cached).toEqual(myAppConfigVars)
+        expect(result2Cached).toEqual(myOtherAppConfigVars)
       })
     })
   })
@@ -129,18 +125,18 @@ describe('config-vars', function () {
     it('returns the first config var name that ends with _URL', function () {
       const configVars = shieldDatabaseAttachment.config_vars
       const result = getConfigVarName(configVars)
-      expect(result).to.equal('DATABASE_URL')
+      expect(result).toBe('DATABASE_URL')
     })
 
     it('throws error when no config vars end with _URL', function () {
       const configVars = ['DATABASE']
-      expect(() => getConfigVarName(configVars)).to.throw('Database URL not found for this addon')
+      expect(() => getConfigVarName(configVars)).toThrow('Database URL not found for this addon')
     })
 
     it('returns the first _URL config var when multiple exist', function () {
       const configVars = ['DATABASE_BASTION_KEY', 'DATABASE_URL', 'DATABASE_FOLLOWER_URL']
       const result = getConfigVarName(configVars)
-      expect(result).to.equal('DATABASE_URL')
+      expect(result).toBe('DATABASE_URL')
     })
   })
 
@@ -152,7 +148,7 @@ describe('config-vars', function () {
       }
 
       expect(() => getConfigVarNameFromAttachment(attachmentWithoutConfigVars, myAppConfigVars))
-        .to.throw('No config vars found for MAIN_DATABASE; perhaps they were removed')
+        .toThrow('No config vars found for MAIN_DATABASE; perhaps they were removed')
     })
 
     it('throws error when defaultAttachment config var is missing from config', function () {
@@ -161,7 +157,7 @@ describe('config-vars', function () {
       const {MAIN_DATABASE_URL, ...configWithoutMainDatabase} = myAppConfigVars
 
       expect(() => getConfigVarNameFromAttachment(defaultAttachment, configWithoutMainDatabase))
-        .to.throw('No config vars found for MAIN_DATABASE; perhaps they were removed')
+        .toThrow('No config vars found for MAIN_DATABASE; perhaps they were removed')
     })
 
     it('throws error when defaultAttachment config var exists but is not a PostgreSQL connection string', function () {
@@ -172,13 +168,13 @@ describe('config-vars', function () {
       }
 
       expect(() => getConfigVarNameFromAttachment(defaultAttachment, configWithTamperedValue))
-        .to.throw('No config vars found for MAIN_DATABASE; perhaps they were removed')
+        .toThrow('No config vars found for MAIN_DATABASE; perhaps they were removed')
     })
 
     it('returns the default config var name when it exists and contains a PostgreSQL connection string', function () {
       const result = getConfigVarNameFromAttachment(defaultAttachment, myAppConfigVars)
 
-      expect(result).to.equal('MAIN_DATABASE_URL')
+      expect(result).toBe('MAIN_DATABASE_URL')
     })
 
     it('returns the first _URL config var when default config var name is not in attachment config vars', function () {
@@ -198,7 +194,7 @@ describe('config-vars', function () {
 
       const result = getConfigVarNameFromAttachment(attachmentWithDifferentConfigVar, configWithDifferentConfigVar)
 
-      expect(result).to.equal('MAIN_DB_URL')
+      expect(result).toBe('MAIN_DB_URL')
     })
   })
 })

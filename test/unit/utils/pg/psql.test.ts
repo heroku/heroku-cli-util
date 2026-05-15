@@ -1,15 +1,14 @@
 import {ux} from '@oclif/core'
-import * as chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import {ChildProcess} from 'node:child_process'
 import {EventEmitter} from 'node:events'
 import fs from 'node:fs'
 import {Server} from 'node:net'
 import path from 'node:path'
 import {Readable} from 'node:stream'
-import sinon from 'sinon'
-import sinonChai from 'sinon-chai'
 import * as tmp from 'tmp'
+import {
+  afterEach, beforeEach, describe, expect, it, vi,
+} from 'vitest'
 
 import {ConnectionDetails} from '../../../../src/types/pg/tunnel.js'
 import {PsqlConfigs} from '../../../../src/utils/pg/bastion.js'
@@ -17,17 +16,12 @@ import PsqlService from '../../../../src/utils/pg/psql.js'
 import {defaultConnectionDetails, privateDatabaseConnectionDetails} from '../../../fixtures/bastion-mocks.js'
 import {defaultPsqlConfigs, privateDatabasePsqlConfigs} from '../../../fixtures/psql-mocks.js'
 
-const {expect} = chai
-
-chai.use(chaiAsPromised)
-chai.use(sinonChai)
-
 // Helper function to create a mock tunnel server
 describe('PsqlService', function () {
   let psqlService: PsqlService
   let connectionDetails: ConnectionDetails
-  let mockGetPsqlConfigs: sinon.SinonStub
-  let mockSpawn: sinon.SinonStub
+  let mockGetPsqlConfigs: ReturnType<typeof vi.fn>
+  let mockSpawn: ReturnType<typeof vi.fn>
   let mockChildProcess: ChildProcess & {killed: boolean}
   let psqlConfigs: PsqlConfigs
 
@@ -39,7 +33,7 @@ describe('PsqlService', function () {
       read() {},
     })
     childProcess.stderr = null
-    childProcess.kill = sinon.stub().callsFake(() => {
+    childProcess.kill = vi.fn().mockImplementation(() => {
       childProcess.killed = true
     })
     childProcess.killed = false
@@ -49,20 +43,20 @@ describe('PsqlService', function () {
   function createMockTunnelServer() {
     // eslint-disable-next-line unicorn/prefer-event-target
     const server = new EventEmitter() as Server
-    server.close = sinon.stub().callsFake(() => server.emit('close'))
-    server.listen = sinon.stub() as sinon.SinonStub
+    server.close = vi.fn().mockImplementation(() => server.emit('close'))
+    server.listen = vi.fn()
     return server
   }
 
   beforeEach(function () {
-    mockGetPsqlConfigs = sinon.stub()
+    mockGetPsqlConfigs = vi.fn()
     mockChildProcess = createMockChildProcess()
-    mockSpawn = sinon.stub()
-    mockSpawn.returns(mockChildProcess)
+    mockSpawn = vi.fn()
+    mockSpawn.mockReturnValue(mockChildProcess)
   })
 
   afterEach(function () {
-    sinon.restore()
+    vi.restoreAllMocks()
   })
 
   describe('execFile', function () {
@@ -70,7 +64,7 @@ describe('PsqlService', function () {
       beforeEach(function () {
         connectionDetails = defaultConnectionDetails
         psqlConfigs = defaultPsqlConfigs
-        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockGetPsqlConfigs.mockReturnValue(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
       })
 
@@ -95,13 +89,13 @@ describe('PsqlService', function () {
         const result = await filePromise
 
         // Verify the result
-        expect(result).to.equal(expectedResult)
+        expect(result).toBe(expectedResult)
 
         // Verify getPsqlConfigs was called with correct parameters
-        expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
+        expect(mockGetPsqlConfigs).toHaveBeenCalledExactlyOnceWith(connectionDetails)
 
         // Verify spawn was called with correct parameters
-        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '-f',
           file,
           '--set',
@@ -133,10 +127,10 @@ describe('PsqlService', function () {
         const result = await filePromise
 
         // Verify the result
-        expect(result).to.equal(expectedResult)
+        expect(result).toBe(expectedResult)
 
         // Verify spawn was called with correct parameters including additional args
-        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '-f',
           file,
           '--set',
@@ -169,10 +163,10 @@ describe('PsqlService', function () {
         const result = await filePromise
 
         // Verify the result is empty string
-        expect(result).to.equal('')
+        expect(result).toBe('')
 
         // Verify spawn was called
-        expect(mockSpawn).to.have.been.calledOnceWithExactly('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '-f',
           file,
           '--set',
@@ -187,12 +181,12 @@ describe('PsqlService', function () {
 
     describe('for private, non-shielded add-on plans (tunnel required)', function () {
       let mockTunnelServer: Server
-      let mockTunnelFn: sinon.SinonStub
+      let mockTunnelFn: ReturnType<typeof vi.fn>
 
       beforeEach(function () {
         connectionDetails = privateDatabaseConnectionDetails
         psqlConfigs = privateDatabasePsqlConfigs
-        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockGetPsqlConfigs.mockReturnValue(psqlConfigs)
         mockTunnelServer = createMockTunnelServer()
       })
 
@@ -200,7 +194,7 @@ describe('PsqlService', function () {
         // Setup file execution and expected result
         const file = 'statements.sql'
         const expectedResult = ' it_works\n----------\n t\n(1 row)\n'
-        mockTunnelFn = sinon.stub().resolves(mockTunnelServer)
+        mockTunnelFn = vi.fn().mockResolvedValue(mockTunnelServer)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
         // Start the file execution
@@ -223,13 +217,13 @@ describe('PsqlService', function () {
         const result = await filePromise
 
         // Verify the result
-        expect(result).to.equal(expectedResult)
+        expect(result).toBe(expectedResult)
 
         // Verify getPsqlConfigs was called with correct parameters
-        expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
+        expect(mockGetPsqlConfigs).toHaveBeenCalledExactlyOnceWith(connectionDetails)
 
         // Verify spawn was called with tunnel-adjusted environment
-        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '-f',
           file,
           '--set',
@@ -240,13 +234,13 @@ describe('PsqlService', function () {
         })
 
         // Verify tunnel server was closed
-        expect(mockTunnelServer.close).to.have.been.calledOnce
+        expect(mockTunnelServer.close).toHaveBeenCalledOnce()
       })
 
       it('handles tunnel creation failure', async function () {
         const file = 'statements.sql'
         const tunnelError = new Error('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
-        mockTunnelFn = sinon.stub().rejects(tunnelError)
+        mockTunnelFn = vi.fn().mockRejectedValue(tunnelError)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
         // Start the file execution
@@ -254,12 +248,12 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(filePromise)
-          .to.be.rejectedWith('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
+          .rejects.toThrow('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
       })
 
       it('handles psql failure while tunnel is active', async function () {
         const file = 'statements.sql'
-        mockTunnelFn = sinon.stub().resolves(mockTunnelServer)
+        mockTunnelFn = vi.fn().mockResolvedValue(mockTunnelServer)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
         // Start the file execution
@@ -279,15 +273,15 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(filePromise)
-          .to.be.rejectedWith('psql exited with code 1')
+          .rejects.toThrow('psql exited with code 1')
 
         // Verify tunnel server was closed even after psql failure
-        expect(mockTunnelServer.close).to.have.been.calledOnce
+        expect(mockTunnelServer.close).toHaveBeenCalledOnce()
       })
 
       it('handles tunnel close before psql completion', async function () {
         const file = 'statements.sql'
-        mockTunnelFn = sinon.stub().resolves(mockTunnelServer)
+        mockTunnelFn = vi.fn().mockResolvedValue(mockTunnelServer)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
         // Start the file execution
@@ -307,7 +301,7 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(filePromise)
-          .to.be.rejectedWith('Secure tunnel to your database failed')
+          .rejects.toThrow('Secure tunnel to your database failed')
       })
     })
 
@@ -315,7 +309,7 @@ describe('PsqlService', function () {
       beforeEach(function () {
         connectionDetails = defaultConnectionDetails
         psqlConfigs = defaultPsqlConfigs
-        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockGetPsqlConfigs.mockReturnValue(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
       })
 
@@ -335,7 +329,7 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(filePromise)
-          .to.be.rejectedWith('psql exited with code 1')
+          .rejects.toThrow('psql exited with code 1')
       })
 
       it('throws error when psql command is not found', async function () {
@@ -352,7 +346,7 @@ describe('PsqlService', function () {
 
         // Attempt file execution and expect it to throw
         await expect(filePromise)
-          .to.be.rejectedWith('The local psql command could not be located. For help installing psql, see '
+          .rejects.toThrow('The local psql command could not be located. For help installing psql, see '
             + 'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup')
       })
     })
@@ -363,7 +357,7 @@ describe('PsqlService', function () {
       beforeEach(function () {
         connectionDetails = defaultConnectionDetails
         psqlConfigs = defaultPsqlConfigs
-        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockGetPsqlConfigs.mockReturnValue(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
       })
 
@@ -388,13 +382,13 @@ describe('PsqlService', function () {
         const result = await queryPromise
 
         // Verify the result
-        expect(result).to.equal(expectedResult)
+        expect(result).toBe(expectedResult)
 
         // Verify getPsqlConfigs was called with correct parameters
-        expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
+        expect(mockGetPsqlConfigs).toHaveBeenCalledExactlyOnceWith(connectionDetails)
 
         // Verify spawn was called with correct parameters
-        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '-c',
           query,
           '--set',
@@ -426,10 +420,10 @@ describe('PsqlService', function () {
         const result = await queryPromise
 
         // Verify the result
-        expect(result).to.equal(expectedResult)
+        expect(result).toBe(expectedResult)
 
         // Verify spawn was called with correct parameters including additional args
-        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '-c',
           query,
           '--set',
@@ -462,10 +456,10 @@ describe('PsqlService', function () {
         const result = await queryPromise
 
         // Verify the result is empty string
-        expect(result).to.equal('')
+        expect(result).toBe('')
 
         // Verify spawn was called
-        expect(mockSpawn).to.have.been.calledOnceWithExactly('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '-c',
           query,
           '--set',
@@ -480,12 +474,12 @@ describe('PsqlService', function () {
 
     describe('for private, non-shielded add-on plans (tunnel required)', function () {
       let mockTunnelServer: Server
-      let mockTunnelFn: sinon.SinonStub
+      let mockTunnelFn: ReturnType<typeof vi.fn>
 
       beforeEach(function () {
         connectionDetails = privateDatabaseConnectionDetails
         psqlConfigs = privateDatabasePsqlConfigs
-        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockGetPsqlConfigs.mockReturnValue(psqlConfigs)
         mockTunnelServer = createMockTunnelServer()
       })
 
@@ -493,7 +487,7 @@ describe('PsqlService', function () {
         // Setup query and expected result
         const query = 'SELECT \'t\'::boolean AS it_works;'
         const expectedResult = ' it_works\n----------\n t\n(1 row)\n'
-        mockTunnelFn = sinon.stub().resolves(mockTunnelServer)
+        mockTunnelFn = vi.fn().mockResolvedValue(mockTunnelServer)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
         // Start the query execution
@@ -516,13 +510,13 @@ describe('PsqlService', function () {
         const result = await queryPromise
 
         // Verify the result
-        expect(result).to.equal(expectedResult)
+        expect(result).toBe(expectedResult)
 
         // Verify getPsqlConfigs was called with correct parameters
-        expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
+        expect(mockGetPsqlConfigs).toHaveBeenCalledExactlyOnceWith(connectionDetails)
 
         // Verify spawn was called with tunnel-adjusted environment
-        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '-c',
           query,
           '--set',
@@ -533,13 +527,13 @@ describe('PsqlService', function () {
         })
 
         // Verify tunnel server was closed
-        expect(mockTunnelServer.close).to.have.been.calledOnce
+        expect(mockTunnelServer.close).toHaveBeenCalledOnce()
       })
 
       it('handles tunnel creation failure', async function () {
         const query = 'SELECT 1;'
         const tunnelError = new Error('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
-        mockTunnelFn = sinon.stub().rejects(tunnelError)
+        mockTunnelFn = vi.fn().mockRejectedValue(tunnelError)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
         // Start the query execution
@@ -547,12 +541,12 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(queryPromise)
-          .to.be.rejectedWith('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
+          .rejects.toThrow('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
       })
 
       it('handles psql failure while tunnel is active', async function () {
         const query = 'SELECT * FROM non_existent_table;'
-        mockTunnelFn = sinon.stub().resolves(mockTunnelServer)
+        mockTunnelFn = vi.fn().mockResolvedValue(mockTunnelServer)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
         // Start the query execution
@@ -572,15 +566,15 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(queryPromise)
-          .to.be.rejectedWith('psql exited with code 1')
+          .rejects.toThrow('psql exited with code 1')
 
         // Verify tunnel server was closed even after psql failure
-        expect(mockTunnelServer.close).to.have.been.calledOnce
+        expect(mockTunnelServer.close).toHaveBeenCalledOnce()
       })
 
       it('handles tunnel close before psql completion', async function () {
         const query = 'SELECT 1;'
-        mockTunnelFn = sinon.stub().resolves(mockTunnelServer)
+        mockTunnelFn = vi.fn().mockResolvedValue(mockTunnelServer)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
         // Start the query execution
@@ -600,7 +594,7 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(queryPromise)
-          .to.be.rejectedWith('Secure tunnel to your database failed')
+          .rejects.toThrow('Secure tunnel to your database failed')
       })
     })
 
@@ -608,7 +602,7 @@ describe('PsqlService', function () {
       beforeEach(function () {
         connectionDetails = defaultConnectionDetails
         psqlConfigs = defaultPsqlConfigs
-        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockGetPsqlConfigs.mockReturnValue(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
       })
 
@@ -628,7 +622,7 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(queryPromise)
-          .to.be.rejectedWith('psql exited with code 1')
+          .rejects.toThrow('psql exited with code 1')
       })
 
       it('throws error when psql command is not found', async function () {
@@ -645,7 +639,7 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(queryPromise)
-          .to.be.rejectedWith('The local psql command could not be located. For help installing psql, see '
+          .rejects.toThrow('The local psql command could not be located. For help installing psql, see '
             + 'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup')
       })
     })
@@ -657,7 +651,7 @@ describe('PsqlService', function () {
         connectionDetails = defaultConnectionDetails
         // Deep clone the psql configs to avoid mutating the original object
         psqlConfigs = structuredClone(defaultPsqlConfigs) as PsqlConfigs
-        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockGetPsqlConfigs.mockReturnValue(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
         delete process.env.HEROKU_PSQL_HISTORY // Reset environment variable
       })
@@ -678,14 +672,14 @@ describe('PsqlService', function () {
         const result = await sessionPromise
 
         // Verify the result
-        expect(result).to.equal('')
+        expect(result).toBe('')
 
         // Verify getPsqlConfigs was called with correct parameters
-        expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
+        expect(mockGetPsqlConfigs).toHaveBeenCalledExactlyOnceWith(connectionDetails)
 
         // Verify spawn was called with correct parameters
         const expectedPrompt = `${connectionDetails.attachment!.app.name}::${connectionDetails.attachment!.name}%R%# `
-        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '--set',
           `PROMPT1=${expectedPrompt}`,
           '--set',
@@ -717,14 +711,14 @@ describe('PsqlService', function () {
         const result = await sessionPromise
 
         // Verify the result
-        expect(result).to.equal('')
+        expect(result).toBe('')
 
         // Verify getPsqlConfigs was called with correct parameters
-        expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
+        expect(mockGetPsqlConfigs).toHaveBeenCalledExactlyOnceWith(connectionDetails)
 
         // Verify spawn was called with correct parameters
         const expectedPrompt = `${connectionDetails.attachment!.app.name}::${connectionDetails.attachment!.name}%R%# `
-        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '--set',
           `PROMPT1=${expectedPrompt}`,
           '--set',
@@ -742,19 +736,19 @@ describe('PsqlService', function () {
 
     describe('for private, non-shielded add-on plans (tunnel required)', function () {
       let mockTunnelServer: Server
-      let mockTunnelFn: sinon.SinonStub
+      let mockTunnelFn: ReturnType<typeof vi.fn>
 
       beforeEach(function () {
         connectionDetails = privateDatabaseConnectionDetails
         // Deep clone the psql configs to avoid mutating the original object
         psqlConfigs = structuredClone(privateDatabasePsqlConfigs) as PsqlConfigs
-        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockGetPsqlConfigs.mockReturnValue(psqlConfigs)
         mockTunnelServer = createMockTunnelServer()
         delete process.env.HEROKU_PSQL_HISTORY // Reset environment variable
       })
 
       it('opens a session successfully through an SSH tunnel', async function () {
-        mockTunnelFn = sinon.stub().resolves(mockTunnelServer)
+        mockTunnelFn = vi.fn().mockResolvedValue(mockTunnelServer)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
         const sessionPromise = psqlService.interactiveSession()
@@ -776,14 +770,14 @@ describe('PsqlService', function () {
         const result = await sessionPromise
 
         // Verify the result
-        expect(result).to.equal('')
+        expect(result).toBe('')
 
         // Verify getPsqlConfigs was called with correct parameters
-        expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
+        expect(mockGetPsqlConfigs).toHaveBeenCalledExactlyOnceWith(connectionDetails)
 
         // Verify spawn was called with tunnel-adjusted environment
         const expectedPrompt = `${connectionDetails.attachment!.app.name}::${connectionDetails.attachment!.name}%R%# `
-        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '--set',
           `PROMPT1=${expectedPrompt}`,
           '--set',
@@ -796,23 +790,23 @@ describe('PsqlService', function () {
         })
 
         // Verify tunnel server was closed
-        expect(mockTunnelServer.close).to.have.been.calledOnce
+        expect(mockTunnelServer.close).toHaveBeenCalledOnce()
       })
 
       it('handles tunnel creation failure', async function () {
         const tunnelError = new Error('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
-        mockTunnelFn = sinon.stub().rejects(tunnelError)
+        mockTunnelFn = vi.fn().mockRejectedValue(tunnelError)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
         const sessionPromise = psqlService.interactiveSession()
 
         // Execute the query and expect it to throw
         await expect(sessionPromise)
-          .to.be.rejectedWith('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
+          .rejects.toThrow('Unable to establish a secure tunnel to your database: ssh: Could not resolve hostname.')
       })
 
       it('handles psql failure while tunnel is active', async function () {
-        mockTunnelFn = sinon.stub().resolves(mockTunnelServer)
+        mockTunnelFn = vi.fn().mockResolvedValue(mockTunnelServer)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
         const sessionPromise = psqlService.interactiveSession()
@@ -831,14 +825,14 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(sessionPromise)
-          .to.be.rejectedWith('psql exited with code 1')
+          .rejects.toThrow('psql exited with code 1')
 
         // Verify tunnel server was closed even after psql failure
-        expect(mockTunnelServer.close).to.have.been.calledOnce
+        expect(mockTunnelServer.close).toHaveBeenCalledOnce()
       })
 
       it('handles tunnel close before psql completion', async function () {
-        mockTunnelFn = sinon.stub().resolves(mockTunnelServer)
+        mockTunnelFn = vi.fn().mockResolvedValue(mockTunnelServer)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn, mockTunnelFn)
 
         const sessionPromise = psqlService.interactiveSession()
@@ -857,7 +851,7 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(sessionPromise)
-          .to.be.rejectedWith('Secure tunnel to your database failed')
+          .rejects.toThrow('Secure tunnel to your database failed')
       })
     })
 
@@ -866,7 +860,7 @@ describe('PsqlService', function () {
         connectionDetails = defaultConnectionDetails
         // Deep clone the psql configs to avoid mutating the original object
         psqlConfigs = structuredClone(defaultPsqlConfigs) as PsqlConfigs
-        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockGetPsqlConfigs.mockReturnValue(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
         delete process.env.HEROKU_PSQL_HISTORY // Reset environment variable
         tmp.setGracefulCleanup()
@@ -891,14 +885,14 @@ describe('PsqlService', function () {
         const result = await sessionPromise
 
         // Verify the result
-        expect(result).to.equal('')
+        expect(result).toBe('')
 
         // Verify getPsqlConfigs was called with correct parameters
-        expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
+        expect(mockGetPsqlConfigs).toHaveBeenCalledExactlyOnceWith(connectionDetails)
 
         // Verify spawn was called with correct parameters
         const expectedPrompt = `${connectionDetails.attachment!.app.name}::${connectionDetails.attachment!.name}%R%# `
-        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '--set',
           `PROMPT1=${expectedPrompt}`,
           '--set',
@@ -922,7 +916,7 @@ describe('PsqlService', function () {
         connectionDetails = defaultConnectionDetails
         // Deep clone the psql configs to avoid mutating the original object
         psqlConfigs = structuredClone(defaultPsqlConfigs) as PsqlConfigs
-        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockGetPsqlConfigs.mockReturnValue(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
         delete process.env.HEROKU_PSQL_HISTORY // Reset environment variable
         tmp.setGracefulCleanup()
@@ -947,14 +941,14 @@ describe('PsqlService', function () {
         const result = await sessionPromise
 
         // Verify the result
-        expect(result).to.equal('')
+        expect(result).toBe('')
 
         // Verify getPsqlConfigs was called with correct parameters
-        expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
+        expect(mockGetPsqlConfigs).toHaveBeenCalledExactlyOnceWith(connectionDetails)
 
         // Verify spawn was called with correct parameters
         const expectedPrompt = `${connectionDetails.attachment!.app.name}::${connectionDetails.attachment!.name}%R%# `
-        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '--set',
           `PROMPT1=${expectedPrompt}`,
           '--set',
@@ -978,7 +972,7 @@ describe('PsqlService', function () {
         connectionDetails = defaultConnectionDetails
         // Deep clone the psql configs to avoid mutating the original object
         psqlConfigs = structuredClone(defaultPsqlConfigs) as PsqlConfigs
-        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockGetPsqlConfigs.mockReturnValue(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
         delete process.env.HEROKU_PSQL_HISTORY // Reset environment variable
         tmp.setGracefulCleanup()
@@ -988,7 +982,7 @@ describe('PsqlService', function () {
         const inexistentDirName = path.join('/', 'path', 'to', 'history-file.txt')
         process.env.HEROKU_PSQL_HISTORY = inexistentDirName
         const expectedMessage = `HEROKU_PSQL_HISTORY is set but is not a valid path (${process.env.HEROKU_PSQL_HISTORY})\n`
-        const uxWarnSpy = sinon.spy(ux, 'warn')
+        const uxWarnSpy = vi.spyOn(ux, 'warn')
         const sessionPromise = psqlService.interactiveSession()
 
         // Simulate psql process completion
@@ -1004,14 +998,14 @@ describe('PsqlService', function () {
         const result = await sessionPromise
 
         // Verify the result
-        expect(result).to.equal('')
+        expect(result).toBe('')
 
         // Verify getPsqlConfigs was called with correct parameters
-        expect(mockGetPsqlConfigs).to.have.been.calledOnceWith(connectionDetails)
+        expect(mockGetPsqlConfigs).toHaveBeenCalledExactlyOnceWith(connectionDetails)
 
         // Verify spawn was called with correct parameters
         const expectedPrompt = `${connectionDetails.attachment!.app.name}::${connectionDetails.attachment!.name}%R%# `
-        expect(mockSpawn).to.have.been.calledOnceWith('psql', [
+        expect(mockSpawn).toHaveBeenCalledExactlyOnceWith('psql', [
           '--set',
           `PROMPT1=${expectedPrompt}`,
           '--set',
@@ -1024,8 +1018,8 @@ describe('PsqlService', function () {
         })
 
         // Verify the warning message was logged
-        expect(uxWarnSpy).to.have.been.calledOnceWith(expectedMessage)
-        uxWarnSpy.restore()
+        expect(uxWarnSpy).toHaveBeenCalledExactlyOnceWith(expectedMessage)
+        uxWarnSpy.mockRestore()
       })
     })
 
@@ -1033,7 +1027,7 @@ describe('PsqlService', function () {
       beforeEach(function () {
         connectionDetails = defaultConnectionDetails
         psqlConfigs = defaultPsqlConfigs
-        mockGetPsqlConfigs.returns(psqlConfigs)
+        mockGetPsqlConfigs.mockReturnValue(psqlConfigs)
         psqlService = new PsqlService(connectionDetails, mockGetPsqlConfigs, mockSpawn)
       })
 
@@ -1050,7 +1044,7 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(sessionPromise)
-          .to.be.rejectedWith('psql exited with code 1')
+          .rejects.toThrow('psql exited with code 1')
       })
 
       it('throws error when psql command is not found', async function () {
@@ -1064,7 +1058,7 @@ describe('PsqlService', function () {
 
         // Execute the query and expect it to throw
         await expect(sessionPromise)
-          .to.be.rejectedWith('The local psql command could not be located. For help installing psql, see '
+          .rejects.toThrow('The local psql command could not be located. For help installing psql, see '
             + 'https://devcenter.heroku.com/articles/heroku-postgresql#local-setup')
       })
     })

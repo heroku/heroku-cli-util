@@ -1,7 +1,9 @@
 import {captureOutput} from '@heroku-cli/test-utils'
 import ansis from 'ansis'
-import {expect} from 'chai'
 import {stdin as mockStdin} from 'mock-stdin'
+import {
+  afterEach, beforeEach, describe, expect, it,
+} from 'vitest'
 
 import {confirm} from '../../../src/ux/confirm.js'
 
@@ -26,10 +28,10 @@ describe('confirm', function () {
       await wait(2000)
       stdin.send('y\n')
       const result = await confirmPromise
-      expect(result).to.equal(true)
+      expect(result).toBe(true)
     })
     const output = ansis.strip(stdout)
-    expect(output).to.contain('Are you sure')
+    expect(output).toContain('Are you sure')
   })
 
   it('should print the prompt and return false for no', async function () {
@@ -38,10 +40,10 @@ describe('confirm', function () {
       await wait(2000)
       stdin.send('n\n')
       const result = await confirmPromise
-      expect(result).to.equal(false)
+      expect(result).toBe(false)
     })
     const output = ansis.strip(stdout)
-    expect(output).to.contain('Are you sure')
+    expect(output).toContain('Are you sure')
   })
 
   it('should use default answer when timed out', async function () {
@@ -49,10 +51,10 @@ describe('confirm', function () {
       const confirmPromise = confirm('Are you sure', {ms: 1000})
       await wait(2000) // Wait longer than the timeout
       const result = await confirmPromise
-      expect(result).to.equal(false) // Default answer is false
+      expect(result).toBe(false) // Default answer is false
     })
     const output = ansis.strip(stdout)
-    expect(output).to.contain('Are you sure')
+    expect(output).toContain('Are you sure')
   })
 
   it('should use custom default answer when timed out', async function () {
@@ -60,9 +62,9 @@ describe('confirm', function () {
       const confirmPromise = confirm('Are you sure', {defaultAnswer: true, ms: 1000})
       await wait(2000) // Wait longer than the timeout
       const result = await confirmPromise
-      expect(result).to.equal(true) // Custom default answer is true
+      expect(result).toBe(true) // Custom default answer is true
     })
     const output = ansis.strip(stdout)
-    expect(output).to.contain('Are you sure')
+    expect(output).toContain('Are you sure')
   })
 })
