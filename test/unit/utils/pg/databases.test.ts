@@ -51,7 +51,7 @@ describe('DatabaseResolver', function () {
     let herokuApi: nock.Scope
 
     beforeEach(async function () {
-      config = await Config.load()
+      config = await Config.load(process.cwd())
       heroku = new APIClient(config)
       env = process.env
       herokuApi = nock(HEROKU_API)
@@ -156,7 +156,7 @@ describe('DatabaseResolver', function () {
     let herokuApi: nock.Scope
 
     beforeEach(async function () {
-      config = await Config.load()
+      config = await Config.load(process.cwd())
       heroku = new APIClient(config)
       env = process.env
       herokuApi = nock(HEROKU_API)
@@ -234,7 +234,7 @@ describe('DatabaseResolver', function () {
     let herokuApi: nock.Scope
 
     beforeEach(async function () {
-      config = await Config.load()
+      config = await Config.load(process.cwd())
       heroku = new APIClient(config)
       addonAttachmentResolveStub = vi.spyOn(AddonAttachmentResolver.prototype, 'resolve')
       env = process.env
@@ -461,7 +461,7 @@ describe('DatabaseResolver', function () {
     let fetchBastionConfigStub: ReturnType<typeof vi.fn>
 
     beforeEach(async function () {
-      config = await Config.load()
+      config = await Config.load(process.cwd())
       heroku = new APIClient(config)
       getAttachmentStub = vi.fn()
       getConfigStub = vi.fn()

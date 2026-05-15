@@ -30,7 +30,7 @@ describe('config-vars', function () {
     let heroku: APIClient
 
     beforeEach(async function () {
-      config = await Config.load()
+      config = await Config.load(process.cwd())
       heroku = new APIClient(config)
     })
 
