@@ -93,8 +93,5 @@
     "prepare": "npm run build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
-  },
-  "overrides": {
-    "serialize-javascript": "^7.0.3"
   }
 }
