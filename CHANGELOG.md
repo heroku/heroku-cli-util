@@ -1,5 +1,14 @@
 # Changelog
 
+## [10.8.2](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.8.1...heroku-cli-util-v10.8.2) (2026-06-08)
+
+
+### Dependencies
+
+* bump @heroku/http-call from 5.5.1 to 5.5.2 ([#343](https://github.com/heroku/heroku-cli-util/issues/343)) ([f2fce3e](https://github.com/heroku/heroku-cli-util/commit/f2fce3ead3c1ec441d7b39870fe6918a488c7e1f))
+* bump @oclif/table from 0.5.2 to 0.5.9 ([#333](https://github.com/heroku/heroku-cli-util/issues/333)) ([ac9a283](https://github.com/heroku/heroku-cli-util/commit/ac9a2837058b0c0fdb15fe75905aff1c792f16f9))
+* bump ws from 8.18.2 to 8.21.0 ([#339](https://github.com/heroku/heroku-cli-util/issues/339)) ([c6b3151](https://github.com/heroku/heroku-cli-util/commit/c6b3151ebbe9b4e7dd2bc513d56c325d9a0d64d0))
+
 ## [10.8.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.8.0...heroku-cli-util-v10.8.1) (2026-05-28)
 
 
