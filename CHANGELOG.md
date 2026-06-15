@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.8.3](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.8.2...heroku-cli-util-v10.8.3) (2026-06-15)
+
+
+### Dependencies
+
+* update @heroku-cli/command to v12.4.2 ([#348](https://github.com/heroku/heroku-cli-util/issues/348)) ([535b986](https://github.com/heroku/heroku-cli-util/commit/535b986cfd6885d8ab86b35be486467a3fe55f18))
+
 ## [10.8.2](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.8.1...heroku-cli-util-v10.8.2) (2026-06-08)
 
 
