@@ -70,7 +70,7 @@
     "vitest": "^4.1.6"
   },
   "dependencies": {
-    "@heroku-cli/command": "^12.4.0",
+    "@heroku-cli/command": "^12.4.2",
     "@heroku/http-call": "^5.5.0",
     "@oclif/core": "^4.3.0",
     "@oclif/table": "0.5.9",
