@@ -191,16 +191,16 @@ describe('table', function () {
 
     it('should escape CSV when values contain carriage returns', async function () {
       const data = [
-        {status: 'sent', text: 'Line1\r\nLine2'},
-        {status: 'read', text: 'Normal'},
+        {message: 'Line 1\r\nLine 2', status: 'sent'},
+        {message: 'Normal', status: 'read'},
       ]
-      const columns = {status: {header: 'Status'}, text: {header: 'Text'}}
+      const columns = {message: {header: 'Message'}, status: {header: 'Status'}}
       const {stdout} = await captureOutput(() =>
         table(data, columns, {
           csv: true,
         }))
 
-      expect(stdout.trim()).toBe('Text,Status\n"Line1\r\nLine2",sent\nNormal,read')
+      expect(stdout.trim()).toBe('Message,Status\n"Line 1\r\nLine 2",sent\nNormal,read')
     })
   })
 
