@@ -49,7 +49,7 @@ function selectColumns<T extends Record<string, unknown>>(
   flags: {columns?: string; extended?: boolean},
 ): Columns<T> {
   if (flags.columns) {
-    const columnIds = flags.columns.split(',');
+    const columnIds = flags.columns.split(',').filter(id => id.trim());
     const uniqueColumnIds = [...new Set(columnIds)];
 
     const selectedColumns: Columns<T> = {};
@@ -112,6 +112,7 @@ function getFilterPredicate<T extends Record<string, unknown>>(
 function getSortIds<T extends Record<string, unknown>>(columns: Columns<T>, sort: string): string[] {
   const sortIds = sort
     .split(',')
+    .filter(id => id.trim())
     .map(id => {
       const column = getColumnById(id, columns);
       if (!column) {
@@ -177,11 +178,7 @@ export function table<T extends Record<string, unknown>>(
 
   if (options?.sort) {
     const sortIds = getSortIds(selectedColumns, options.sort);
-    processedData = orderBy(
-      processedData,
-      sortIds.map(id => row => row[id]),
-      ['asc'],
-    );
+    processedData = orderBy(processedData, sortIds, ['asc']);
   }
 
   if (options?.csv) {

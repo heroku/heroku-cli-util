@@ -188,6 +188,20 @@ describe('table', function () {
 
       expect(stdout.trim()).toBe('Message,Status\n"Line 1\nLine 2",sent\nNormal,read')
     })
+
+    it('should escape CSV when values contain carriage returns', async function () {
+      const data = [
+        {status: 'sent', text: 'Line1\r\nLine2'},
+        {status: 'read', text: 'Normal'},
+      ]
+      const columns = {status: {header: 'Status'}, text: {header: 'Text'}}
+      const {stdout} = await captureOutput(() =>
+        table(data, columns, {
+          csv: true,
+        }))
+
+      expect(stdout.trim()).toBe('Text,Status\n"Line1\r\nLine2",sent\nNormal,read')
+    })
   })
 
   describe('--filter flag', function () {
@@ -454,6 +468,54 @@ describe('table', function () {
       expect(lines[1]).toBe('30,NYC,Alice')
       expect(lines[2]).toBe('35,NYC,Charlie')
       expect(lines.length).toBe(3)
+    })
+  })
+
+  describe('empty data', function () {
+    it('should handle empty data array', async function () {
+      const data: Array<{age: number; name: string}> = []
+      const columns = {age: {header: 'Age'}, name: {header: 'Name'}}
+      const {stdout} = await captureOutput(() =>
+        table(data, columns))
+
+      const strippedOutput = removeAllWhitespace(stdout)
+      expect(strippedOutput).toContain('Name')
+      expect(strippedOutput).toContain('Age')
+    })
+
+    it('should handle empty data array with CSV', async function () {
+      const data: Array<{age: number; name: string}> = []
+      const columns = {age: {header: 'Age'}, name: {header: 'Name'}}
+      const {stdout} = await captureOutput(() =>
+        table(data, columns, {
+          csv: true,
+        }))
+
+      expect(stdout.trim()).toBe('Age,Name')
+    })
+
+    it('should handle empty data array with filter', async function () {
+      const data: Array<{name: string}> = []
+      const columns = {name: {header: 'Name'}}
+      const {stdout} = await captureOutput(() =>
+        table(data, columns, {
+          filter: 'name=test',
+        }))
+
+      const strippedOutput = removeAllWhitespace(stdout)
+      expect(strippedOutput).toContain('Name')
+    })
+
+    it('should handle empty data array with sort', async function () {
+      const data: Array<{name: string}> = []
+      const columns = {name: {header: 'Name'}}
+      const {stdout} = await captureOutput(() =>
+        table(data, columns, {
+          sort: 'name',
+        }))
+
+      const strippedOutput = removeAllWhitespace(stdout)
+      expect(strippedOutput).toContain('Name')
     })
   })
 })
