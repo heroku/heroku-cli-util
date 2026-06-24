@@ -77,6 +77,7 @@
     "ansis": "^4.1.0",
     "debug": "^4.4.0",
     "inquirer": "^12.6.1",
+    "natural-orderby": "^5.0.0",
     "open": "^11",
     "printf": "^0.6.1",
     "tsheredoc": "^1.0.1",

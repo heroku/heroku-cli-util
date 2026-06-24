@@ -10,6 +10,7 @@ export {
   isLegacyEssentialDatabase,
   isPostgresAddon,
 } from './addons/helpers.js'
+export {default as parseKeyValue} from './parse-key-value.js'
 export {getPsqlConfigs, sshTunnel} from './pg/bastion.js'
 export {getConfigVarNameFromAttachment} from './pg/config-vars.js'
 export {default as DatabaseResolver} from './pg/databases.js'
