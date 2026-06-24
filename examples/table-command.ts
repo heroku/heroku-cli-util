@@ -42,11 +42,6 @@ export default class TableCommand extends Command {
 
     // Define the columns configuration
     const columns = {
-      email: {
-        extended: true,  // Hidden by default, shown with --extended
-        header: 'Email',
-        minWidth: 15,
-      },
       id: {
         header: 'ID',
         minWidth: 2,
@@ -62,6 +57,12 @@ export default class TableCommand extends Command {
       status: {
         header: 'Status',
         minWidth: 8,
+      },
+      // eslint-disable-next-line perfectionist/sort-objects
+      email: {
+        extended: true,  // Hidden by default, shown with --extended
+        header: 'Email',
+        minWidth: 15,
       },
     }
 
