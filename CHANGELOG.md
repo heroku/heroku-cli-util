@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.9.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.8.3...heroku-cli-util-v10.9.0) (2026-06-24)
+
+
+### Features
+
+* restore --columns, --csv, --extended, --filter, and --sort ([#354](https://github.com/heroku/heroku-cli-util/issues/354)) ([8581f1f](https://github.com/heroku/heroku-cli-util/commit/8581f1f7ccce840939904c2a39f1deb2b55df532))
+
 ## [10.8.3](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.8.2...heroku-cli-util-v10.8.3) (2026-06-15)
 
 
