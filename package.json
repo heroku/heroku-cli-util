@@ -57,7 +57,7 @@
     "@types/debug": "^4.1.12",
     "@types/node": "^22.15.3",
     "@types/tmp": "^0.2.6",
-    "@types/tunnel-ssh": "4.1.1",
+    "@types/tunnel-ssh": "5.1.0",
     "@vitest/coverage-v8": "^4.0.0",
     "eslint": "^9",
     "eslint-config-oclif": "^6.0.144",
