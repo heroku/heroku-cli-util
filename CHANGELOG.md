@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.9.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.9.0...heroku-cli-util-v10.9.1) (2026-07-01)
+
+
+### Dependencies
+
+* update @heroku-cli/command to v13.0.0 ([#357](https://github.com/heroku/heroku-cli-util/issues/357)) ([a05a641](https://github.com/heroku/heroku-cli-util/commit/a05a641684c675e000803a2c2263a36d9704016d))
+
 ## [10.9.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.8.3...heroku-cli-util-v10.9.0) (2026-06-24)
 
 
