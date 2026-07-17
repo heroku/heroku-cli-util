@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.9.2](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.9.1...heroku-cli-util-v10.9.2) (2026-07-17)
+
+
+### Bug Fixes
+
+* **ci:** pass PR title via env var in pr-title-check workflow ([#361](https://github.com/heroku/heroku-cli-util/issues/361)) ([0825bcc](https://github.com/heroku/heroku-cli-util/commit/0825bccaf3f87659edbe4d94c305b4f2b71e6e09))
+
+
+### Dependencies
+
+* bump @opentelemetry/core and @opentelemetry/sdk-trace-base ([#352](https://github.com/heroku/heroku-cli-util/issues/352)) ([c21f702](https://github.com/heroku/heroku-cli-util/commit/c21f7029fcec910660f540309aa6c4bed7dc88bb))
+
 ## [10.9.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.9.0...heroku-cli-util-v10.9.1) (2026-07-01)
 
 
