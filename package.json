@@ -80,7 +80,7 @@
     "natural-orderby": "^5.0.0",
     "open": "^11",
     "printf": "^0.6.1",
-    "tsheredoc": "^1.0.1",
+    "tsheredoc": "^2.0.0",
     "tunnel-ssh": "5.2.0"
   },
   "engines": {
