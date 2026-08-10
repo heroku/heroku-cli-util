@@ -8,7 +8,9 @@ export {
   isEssentialDatabase,
   isLegacyDatabase,
   isLegacyEssentialDatabase,
+  isLegacyShieldDatabase,
   isPostgresAddon,
+  isPrivateNetworkDatabase,
 } from './addons/helpers.js'
 export {default as parseKeyValue} from './parse-key-value.js'
 export {getPsqlConfigs, sshTunnel} from './pg/bastion.js'
