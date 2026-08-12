@@ -35,7 +35,15 @@ describe('utils/addons index exports', function () {
     expect(addons.isLegacyEssentialDatabase).toBeTypeOf('function')
   })
 
+  it('exports isLegacyShieldDatabase', function () {
+    expect(addons.isLegacyShieldDatabase).toBeTypeOf('function')
+  })
+
   it('exports isPostgresAddon', function () {
     expect(addons.isPostgresAddon).toBeTypeOf('function')
+  })
+
+  it('exports isPrivateNetworkDatabase', function () {
+    expect(addons.isPrivateNetworkDatabase).toBeTypeOf('function')
   })
 })
