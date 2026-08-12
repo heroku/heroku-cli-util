@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.10.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.9.2...heroku-cli-util-v10.10.0) (2026-08-12)
+
+
+### Features
+
+* adding classic shield and private network bool  ([#370](https://github.com/heroku/heroku-cli-util/issues/370)) ([4b6011f](https://github.com/heroku/heroku-cli-util/commit/4b6011f716d5682360137859d7dfb80109f6079e))
+
+
+### Dependencies
+
+* bump brace-expansion ([#369](https://github.com/heroku/heroku-cli-util/issues/369)) ([513fd92](https://github.com/heroku/heroku-cli-util/commit/513fd92846009a91ca1482014160ba59286c5a64))
+
 ## [10.9.2](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.9.1...heroku-cli-util-v10.9.2) (2026-07-17)
 
 
