@@ -7,5 +7,7 @@ export {
   isEssentialDatabase,
   isLegacyDatabase,
   isLegacyEssentialDatabase,
+  isLegacyShieldDatabase,
   isPostgresAddon,
+  isPrivateNetworkDatabase,
 } from './helpers.js'

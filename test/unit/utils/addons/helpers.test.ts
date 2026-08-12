@@ -9,7 +9,9 @@ import {
   isEssentialDatabase,
   isLegacyDatabase,
   isLegacyEssentialDatabase,
+  isLegacyShieldDatabase,
   isPostgresAddon,
+  isPrivateNetworkDatabase,
 } from '../../../../src/utils/addons/helpers.js'
 import {
   advancedDatabase,
@@ -364,6 +366,124 @@ describe('addons/helpers', function () {
     // Non-Postgres Add-ons
     it('returns false for a non-Postgres add-on', function () {
       expect(isLegacyEssentialDatabase(nonPostgresAddon)).toBe(false)
+    })
+  })
+
+  describe('isLegacyShieldDatabase', function () {
+    // Advanced Tier Databases
+    it('returns false for an Advanced database', function () {
+      expect(isLegacyShieldDatabase(advancedDatabase)).toBe(false)
+    })
+
+    it('returns false for an Advanced Private database', function () {
+      expect(isLegacyShieldDatabase(advancedPrivateDatabase)).toBe(false)
+    })
+
+    it('returns false for an Advanced Shield database', function () {
+      expect(isLegacyShieldDatabase(advancedShieldDatabase)).toBe(false)
+    })
+
+    it('returns false for a Performance database', function () {
+      expect(isLegacyShieldDatabase(performanceDatabase)).toBe(false)
+    })
+
+    // Essential Tier Databases
+    it('returns false for an Essential database', function () {
+      expect(isLegacyShieldDatabase(essentialDatabase)).toBe(false)
+    })
+
+    // Non-Advanced Tier Databases
+    it('returns false for a Premium database', function () {
+      expect(isLegacyShieldDatabase(premiumDatabase)).toBe(false)
+    })
+
+    it('returns false for a Private database', function () {
+      expect(isLegacyShieldDatabase(privateDatabase)).toBe(false)
+    })
+
+    it('returns true for a Shield database', function () {
+      expect(isLegacyShieldDatabase(shieldDatabase)).toBe(true)
+    })
+
+    it('returns false for a Standard database', function () {
+      expect(isLegacyShieldDatabase(standardDatabase)).toBe(false)
+    })
+
+    // Legacy Essential Tier Databases
+    it('returns false for a Dev database', function () {
+      expect(isLegacyShieldDatabase(devDatabase)).toBe(false)
+    })
+
+    it('returns false for a Basic database', function () {
+      expect(isLegacyShieldDatabase(basicDatabase)).toBe(false)
+    })
+
+    it('returns false for a Mini database', function () {
+      expect(isLegacyShieldDatabase(miniDatabase)).toBe(false)
+    })
+
+    // Non-Postgres Add-ons
+    it('returns false for a non-Postgres add-on', function () {
+      expect(isLegacyShieldDatabase(nonPostgresAddon)).toBe(false)
+    })
+  })
+
+  describe('isPrivateNetworkDatabase', function () {
+    // Advanced Tier Databases
+    it('returns false for an Advanced database in the Common Runtime', function () {
+      expect(isPrivateNetworkDatabase(advancedDatabase)).toBe(false)
+    })
+
+    it('returns true for an Advanced database in a Private Space', function () {
+      expect(isPrivateNetworkDatabase(advancedPrivateDatabase)).toBe(true)
+    })
+
+    it('returns true for an Advanced database in a Shield Private Space', function () {
+      expect(isPrivateNetworkDatabase(advancedShieldDatabase)).toBe(true)
+    })
+
+    it('returns false for a Performance database in the Common Runtime', function () {
+      expect(isPrivateNetworkDatabase(performanceDatabase)).toBe(false)
+    })
+
+    // Essential Tier Databases
+    it('returns false for an Essential database', function () {
+      expect(isPrivateNetworkDatabase(essentialDatabase)).toBe(false)
+    })
+
+    // Non-Advanced Tier Databases
+    it('returns false for a Premium database', function () {
+      expect(isPrivateNetworkDatabase(premiumDatabase)).toBe(false)
+    })
+
+    it('returns false for a Private database', function () {
+      expect(isPrivateNetworkDatabase(privateDatabase)).toBe(false)
+    })
+
+    it('returns true for a Shield database', function () {
+      expect(isPrivateNetworkDatabase(shieldDatabase)).toBe(true)
+    })
+
+    it('returns false for a Standard database', function () {
+      expect(isPrivateNetworkDatabase(standardDatabase)).toBe(false)
+    })
+
+    // Legacy Essential Tier Databases
+    it('returns false for a Dev database', function () {
+      expect(isPrivateNetworkDatabase(devDatabase)).toBe(false)
+    })
+
+    it('returns false for a Basic database', function () {
+      expect(isPrivateNetworkDatabase(basicDatabase)).toBe(false)
+    })
+
+    it('returns false for a Mini database', function () {
+      expect(isPrivateNetworkDatabase(miniDatabase)).toBe(false)
+    })
+
+    // Non-Postgres Add-ons
+    it('returns false for a non-Postgres add-on', function () {
+      expect(isPrivateNetworkDatabase(nonPostgresAddon)).toBe(false)
     })
   })
 

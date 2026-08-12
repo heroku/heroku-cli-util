@@ -18,5 +18,11 @@ export const isLegacyDatabase = (addon: ExtendedAddon | ExtendedAddonAttachment[
 export const isLegacyEssentialDatabase = (addon: ExtendedAddon | ExtendedAddonAttachment['addon']) =>
   isLegacyDatabase(addon) && /^(dev|basic|mini)/.test(addon.plan.name.split(':', 2)[1])
 
+export const isLegacyShieldDatabase = (addon: ExtendedAddon | ExtendedAddonAttachment['addon']) =>
+  isLegacyDatabase(addon) && addon.plan.name.split(':', 2)[1].includes('shield')
+
+export const isPrivateNetworkDatabase = (addon: ExtendedAddon | ExtendedAddonAttachment['addon']) =>
+  isAdvancedPrivateDatabase(addon) || isLegacyShieldDatabase(addon)
+
 export const isEssentialDatabase = (addon: ExtendedAddon | ExtendedAddonAttachment['addon']) =>
   isLegacyDatabase(addon) && addon.plan.name.split(':', 2)[1].startsWith('essential')
