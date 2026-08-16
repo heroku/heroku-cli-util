@@ -55,7 +55,7 @@
     "@heroku-cli/schema": "^2.0.0",
     "@heroku-cli/test-utils": "^0.3.0",
     "@types/debug": "^4.1.12",
-    "@types/node": "^22.15.3",
+    "@types/node": "^26.2.0",
     "@types/tmp": "^0.2.6",
     "@types/tunnel-ssh": "4.1.1",
     "@vitest/coverage-v8": "^4.0.0",
