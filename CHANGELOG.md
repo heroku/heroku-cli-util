@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.10.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.10.0...heroku-cli-util-v10.10.1) (2026-09-11)
+
+
+### Dependencies
+
+* bump @heroku/http-call from 5.5.2 to 5.6.1 ([#378](https://github.com/heroku/heroku-cli-util/issues/378)) ([99c3467](https://github.com/heroku/heroku-cli-util/commit/99c3467e02dd8f5769e147a8be6d6f3aff721f1a))
+* bump ansis from 4.2.0 to 4.3.1 ([#375](https://github.com/heroku/heroku-cli-util/issues/375)) ([8949136](https://github.com/heroku/heroku-cli-util/commit/8949136e6bdbebef66e75fa513286bc554fe88b1))
+
 ## [10.10.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.9.2...heroku-cli-util-v10.10.0) (2026-08-12)
 
 
