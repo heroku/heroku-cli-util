@@ -68,7 +68,7 @@
     "tmp": "^0.2.5",
     "tsx": "^4.21.0",
     "typescript": "^5.4.0",
-    "vitest": "^4.1.6"
+    "vitest": "^5.0.2"
   },
   "dependencies": {
     "@heroku-cli/command": "^13.0.0",
