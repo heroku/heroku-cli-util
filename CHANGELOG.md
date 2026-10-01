@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.10.2](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.10.1...heroku-cli-util-v10.10.2) (2026-10-01)
+
+
+### Dependencies
+
+* bump brace-expansion ([#396](https://github.com/heroku/heroku-cli-util/issues/396)) ([27d5ede](https://github.com/heroku/heroku-cli-util/commit/27d5ede76d74df7ebaad55fd2fcb0990701527d1))
+
 ## [10.10.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.10.0...heroku-cli-util-v10.10.1) (2026-09-22)
 
 
