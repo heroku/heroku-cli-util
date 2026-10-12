@@ -3,7 +3,6 @@ import {APIClient} from '@heroku-cli/command'
 import {HerokuAPIError} from '@heroku-cli/command/lib/api-client.js'
 import {HTTPError} from '@heroku/http-call'
 import {Config} from '@oclif/core'
-import ansis from 'ansis'
 import nock from 'nock'
 import {
   afterEach, beforeEach, describe, expect, it, MockInstance, vi,
@@ -306,13 +305,9 @@ describe('DatabaseResolver', function () {
           .get('/apps/app-no-addons/addon-attachments')
           .reply(200, [])
 
-        try {
-          await new DatabaseResolver(heroku).getAttachment('app-no-addons', 'MAIN_DATABASE')
-        } catch (error: unknown) {
-          expect(addonAttachmentResolveStub).toHaveBeenCalledWith('app-no-addons', 'MAIN_DATABASE', {addonService: 'heroku-postgresql', namespace: undefined})
-          // Symbol (⬢) is only included when TTY supports ANSI256, so just check the app name
-          expect(ansis.strip((error as Error).message)).toMatch(/app-no-addons has no databases/)
-        }
+        await expect(new DatabaseResolver(heroku).getAttachment('app-no-addons', 'MAIN_DATABASE'))
+          .rejects.toThrow(/app-no-addons has no databases/)
+        expect(addonAttachmentResolveStub).toHaveBeenCalledWith('app-no-addons', 'MAIN_DATABASE', {addonService: 'heroku-postgresql', namespace: undefined})
       })
 
       it('throws error when app has databases but requested database does not exist', async function () {
@@ -325,12 +320,9 @@ describe('DatabaseResolver', function () {
           .get('/apps/my-app/config-vars')
           .reply(200, myAppConfigVars)
 
-        try {
-          await new DatabaseResolver(heroku).getAttachment('my-app', 'NONEXISTENT_DB')
-        } catch (error: unknown) {
-          expect(addonAttachmentResolveStub).toHaveBeenCalledWith('my-app', 'NONEXISTENT_DB', {addonService: 'heroku-postgresql', namespace: undefined})
-          expect((error as Error).message).toBe('Unknown database: NONEXISTENT_DB. Valid options are: MAIN_DATABASE, MAIN_RO_DATABASE, FOLLOWER_DATABASE')
-        }
+        await expect(new DatabaseResolver(heroku).getAttachment('my-app', 'NONEXISTENT_DB'))
+          .rejects.toThrow('Unknown database: NONEXISTENT_DB. Valid options are: MAIN_DATABASE, MAIN_RO_DATABASE, FOLLOWER_DATABASE')
+        expect(addonAttachmentResolveStub).toHaveBeenCalledWith('my-app', 'NONEXISTENT_DB', {addonService: 'heroku-postgresql', namespace: undefined})
       })
 
       it('handles app::database format when no matches found', async function () {
@@ -341,13 +333,9 @@ describe('DatabaseResolver', function () {
           .get('/apps/app-no-addons/addon-attachments')
           .reply(200, [])
 
-        try {
-          await new DatabaseResolver(heroku).getAttachment('my-app', 'app-no-addons::MAIN_DATABASE')
-        } catch (error: unknown) {
-          expect(addonAttachmentResolveStub).toHaveBeenCalledWith('app-no-addons', 'MAIN_DATABASE', {addonService: 'heroku-postgresql', namespace: undefined})
-          // Symbol (⬢) is only included when TTY supports ANSI256, so just check the app name
-          expect(ansis.strip((error as Error).message)).toMatch(/app-no-addons has no databases/)
-        }
+        await expect(new DatabaseResolver(heroku).getAttachment('my-app', 'app-no-addons::MAIN_DATABASE'))
+          .rejects.toThrow(/app-no-addons has no databases/)
+        expect(addonAttachmentResolveStub).toHaveBeenCalledWith('app-no-addons', 'MAIN_DATABASE', {addonService: 'heroku-postgresql', namespace: undefined})
       })
 
       it('handles non-existent namespace', async function () {
@@ -355,12 +343,9 @@ describe('DatabaseResolver', function () {
 
         // In this case, there's no fetching app add-on attachments from Platform API, because the matchesHelper
         // function re-throws the NotFound error received from the resolver.
-        try {
-          await new DatabaseResolver(heroku).getAttachment('my-app', 'DATABASE', 'missing-namespace')
-        } catch (error: unknown) {
-          expect(addonAttachmentResolveStub).toHaveBeenCalledWith('my-app', 'DATABASE', {addonService: 'heroku-postgresql', namespace: 'missing-namespace'})
-          expect((error as Error).message).toBe('Couldn\'t find that addon.')
-        }
+        await expect(new DatabaseResolver(heroku).getAttachment('my-app', 'DATABASE', 'missing-namespace'))
+          .rejects.toThrow('Couldn\'t find that addon.')
+        expect(addonAttachmentResolveStub).toHaveBeenCalledWith('my-app', 'DATABASE', {addonService: 'heroku-postgresql', namespace: 'missing-namespace'})
       })
 
       it('respects value of HEROKU_POSTGRESQL_ADDON_NAME env var', async function () {
@@ -407,12 +392,9 @@ describe('DatabaseResolver', function () {
           'addon_attachment',
         ))
 
-        try {
-          await new DatabaseResolver(heroku).getAttachment('my-app', 'DATABASE')
-        } catch (error: unknown) {
-          expect(addonAttachmentResolveStub).toHaveBeenCalledWith('my-app', 'DATABASE', {addonService: 'heroku-postgresql', namespace: undefined})
-          expect((error as Error).message).toBe('Ambiguous identifier; multiple matching add-ons found: MAIN_DATABASE, MAIN_RO_DATABASE, FOLLOWER_DATABASE.')
-        }
+        await expect(new DatabaseResolver(heroku).getAttachment('my-app', 'DATABASE'))
+          .rejects.toThrow('Ambiguous identifier; multiple matching add-ons found: MAIN_DATABASE, MAIN_RO_DATABASE, FOLLOWER_DATABASE.')
+        expect(addonAttachmentResolveStub).toHaveBeenCalledWith('my-app', 'DATABASE', {addonService: 'heroku-postgresql', namespace: undefined})
       })
 
       it('throws AmbiguousError when multiple matches are found and they are non equivalent attachments (different namespaces)', async function () {
@@ -426,12 +408,9 @@ describe('DatabaseResolver', function () {
           .get('/apps/my-app/config-vars')
           .reply(200, myAppConfigVars)
 
-        try {
-          await new DatabaseResolver(heroku).getAttachment('my-app', 'MAIN')
-        } catch (error: unknown) {
-          expect(addonAttachmentResolveStub).toHaveBeenCalledWith('my-app', 'MAIN', {addonService: 'heroku-postgresql', namespace: undefined})
-          expect((error as Error).message).toBe('Ambiguous identifier; multiple matching add-ons found: MAIN_DATABASE, MAIN_RO_DATABASE.')
-        }
+        await expect(new DatabaseResolver(heroku).getAttachment('my-app', 'MAIN'))
+          .rejects.toThrow('Ambiguous identifier; multiple matching add-ons found: MAIN_DATABASE, MAIN_RO_DATABASE.')
+        expect(addonAttachmentResolveStub).toHaveBeenCalledWith('my-app', 'MAIN', {addonService: 'heroku-postgresql', namespace: undefined})
       })
 
       it('returns the first match when multiple matches are found but they are equivalent', async function () {

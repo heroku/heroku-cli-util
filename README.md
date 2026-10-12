@@ -17,6 +17,31 @@ formatting, and color styling.
 npm install @heroku/heroku-cli-util
 ```
 
+## v11 Migration
+
+Version 11 requires Node.js `>=22.12.0`, uses `@oclif/core` v5 directly, and
+supports `@heroku-cli/command` v14 only. It does not support command v13.
+The dependency range admits stable command v14 releases as well as the v14
+beta used during v11 beta validation.
+
+During the beta period, install an exact beta version rather than the floating
+`beta` tag:
+
+```bash
+npm install @heroku/heroku-cli-util@11.0.0-beta.0
+```
+
+After v11 has completed beta acceptance and stable `@heroku-cli/command` v14
+compatibility has been verified, migrate to:
+
+```bash
+npm install @heroku/heroku-cli-util@^11.0.0
+```
+
+The package directly uses oclif core v5. The command v14 dependency may bring
+its own core v4 copy; both versions intentionally coexist, without dependency
+overrides.
+
 ## Usage
 
 Import only the utilities you need for better performance and smaller bundle sizes.
@@ -30,10 +55,12 @@ import { AddonResolver } from '@heroku/heroku-cli-util/utils/addons';
 
 **Available import paths:**
 - `@heroku/heroku-cli-util/color` - Color utilities
+- `@heroku/heroku-cli-util/colors` - Alias for color utilities
 - `@heroku/heroku-cli-util/hux` - UX utilities (prompts, tables, output formatting)
 - `@heroku/heroku-cli-util/utils` - All utility functions
 - `@heroku/heroku-cli-util/utils/pg` - PostgreSQL-specific utilities
 - `@heroku/heroku-cli-util/utils/addons` - Addon-specific utilities
+- `@heroku/heroku-cli-util` - Root namespace exports (`utils`, `hux`, and `color`)
 
 ### Output Utilities
 
@@ -173,8 +200,8 @@ import { DatabaseResolver, PsqlService, getHost, getPsqlConfigs } from '@heroku/
 import { AddonResolver, isPostgresAddon } from '@heroku/heroku-cli-util/utils/addons';
 
 // Resolve a database from an app (requires APIClient from @heroku-cli/command)
-const resolver = new DatabaseResolver(herokuApiClient, app, db);
-const database = await resolver.resolve();
+const resolver = new DatabaseResolver(herokuApiClient);
+const database = await resolver.getDatabase(app, db);
 
 // Get Heroku Postgres host
 const host = getHost();
