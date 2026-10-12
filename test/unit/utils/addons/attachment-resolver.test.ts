@@ -67,14 +67,11 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on attachment.', resource: 'add_on attachment'})
 
-      try {
-        await new AddonAttachmentResolver(heroku).resolve(undefined, 'DATABASE')
-      } catch (error: unknown) {
-        const apiError = error as HerokuAPIError
-        expect(apiError.body.id).toBe('not_found')
-        expect(apiError.body.message).toBe('Couldn\'t find that add on attachment.')
-        expect(apiError.http.statusCode).toBe(404)
-      }
+      await expect(new AddonAttachmentResolver(heroku).resolve(undefined, 'DATABASE'))
+        .rejects.toMatchObject({
+          body: {id: 'not_found', message: 'Couldn\'t find that add on attachment.'},
+          http: {statusCode: 404},
+        } satisfies Partial<HerokuAPIError>)
     })
 
     it('throws a not found error when trying to resolve only by config var name', async function () {
@@ -82,14 +79,11 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on attachment.', resource: 'add_on attachment'})
 
-      try {
-        await new AddonAttachmentResolver(heroku).resolve(undefined, 'DATABASE_URL')
-      } catch (error: unknown) {
-        const apiError = error as HerokuAPIError
-        expect(apiError.body.id).toBe('not_found')
-        expect(apiError.body.message).toBe('Couldn\'t find that add on attachment.')
-        expect(apiError.http.statusCode).toBe(404)
-      }
+      await expect(new AddonAttachmentResolver(heroku).resolve(undefined, 'DATABASE_URL'))
+        .rejects.toMatchObject({
+          body: {id: 'not_found', message: 'Couldn\'t find that add on attachment.'},
+          http: {statusCode: 404},
+        } satisfies Partial<HerokuAPIError>)
     })
 
     it('throws an ambiguous error when multiple matches by app name and partial attachment name', async function () {
@@ -115,14 +109,11 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(404, {id: 'not_found', message: 'Couldn\'t find that app.', resource: 'app'})
 
-      try {
-        await new AddonAttachmentResolver(heroku).resolve('missing-app', 'whatever')
-      } catch (error: unknown) {
-        const apiError = error as HerokuAPIError
-        expect(apiError.body.id).toBe('not_found')
-        expect(apiError.body.message).toBe('Couldn\'t find that app.')
-        expect(apiError.http.statusCode).toBe(404)
-      }
+      await expect(new AddonAttachmentResolver(heroku).resolve('missing-app', 'whatever'))
+        .rejects.toMatchObject({
+          body: {id: 'not_found', message: 'Couldn\'t find that app.'},
+          http: {statusCode: 404},
+        } satisfies Partial<HerokuAPIError>)
     })
 
     it('throws an attachment not found error when trying to resolve by an attachment id for a different app', async function () {
@@ -130,14 +121,11 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on attachment.', resource: 'add_on attachment'})
 
-      try {
-        await new AddonAttachmentResolver(heroku).resolve('my-app', foreignAttachment.id)
-      } catch (error: unknown) {
-        const apiError = error as HerokuAPIError
-        expect(apiError.body.id).toBe('not_found')
-        expect(apiError.body.message).toBe('Couldn\'t find that add on attachment.')
-        expect(apiError.http.statusCode).toBe(404)
-      }
+      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', foreignAttachment.id))
+        .rejects.toMatchObject({
+          body: {id: 'not_found', message: 'Couldn\'t find that add on attachment.'},
+          http: {statusCode: 404},
+        } satisfies Partial<HerokuAPIError>)
     })
 
     it('throws an attachment not found error when trying to resolve by a non-existent attachment name', async function () {
@@ -145,14 +133,11 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on attachment.', resource: 'add_on attachment'})
 
-      try {
-        await new AddonAttachmentResolver(heroku).resolve('my-app', 'PRIMARY_DB')
-      } catch (error: unknown) {
-        const apiError = error as HerokuAPIError
-        expect(apiError.body.id).toBe('not_found')
-        expect(apiError.body.message).toBe('Couldn\'t find that add on attachment.')
-        expect(apiError.http.statusCode).toBe(404)
-      }
+      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'PRIMARY_DB'))
+        .rejects.toMatchObject({
+          body: {id: 'not_found', message: 'Couldn\'t find that add on attachment.'},
+          http: {statusCode: 404},
+        } satisfies Partial<HerokuAPIError>)
     })
 
     // This is wrongfully described in the API comments as returning the attachment for the other app, but passing an app name
@@ -163,14 +148,11 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on attachment.', resource: 'add_on attachment'})
 
-      try {
-        await new AddonAttachmentResolver(heroku).resolve('my-app', 'my-other-app::DATABASE')
-      } catch (error: unknown) {
-        const apiError = error as HerokuAPIError
-        expect(apiError.body.id).toBe('not_found')
-        expect(apiError.body.message).toBe('Couldn\'t find that add on attachment.')
-        expect(apiError.http.statusCode).toBe(404)
-      }
+      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'my-other-app::DATABASE'))
+        .rejects.toMatchObject({
+          body: {id: 'not_found', message: 'Couldn\'t find that add on attachment.'},
+          http: {statusCode: 404},
+        } satisfies Partial<HerokuAPIError>)
     })
 
     it('returns the resolved addon attachment if one matches exactly by attachment name', async function () {
@@ -243,13 +225,10 @@ describe('AddonAttachmentResolver#resolve', function () {
         .post('/actions/addon-attachments/resolve')
         .reply(200, [defaultAttachment])
 
-      try {
-        await new AddonAttachmentResolver(heroku).resolve('my-app', 'DATABASE', {addonService: 'heroku-redis'})
-      } catch (error: unknown) {
-        const notFoundError = error as NotFound
-        expect(notFoundError.body.id).toBe('not_found')
-        expect(notFoundError.body.message).toBe('Couldn\'t find that addon.')
-      }
+      await expect(new AddonAttachmentResolver(heroku).resolve('my-app', 'DATABASE', {addonService: 'heroku-redis'}))
+        .rejects.toMatchObject({
+          body: {id: 'not_found', message: 'Couldn\'t find that addon.'},
+        } satisfies Partial<NotFound>)
     })
 
     it('returns the resolved addon attachment if the matching attachment is for the same addon service', async function () {
