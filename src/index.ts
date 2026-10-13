@@ -11,7 +11,9 @@ import {
   isEssentialDatabase,
   isLegacyDatabase,
   isLegacyEssentialDatabase,
+  isLegacyShieldDatabase,
   isPostgresAddon,
+  isPrivateNetworkDatabase,
 } from './utils/addons/helpers.js'
 import {getPsqlConfigs, sshTunnel} from './utils/pg/bastion.js'
 import {getConfigVarNameFromAttachment} from './utils/pg/config-vars.js'
@@ -59,7 +61,9 @@ export const utils = {
     isEssentialDatabase,
     isLegacyDatabase,
     isLegacyEssentialDatabase,
+    isLegacyShieldDatabase,
     isPostgresAddon,
+    isPrivateNetworkDatabase,
     psql: {
       getConfigVarNameFromAttachment,
       getPsqlConfigs,

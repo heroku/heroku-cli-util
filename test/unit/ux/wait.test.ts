@@ -1,4 +1,4 @@
-import {expect} from 'chai'
+import {describe, expect, it} from 'vitest'
 
 import {wait} from '../../../src/ux/wait.js'
 
@@ -9,7 +9,7 @@ describe('wait', function () {
     await wait(duration)
     const elapsed = Date.now() - start
     // Allow a small margin for timing inaccuracy
-    expect(elapsed).to.be.at.least(duration - 30)
-    expect(elapsed).to.be.at.most(duration + 30)
+    expect(elapsed).toBeGreaterThanOrEqual(duration - 30)
+    expect(elapsed).toBeLessThanOrEqual(duration + 30)
   })
 })

@@ -1,5 +1,94 @@
 # Changelog
 
+## [10.10.2](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.10.1...heroku-cli-util-v10.10.2) (2026-10-01)
+
+
+### Dependencies
+
+* bump brace-expansion ([#396](https://github.com/heroku/heroku-cli-util/issues/396)) ([27d5ede](https://github.com/heroku/heroku-cli-util/commit/27d5ede76d74df7ebaad55fd2fcb0990701527d1))
+
+## [10.10.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.10.0...heroku-cli-util-v10.10.1) (2026-09-22)
+
+
+### Dependencies
+
+* bump @heroku/http-call from 5.5.2 to 5.6.1 ([#378](https://github.com/heroku/heroku-cli-util/issues/378)) ([99c3467](https://github.com/heroku/heroku-cli-util/commit/99c3467e02dd8f5769e147a8be6d6f3aff721f1a))
+* bump @oclif/core from 4.8.0 to 4.14.0 ([#387](https://github.com/heroku/heroku-cli-util/issues/387)) ([e681886](https://github.com/heroku/heroku-cli-util/commit/e6818868db6b0453837beaf74edd4cc3af113149))
+* bump ansis from 4.2.0 to 4.3.1 ([#375](https://github.com/heroku/heroku-cli-util/issues/375)) ([8949136](https://github.com/heroku/heroku-cli-util/commit/8949136e6bdbebef66e75fa513286bc554fe88b1))
+
+## [10.10.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.9.2...heroku-cli-util-v10.10.0) (2026-08-12)
+
+
+### Features
+
+* adding classic shield and private network bool  ([#370](https://github.com/heroku/heroku-cli-util/issues/370)) ([4b6011f](https://github.com/heroku/heroku-cli-util/commit/4b6011f716d5682360137859d7dfb80109f6079e))
+
+
+### Dependencies
+
+* bump brace-expansion ([#369](https://github.com/heroku/heroku-cli-util/issues/369)) ([513fd92](https://github.com/heroku/heroku-cli-util/commit/513fd92846009a91ca1482014160ba59286c5a64))
+
+## [10.9.2](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.9.1...heroku-cli-util-v10.9.2) (2026-07-17)
+
+
+### Bug Fixes
+
+* **ci:** pass PR title via env var in pr-title-check workflow ([#361](https://github.com/heroku/heroku-cli-util/issues/361)) ([0825bcc](https://github.com/heroku/heroku-cli-util/commit/0825bccaf3f87659edbe4d94c305b4f2b71e6e09))
+
+
+### Dependencies
+
+* bump @opentelemetry/core and @opentelemetry/sdk-trace-base ([#352](https://github.com/heroku/heroku-cli-util/issues/352)) ([c21f702](https://github.com/heroku/heroku-cli-util/commit/c21f7029fcec910660f540309aa6c4bed7dc88bb))
+
+## [10.9.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.9.0...heroku-cli-util-v10.9.1) (2026-07-01)
+
+
+### Dependencies
+
+* update @heroku-cli/command to v13.0.0 ([#357](https://github.com/heroku/heroku-cli-util/issues/357)) ([a05a641](https://github.com/heroku/heroku-cli-util/commit/a05a641684c675e000803a2c2263a36d9704016d))
+
+## [10.9.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.8.3...heroku-cli-util-v10.9.0) (2026-06-24)
+
+
+### Features
+
+* restore --columns, --csv, --extended, --filter, and --sort ([#354](https://github.com/heroku/heroku-cli-util/issues/354)) ([8581f1f](https://github.com/heroku/heroku-cli-util/commit/8581f1f7ccce840939904c2a39f1deb2b55df532))
+
+## [10.8.3](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.8.2...heroku-cli-util-v10.8.3) (2026-06-15)
+
+
+### Dependencies
+
+* update @heroku-cli/command to v12.4.2 ([#348](https://github.com/heroku/heroku-cli-util/issues/348)) ([535b986](https://github.com/heroku/heroku-cli-util/commit/535b986cfd6885d8ab86b35be486467a3fe55f18))
+
+## [10.8.2](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.8.1...heroku-cli-util-v10.8.2) (2026-06-08)
+
+
+### Dependencies
+
+* bump @heroku/http-call from 5.5.1 to 5.5.2 ([#343](https://github.com/heroku/heroku-cli-util/issues/343)) ([f2fce3e](https://github.com/heroku/heroku-cli-util/commit/f2fce3ead3c1ec441d7b39870fe6918a488c7e1f))
+* bump @oclif/table from 0.5.2 to 0.5.9 ([#333](https://github.com/heroku/heroku-cli-util/issues/333)) ([ac9a283](https://github.com/heroku/heroku-cli-util/commit/ac9a2837058b0c0fdb15fe75905aff1c792f16f9))
+* bump ws from 8.18.2 to 8.21.0 ([#339](https://github.com/heroku/heroku-cli-util/issues/339)) ([c6b3151](https://github.com/heroku/heroku-cli-util/commit/c6b3151ebbe9b4e7dd2bc513d56c325d9a0d64d0))
+
+## [10.8.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.8.0...heroku-cli-util-v10.8.1) (2026-05-28)
+
+
+### Dependencies
+
+* update heroku-cli/command to 12.4.0 ([#336](https://github.com/heroku/heroku-cli-util/issues/336)) ([e9f5bf2](https://github.com/heroku/heroku-cli-util/commit/e9f5bf28e6d11079bd122139bed82c341f709411))
+
+## [10.8.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.7.0...heroku-cli-util-v10.8.0) (2026-04-06)
+
+
+### Features
+
+* disable colors by default when output is not a TTY and add basic colors to exports ([#320](https://github.com/heroku/heroku-cli-util/issues/320)) ([589999b](https://github.com/heroku/heroku-cli-util/commit/589999bb7c531380be9732833b53af6b52acdc2a))
+
+
+### Performance Improvements
+
+* implement lazy loading for heavy dependencies ([#318](https://github.com/heroku/heroku-cli-util/issues/318)) ([3e4eefb](https://github.com/heroku/heroku-cli-util/commit/3e4eefbcf98d6e34235893883cc1ed3dc416345d))
+
 ## [10.7.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.6.1...heroku-cli-util-v10.7.0) (2026-03-24)
 
 

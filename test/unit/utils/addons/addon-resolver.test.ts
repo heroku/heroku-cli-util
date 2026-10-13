@@ -2,19 +2,16 @@
 import {APIClient} from '@heroku-cli/command'
 import {HerokuAPIError} from '@heroku-cli/command/lib/api-client.js'
 import {Config} from '@oclif/core'
-import * as chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import nock from 'nock'
+import {
+  afterEach, beforeEach, describe, expect, it,
+} from 'vitest'
 
 import {AmbiguousError} from '../../../../src/errors/ambiguous.js'
 import {NotFound} from '../../../../src/errors/not-found.js'
 import AddonResolver from '../../../../src/utils/addons/addon-resolver.js'
 import {advancedDatabase, premiumDatabase, standardDatabase} from '../../../fixtures/addon-mocks.js'
 import {HEROKU_API} from '../../../fixtures/attachment-mocks.js'
-
-const {expect} = chai
-
-chai.use(chaiAsPromised)
 
 /*
  * The meaningful parts on all the following tests are really ensuring that Platform API's Add-on Resolution endpoint
@@ -30,7 +27,7 @@ describe('AddonResolver#resolve', function () {
   let heroku: APIClient
 
   beforeEach(async function () {
-    config = await Config.load()
+    config = await Config.load(process.cwd())
     heroku = new APIClient(config)
   })
 
@@ -49,7 +46,7 @@ describe('AddonResolver#resolve', function () {
 
       const result = await new AddonResolver(heroku).resolve('addon-1')
 
-      expect(result).to.deep.equal(advancedDatabase)
+      expect(result).toEqual(advancedDatabase)
       api.done()
     })
 
@@ -63,7 +60,7 @@ describe('AddonResolver#resolve', function () {
 
       const result = await new AddonResolver(heroku).resolve('postgresql-horizontal-12345')
 
-      expect(result).to.deep.equal(advancedDatabase)
+      expect(result).toEqual(advancedDatabase)
       api.done()
     })
 
@@ -77,7 +74,7 @@ describe('AddonResolver#resolve', function () {
 
       const result = await new AddonResolver(heroku).resolve('my-app::DATABASE')
 
-      expect(result).to.deep.equal(advancedDatabase)
+      expect(result).toEqual(advancedDatabase)
       api.done()
     })
 
@@ -91,7 +88,7 @@ describe('AddonResolver#resolve', function () {
 
       const result = await new AddonResolver(heroku).resolve('my-app::DATABASE_URL')
 
-      expect(result).to.deep.equal(advancedDatabase)
+      expect(result).toEqual(advancedDatabase)
       api.done()
     })
 
@@ -103,15 +100,12 @@ describe('AddonResolver#resolve', function () {
         })
         .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on.', resource: 'add_on'})
 
-      try {
-        await new AddonResolver(heroku).resolve('DATABASE')
-      } catch (error: unknown) {
-        const apiError = error as HerokuAPIError
-        expect(apiError.body.id).to.equal('not_found')
-        expect(apiError.body.message).to.equal('Couldn\'t find that add on.')
-        expect(apiError.http.statusCode).to.equal(404)
-        api.done()
-      }
+      await expect(new AddonResolver(heroku).resolve('DATABASE'))
+        .rejects.toMatchObject({
+          body: {id: 'not_found', message: 'Couldn\'t find that add on.'},
+          http: {statusCode: 404},
+        } satisfies Partial<HerokuAPIError>)
+      api.done()
     })
 
     it('throws a not found error when trying to resolve only by config var name', async function () {
@@ -122,15 +116,12 @@ describe('AddonResolver#resolve', function () {
         })
         .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on.', resource: 'add_on'})
 
-      try {
-        await new AddonResolver(heroku).resolve('DATABASE_URL')
-      } catch (error: unknown) {
-        const apiError = error as HerokuAPIError
-        expect(apiError.body.id).to.equal('not_found')
-        expect(apiError.body.message).to.equal('Couldn\'t find that add on.')
-        expect(apiError.http.statusCode).to.equal(404)
-        api.done()
-      }
+      await expect(new AddonResolver(heroku).resolve('DATABASE_URL'))
+        .rejects.toMatchObject({
+          body: {id: 'not_found', message: 'Couldn\'t find that add on.'},
+          http: {statusCode: 404},
+        } satisfies Partial<HerokuAPIError>)
+      api.done()
     })
 
     it('throws an ambiguous error when multiple matches by app name and partial attachment name', async function () {
@@ -141,15 +132,15 @@ describe('AddonResolver#resolve', function () {
         })
         .reply(200, [premiumDatabase, standardDatabase])
 
-      try {
-        await new AddonResolver(heroku).resolve('my-app::HEROKU_POSTGRESQL')
-      } catch (error: unknown) {
-        const apiError = error as AmbiguousError
-        expect(apiError.body.id).to.equal('multiple_matches')
-        expect(apiError.body.message).to.equal('Ambiguous identifier; multiple matching add-ons found: '
-          + 'postgresql-solid-12345, postgresql-hexagonal-12345.')
-        api.done()
-      }
+      await expect(new AddonResolver(heroku).resolve('my-app::HEROKU_POSTGRESQL'))
+        .rejects.toMatchObject({
+          body: {
+            id: 'multiple_matches',
+            message: 'Ambiguous identifier; multiple matching add-ons found: '
+              + 'postgresql-solid-12345, postgresql-hexagonal-12345.',
+          },
+        } satisfies Partial<AmbiguousError>)
+      api.done()
     })
 
     it('throws an ambiguous error when multiple matches by app name and partial config var name', async function () {
@@ -160,15 +151,15 @@ describe('AddonResolver#resolve', function () {
         })
         .reply(200, [advancedDatabase, premiumDatabase, standardDatabase])
 
-      try {
-        await new AddonResolver(heroku).resolve('my-app::URL')
-      } catch (error: unknown) {
-        const apiError = error as AmbiguousError
-        expect(apiError.body.id).to.equal('multiple_matches')
-        expect(apiError.body.message).to.equal('Ambiguous identifier; multiple matching add-ons found: '
-          + 'postgresql-horizontal-12345, postgresql-solid-12345, postgresql-hexagonal-12345.')
-        api.done()
-      }
+      await expect(new AddonResolver(heroku).resolve('my-app::URL'))
+        .rejects.toMatchObject({
+          body: {
+            id: 'multiple_matches',
+            message: 'Ambiguous identifier; multiple matching add-ons found: '
+              + 'postgresql-horizontal-12345, postgresql-solid-12345, postgresql-hexagonal-12345.',
+          },
+        } satisfies Partial<AmbiguousError>)
+      api.done()
     })
   })
 
@@ -183,7 +174,7 @@ describe('AddonResolver#resolve', function () {
 
       const result = await new AddonResolver(heroku).resolve('addon-1', 'my-app')
 
-      expect(result).to.deep.equal(advancedDatabase)
+      expect(result).toEqual(advancedDatabase)
       api.done()
     })
 
@@ -197,7 +188,7 @@ describe('AddonResolver#resolve', function () {
 
       const result = await new AddonResolver(heroku).resolve('postgresql-horizontal-12345', 'my-app')
 
-      expect(result).to.deep.equal(advancedDatabase)
+      expect(result).toEqual(advancedDatabase)
       api.done()
     })
 
@@ -211,7 +202,7 @@ describe('AddonResolver#resolve', function () {
 
       const result = await new AddonResolver(heroku).resolve('my-app::DATABASE', 'another-app')
 
-      expect(result).to.deep.equal(advancedDatabase)
+      expect(result).toEqual(advancedDatabase)
       api.done()
     })
 
@@ -225,7 +216,7 @@ describe('AddonResolver#resolve', function () {
 
       const result = await new AddonResolver(heroku).resolve('my-app::DATABASE_URL', 'another-app')
 
-      expect(result).to.deep.equal(advancedDatabase)
+      expect(result).toEqual(advancedDatabase)
       api.done()
     })
 
@@ -237,15 +228,12 @@ describe('AddonResolver#resolve', function () {
         })
         .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on.', resource: 'add_on'})
 
-      try {
-        await new AddonResolver(heroku).resolve('INEXISTENT_ATTACHMENT', 'my-app')
-      } catch (error: unknown) {
-        const apiError = error as HerokuAPIError
-        expect(apiError.body.id).to.equal('not_found')
-        expect(apiError.body.message).to.equal('Couldn\'t find that add on.')
-        expect(apiError.http.statusCode).to.equal(404)
-        api.done()
-      }
+      await expect(new AddonResolver(heroku).resolve('INEXISTENT_ATTACHMENT', 'my-app'))
+        .rejects.toMatchObject({
+          body: {id: 'not_found', message: 'Couldn\'t find that add on.'},
+          http: {statusCode: 404},
+        } satisfies Partial<HerokuAPIError>)
+      api.done()
     })
 
     it('throws a not found error when trying to resolve with an inexistent config var name', async function () {
@@ -256,15 +244,12 @@ describe('AddonResolver#resolve', function () {
         })
         .reply(404, {id: 'not_found', message: 'Couldn\'t find that add on.', resource: 'add_on'})
 
-      try {
-        await new AddonResolver(heroku).resolve('INEXISTENT_ATTACHMENT_URL', 'my-app')
-      } catch (error: unknown) {
-        const apiError = error as HerokuAPIError
-        expect(apiError.body.id).to.equal('not_found')
-        expect(apiError.body.message).to.equal('Couldn\'t find that add on.')
-        expect(apiError.http.statusCode).to.equal(404)
-        api.done()
-      }
+      await expect(new AddonResolver(heroku).resolve('INEXISTENT_ATTACHMENT_URL', 'my-app'))
+        .rejects.toMatchObject({
+          body: {id: 'not_found', message: 'Couldn\'t find that add on.'},
+          http: {statusCode: 404},
+        } satisfies Partial<HerokuAPIError>)
+      api.done()
     })
 
     it('throws an ambiguous error when multiple matches by app name and partial attachment name', async function () {
@@ -275,15 +260,15 @@ describe('AddonResolver#resolve', function () {
         })
         .reply(200, [premiumDatabase, standardDatabase])
 
-      try {
-        await new AddonResolver(heroku).resolve('HEROKU_POSTGRESQL', 'my-app')
-      } catch (error: unknown) {
-        const apiError = error as AmbiguousError
-        expect(apiError.body.id).to.equal('multiple_matches')
-        expect(apiError.body.message).to.equal('Ambiguous identifier; multiple matching add-ons found: '
-          + 'postgresql-solid-12345, postgresql-hexagonal-12345.')
-        api.done()
-      }
+      await expect(new AddonResolver(heroku).resolve('HEROKU_POSTGRESQL', 'my-app'))
+        .rejects.toMatchObject({
+          body: {
+            id: 'multiple_matches',
+            message: 'Ambiguous identifier; multiple matching add-ons found: '
+              + 'postgresql-solid-12345, postgresql-hexagonal-12345.',
+          },
+        } satisfies Partial<AmbiguousError>)
+      api.done()
     })
 
     it('throws an ambiguous error when multiple matches by app name and partial config var name', async function () {
@@ -294,15 +279,15 @@ describe('AddonResolver#resolve', function () {
         })
         .reply(200, [advancedDatabase, premiumDatabase, standardDatabase])
 
-      try {
-        await new AddonResolver(heroku).resolve('URL', 'my-app')
-      } catch (error: unknown) {
-        const apiError = error as AmbiguousError
-        expect(apiError.body.id).to.equal('multiple_matches')
-        expect(apiError.body.message).to.equal('Ambiguous identifier; multiple matching add-ons found: '
-          + 'postgresql-horizontal-12345, postgresql-solid-12345, postgresql-hexagonal-12345.')
-        api.done()
-      }
+      await expect(new AddonResolver(heroku).resolve('URL', 'my-app'))
+        .rejects.toMatchObject({
+          body: {
+            id: 'multiple_matches',
+            message: 'Ambiguous identifier; multiple matching add-ons found: '
+              + 'postgresql-horizontal-12345, postgresql-solid-12345, postgresql-hexagonal-12345.',
+          },
+        } satisfies Partial<AmbiguousError>)
+      api.done()
     })
   })
 
@@ -317,7 +302,7 @@ describe('AddonResolver#resolve', function () {
 
       const result = await new AddonResolver(heroku).resolve('DATABASE', 'my-app', 'heroku-postgresql')
 
-      expect(result).to.deep.equal(advancedDatabase)
+      expect(result).toEqual(advancedDatabase)
       api.done()
     })
   })
@@ -330,14 +315,11 @@ describe('AddonResolver#resolve', function () {
       })
       .reply(200, [advancedDatabase])
 
-    try {
-      await new AddonResolver(heroku).resolve('DATABASE', 'my-app', 'heroku-redis')
-    } catch (error: unknown) {
-      const notFoundError = error as NotFound
-      expect(notFoundError.body.id).to.equal('not_found')
-      expect(notFoundError.body.message).to.equal('Couldn\'t find that addon.')
-      expect(notFoundError.statusCode).to.equal(404)
-      api.done()
-    }
+    await expect(new AddonResolver(heroku).resolve('DATABASE', 'my-app', 'heroku-redis'))
+      .rejects.toMatchObject({
+        body: {id: 'not_found', message: 'Couldn\'t find that addon.'},
+        statusCode: 404,
+      } satisfies Partial<NotFound>)
+    api.done()
   })
 })

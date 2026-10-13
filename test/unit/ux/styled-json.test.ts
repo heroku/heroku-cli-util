@@ -1,7 +1,7 @@
 import {captureOutput} from '@heroku-cli/test-utils'
 import ansis from 'ansis'
-import {expect} from 'chai'
 import tsheredoc from 'tsheredoc'
+import {describe, expect, it} from 'vitest'
 const heredoc = tsheredoc.default
 
 import {styledJSON} from '../../../src/ux/styled-json.js'
@@ -20,6 +20,6 @@ describe('styledJSON', function () {
       }
     `)
     const actual = ansis.strip(stdout)
-    expect(actual).to.equal(expected)
+    expect(actual).toBe(expected)
   })
 })
