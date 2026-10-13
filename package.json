@@ -55,7 +55,7 @@
     "@heroku-cli/schema": "^2.0.0",
     "@heroku-cli/test-utils": "^1.0.2",
     "@types/debug": "^4.1.12",
-    "@types/node": "^26.6.2",
+    "@types/node": "^22.20.5",
     "@types/tmp": "^0.2.6",
     "@types/tunnel-ssh": "4.1.1",
     "@vitest/coverage-v8": "^4.0.0",
@@ -71,9 +71,9 @@
     "vitest": "^4.1.6"
   },
   "dependencies": {
-    "@heroku-cli/command": "^13.0.0",
+    "@heroku-cli/command": "^14.0.0-beta.1",
     "@heroku/http-call": "^5.5.0",
-    "@oclif/core": "^4.3.0",
+    "@oclif/core": "^5.1.7",
     "@oclif/table": "0.5.9",
     "ansis": "^4.1.0",
     "debug": "^4.4.0",
@@ -85,7 +85,7 @@
     "tunnel-ssh": "5.2.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12.0"
   },
   "scripts": {
     "clean": "rimraf dist",
