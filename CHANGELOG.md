@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.0.0-beta.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.10.2...heroku-cli-util-v11.0.0-beta.0) (2026-10-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js >=22.12.0, @oclif/core v5, and @heroku-cli/command v14 only ([#403](https://github.com/heroku/heroku-cli-util/pull/403)) ([9c36a6f](https://github.com/heroku/heroku-cli-util/commit/9c36a6f6c11bbd7789fe70fe31681c07ac79b925))
+
 ## [10.10.2](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.10.1...heroku-cli-util-v10.10.2) (2026-10-01)
 
 
