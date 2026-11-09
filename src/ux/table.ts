@@ -1,5 +1,6 @@
 import {printTable, TableOptions} from '@oclif/table'
 import {orderBy} from 'natural-orderby'
+import {format} from 'node:util'
 
 import parseKeyValue from '../utils/parse-key-value.js'
 
@@ -161,12 +162,20 @@ function renderCSV<T extends Record<string, unknown>>(
  * `makeTable` would be the obvious choice, but it always renders with ink. `printTable` falls
  * back to a plain-text renderer in CI and for very large tables (OCLIF_TABLE_LIMIT, default
  * 10,000 rows), and that renderer is not exported. Capturing keeps output byte-for-byte
- * identical to the pre-v11 behavior. `printTable` is synchronous, so the swap cannot
- * swallow unrelated writes.
+ * identical to heroku-cli-util 10.x.
+ *
+ * Both output paths are captured: the ink path calls `process.stdout.write`, and the plain path
+ * calls `console.log`. `console.log` is replaced directly, not just reached via
+ * `process.stdout.write`, because test runners (e.g. vitest by default) swap `console` for one
+ * that doesn't write to `process.stdout`.
+ *
+ * `printTable` is synchronous, so asynchronous writes from elsewhere can't land in the capture.
+ * Synchronous writes made during the call (e.g. from a cell value's `toString()`) would.
  */
 function renderTable<T extends Record<string, unknown>>(options: TableOptions<T>): string {
   const chunks: string[] = [];
   const originalWrite = process.stdout.write;
+  const originalLog = console.log;
 
   process.stdout.write = ((chunk: string | Uint8Array, encodingOrCallback?: unknown, callback?: unknown) => {
     chunks.push(typeof chunk === 'string' ? chunk : Buffer.from(chunk).toString());
@@ -174,11 +183,15 @@ function renderTable<T extends Record<string, unknown>>(options: TableOptions<T>
     if (typeof done === 'function') done();
     return true;
   }) as typeof process.stdout.write;
+  console.log = (...args: unknown[]) => {
+    chunks.push(format(...args) + '\n');
+  };
 
   try {
     printTable(options);
   } finally {
     process.stdout.write = originalWrite;
+    console.log = originalLog;
   }
 
   // Drop the final newline: callers pass the result to this.log(), which adds it back.
