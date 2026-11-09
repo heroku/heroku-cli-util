@@ -34,7 +34,7 @@ export async function openUrl(
     browserErrorShown = true
   }
 
-  ux.stdout(`Opening ${color.info(url)} in ${browser ?? 'your default'} browser…`)
+  ux.stderr(`Opening ${color.info(url)} in ${browser ?? 'your default'} browser…`)
 
   try {
     await dependencies.anykey(`Press any key to open up the browser${action ? ` to ${action}` : ''}, or ${color.warning('q')} to exit`)

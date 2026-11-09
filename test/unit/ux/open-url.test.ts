@@ -34,11 +34,12 @@ describe('openUrl', function () {
 
     describe('attempting to open the browser', function () {
       describe('without browser or action arguments', function () {
-        it('shows the URL that will be opened for in the default browser', async function () {
-          const {stdout} = await captureOutput(() =>
+        it('shows the URL that will be opened for in the default browser on stderr', async function () {
+          const {stderr, stdout} = await captureOutput(() =>
             openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
 
-          expect(ansis.strip(stdout)).toContain(`Opening ${url} in your default browser…`)
+          expect(ansis.strip(stderr)).toContain(`Opening ${url} in your default browser…`)
+          expect(stdout).toBe('')
         })
 
         it('attempts to open the default browser to the url argument', async function () {
@@ -50,11 +51,12 @@ describe('openUrl', function () {
       })
 
       describe('with browser argument', function () {
-        it('shows the URL that will be opened in the specified browser', async function () {
-          const {stdout} = await captureOutput(() =>
+        it('shows the URL that will be opened in the specified browser on stderr', async function () {
+          const {stderr, stdout} = await captureOutput(() =>
             openUrl(url, 'firefox', undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
 
-          expect(ansis.strip(stdout)).toContain(`Opening ${url} in firefox browser…`)
+          expect(ansis.strip(stderr)).toContain(`Opening ${url} in firefox browser…`)
+          expect(stdout).toBe('')
         })
 
         it('attempts to open the specified browser to the url argument', async function () {

@@ -63,6 +63,17 @@ instead.
 return the value as a string without printing it, and it still does. Logging
 that return value now prints it, which v10 never did.
 
+### Breaking: `hux.openUrl` status message moved to stderr
+
+`hux.openUrl` now writes `Opening <url> in <browser> browser…` to stderr instead
+of stdout, matching its key prompt and warnings. Tests that assert on that line
+should read `stderr`.
+
+`openUrl` and the prompt helpers (`prompt`, `confirm`, `confirmCommand`,
+`anykey`) are interactive and still write to stderr. Commands that use them
+should not offer `--json`, and they are exempt from direct-output and
+`--json 2>&1` guardrails.
+
 ### Breaking: `hux.styledJSON` removed
 
 `hux.styledJSON` was a passthrough to oclif's `ux.colorizeJson`. Call that directly:
