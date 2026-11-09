@@ -104,6 +104,20 @@ heroku-cli-util 10.x never did. Guard falsy values if they can occur.
 of stdout, matching its key prompt and warnings. Tests that assert on that line
 should read `stderr`.
 
+### Breaking: `hux.openUrl` 4th argument is an options object
+
+The 4th argument was the test-only `dependencies` object. It is now
+`{dependencies?, prompt?}`; pass test doubles as `{dependencies: {anykey, urlOpener}}`.
+Calls with one to three arguments are unchanged.
+
+`prompt` (default `true`) controls the "Press any key to open up the browser"
+step. Commands whose whole job is to open the URL, such as `heroku open`, pass
+`{prompt: false}`, so they open right away and also work without a TTY:
+
+```ts
+await hux.openUrl(url, flags.browser, undefined, {prompt: false})
+```
+
 `openUrl` and the prompt helpers (`prompt`, `confirm`, `confirmCommand`,
 `anykey`) are interactive and still write to stderr. Commands that use them
 should not offer `--json`, and they are exempt from direct-output and
