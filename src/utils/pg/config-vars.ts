@@ -1,5 +1,4 @@
 import type {APIClient} from '@heroku-cli/command'
-import type {HTTP} from '@heroku/http-call'
 
 import type {ExtendedAddonAttachment} from '../../types/pg/platform-api.js'
 
@@ -7,7 +6,7 @@ import * as color from '../../ux/colors.js'
 /**
  * Cache of app config vars.
  */
-export const configVarsByAppIdCache: Map<string, Promise<HTTP<Record<string, string>>>> = new Map()
+export const configVarsByAppIdCache: Map<string, Promise<{body: Record<string, string>}>> = new Map()
 
 /**
  * Returns the app's config vars as a record of key-value pairs, either from the cache or from the API.

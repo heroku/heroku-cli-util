@@ -1,5 +1,4 @@
 import {captureOutput} from '@heroku-cli/test-utils'
-import {Errors} from '@oclif/core'
 import ansis from 'ansis'
 import childProcess from 'node:child_process'
 import open from 'open'
@@ -157,14 +156,10 @@ describe('openUrl', function () {
     })
 
     it('doesn\'t attempt to open the browser', async function () {
-      try {
-        await captureOutput(() =>
-          openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
-      } catch (error: unknown) {
-        const {message, oclif} = error as Errors.CLIError
-        expect(message).toBe('quit')
-        expect(oclif?.exit).toBe(1)
-      }
+      await captureOutput(async () => {
+        await expect(openUrl(url, undefined, undefined, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
+          .rejects.toMatchObject({message: 'quit', oclif: {exit: 1}})
+      })
 
       expect(urlOpenerSpy).not.toHaveBeenCalled()
     })
