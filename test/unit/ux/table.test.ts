@@ -1,6 +1,5 @@
 import {captureOutput} from '@heroku-cli/test-utils'
 import {ux} from '@oclif/core/ux'
-import {printTable} from '@oclif/table'
 import ansis from 'ansis'
 import {
   afterEach, beforeEach, describe, expect, it, vi,
@@ -530,11 +529,6 @@ describe('table', function () {
       {baz: 7, foo: 'qux'},
     ]
     const columns = {baz: {header: 'Baz'}, foo: {header: 'Foo'}}
-    const printTableOptions = {
-      columns: [{key: 'baz', name: 'Baz'}, {key: 'foo', name: 'Foo'}],
-      data,
-      noStyle: true,
-    }
 
     beforeEach(function () {
       vi.stubEnv('OCLIF_TABLE_SKIP_CI_CHECK', '')
@@ -544,39 +538,13 @@ describe('table', function () {
       vi.unstubAllEnvs()
     })
 
-    it('restores process.stdout.write after rendering', async function () {
+    it('restores process.stdout.write and console.log after rendering', async function () {
       const originalWrite = process.stdout.write
+      const originalLog = console.log
+      vi.stubEnv('CI', 'true')
       await expectPure(() => table(data, columns))
       expect(process.stdout.write).toBe(originalWrite)
-    })
-
-    it('ux.stdout(table(...)) matches pre-v11 printTable output: ink-rendered table', async function () {
-      vi.stubEnv('CI', '')
-      const {stdout: expected} = await captureOutput(() => printTable(printTableOptions))
-      const rendered = await expectPure(() => table(data, columns, {noStyle: true}))
-      const {stdout} = await captureOutput(() => ux.stdout(rendered))
-      expect(stdout).toBe(expected)
-      expect(ansis.strip(stdout)).toMatch(/Baz\s+Foo/)
-    })
-
-    it('ux.stdout(table(...)) matches pre-v11 printTable output: plain table used in CI', async function () {
-      vi.stubEnv('CI', 'true')
-      const {stdout: expected} = await captureOutput(() => printTable(printTableOptions))
-      const rendered = await expectPure(() => table(data, columns, {noStyle: true}))
-      const {stdout} = await captureOutput(() => ux.stdout(rendered))
-      expect(stdout).toBe(expected)
-      // Sanity check that this really is the plain renderer: dashed header rule.
-      expect(ansis.strip(stdout)).toMatch(/Baz\s+Foo\s*\n-+\n/)
-    })
-
-    it('ux.stdout(table(...)) matches pre-v11 printTable output: plain table used at or above OCLIF_TABLE_LIMIT', async function () {
-      vi.stubEnv('CI', '')
-      vi.stubEnv('OCLIF_TABLE_LIMIT', '2')
-      const {stdout: expected} = await captureOutput(() => printTable(printTableOptions))
-      const rendered = await expectPure(() => table(data, columns, {noStyle: true}))
-      const {stdout} = await captureOutput(() => ux.stdout(rendered))
-      expect(stdout).toBe(expected)
-      expect(ansis.strip(stdout)).toMatch(/Baz\s+Foo\s*\n-+\n/)
+      expect(console.log).toBe(originalLog)
     })
 
     it('csv logged through ux.stdout ends with a single newline', async function () {

@@ -56,7 +56,7 @@ describe('styledObject', function () {
     expect(actual).toBe(expected.replace(/\n$/, ''))
   })
 
-  it('matches the pre-v11 output when logged', async function () {
+  it('matches the heroku-cli-util 10.x output when logged', async function () {
     const {stdout} = await captureOutput(() => ux.stdout(styledObject({baz: 42, foo: 'bar'})))
     expect(ansis.strip(stdout)).toBe('baz: 42\nfoo: bar\n')
   })
