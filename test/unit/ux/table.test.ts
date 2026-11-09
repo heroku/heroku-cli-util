@@ -538,12 +538,36 @@ describe('table', function () {
       vi.unstubAllEnvs()
     })
 
-    it('restores process.stdout.write and console.log after rendering', async function () {
-      const originalWrite = process.stdout.write
+    it('restores console.log after a plain render', async function () {
       const originalLog = console.log
       vi.stubEnv('CI', 'true')
       await expectPure(() => table(data, columns))
-      expect(process.stdout.write).toBe(originalWrite)
+      expect(console.log).toBe(originalLog)
+    })
+
+    // ink itself swaps console.log while it renders (its patchConsole default), so only
+    // process.stdout.write can show whether table() patched anything on the ink path.
+    it('does not patch process.stdout.write for an ink render', async function () {
+      vi.stubEnv('OCLIF_TABLE_SKIP_CI_CHECK', 'true')
+      let patched: boolean | undefined
+      await expectPure(() => {
+        // Read inside the callback: expectPure installs its own stdout capture.
+        const originalWrite = process.stdout.write
+        const cell = {
+          toString() {
+            patched = process.stdout.write !== originalWrite
+            return 'cell'
+          },
+        }
+        return table([{foo: cell}], {foo: {}})
+      })
+      expect(patched).toBe(false)
+    })
+
+    it('restores console.log after an ink render', async function () {
+      vi.stubEnv('OCLIF_TABLE_SKIP_CI_CHECK', 'true')
+      const originalLog = console.log
+      await expectPure(() => table(data, columns))
       expect(console.log).toBe(originalLog)
     })
 

@@ -1,23 +1,28 @@
 import {
-  describe, expect, it, vi,
+  afterEach, describe, expect, it, vi,
 } from 'vitest'
 
 vi.mock('@oclif/table', async importOriginal => ({
   ...await importOriginal<typeof import('@oclif/table')>(),
   printTable() {
-    process.stdout.write('partial output')
+    console.log('partial output')
     throw new Error('render failed')
   },
 }))
 
 const {table} = await import('../../../src/ux/table.js')
 
-describe('table when printTable throws', function () {
-  it('rethrows and restores process.stdout.write and console.log', function () {
-    const originalWrite = process.stdout.write
+// Only the plain renderer (CI, or at OCLIF_TABLE_LIMIT) goes through printTable and patches console.log.
+describe('table when the plain renderer throws', function () {
+  afterEach(function () {
+    vi.unstubAllEnvs()
+  })
+
+  it('rethrows and restores console.log', function () {
+    vi.stubEnv('OCLIF_TABLE_SKIP_CI_CHECK', '')
+    vi.stubEnv('CI', 'true')
     const originalLog = console.log
     expect(() => table([{foo: 'bar'}], {foo: {}})).toThrow('render failed')
-    expect(process.stdout.write).toBe(originalWrite)
     expect(console.log).toBe(originalLog)
   })
 })

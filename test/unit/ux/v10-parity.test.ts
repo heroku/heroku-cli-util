@@ -81,9 +81,14 @@ describe('formatters match heroku-cli-util 10.x output byte-for-byte', function 
     vi.unstubAllGlobals()
   })
 
+  // Upstream treats CI='' as CI, so forcing ink takes OCLIF_TABLE_SKIP_CI_CHECK.
   describe('table, ink renderer', function () {
     beforeEach(function () {
-      vi.stubEnv('CI', '')
+      vi.stubEnv('OCLIF_TABLE_SKIP_CI_CHECK', 'true')
+    })
+
+    it('really uses the ink renderer', function () {
+      expect(table(data, columns)).toContain('─')
     })
 
     it.each(tableCases)('%s', async function (_name, rows, options) {
@@ -98,6 +103,10 @@ describe('formatters match heroku-cli-util 10.x output byte-for-byte', function 
       vi.stubEnv('CI', 'true')
     })
 
+    it('really uses the plain renderer', function () {
+      expect(table(data, columns)).not.toContain('─')
+    })
+
     it.each(tableCases)('%s', async function (_name, rows, options) {
       const expected = await v10Output(() => v10Table(rows, columns, options))
       expect(expected.length).toBeGreaterThan(0)
@@ -106,8 +115,29 @@ describe('formatters match heroku-cli-util 10.x output byte-for-byte', function 
   })
 
   it('table, plain renderer (at OCLIF_TABLE_LIMIT)', async function () {
-    vi.stubEnv('CI', '')
+    vi.stubEnv('OCLIF_TABLE_SKIP_CI_CHECK', 'true')
     vi.stubEnv('OCLIF_TABLE_LIMIT', '2')
+    const expected = await v10Output(() => v10Table(data, columns))
+    expect(expected).not.toContain('─')
+    expect(await loggedOutput(() => table(data, columns))).toBe(expected)
+  })
+
+  // table() copies printTable's renderer choice; these pin the copy to upstream's behavior.
+  const rendererEnvs: Array<[string, Record<string, string | undefined>]> = [
+    ['CI unset', {CI: undefined}],
+    ["CI=''", {CI: ''}],
+    ['CI=false', {CI: 'false'}],
+    ['CI=0', {CI: '0'}],
+    ['CONTINUOUS_INTEGRATION only', {CI: undefined, CONTINUOUS_INTEGRATION: '1'}],
+    ['CI_* variable only', {CI: undefined, CI_PIPELINE_ID: '1'}],
+    ['CI=true, skip check', {CI: 'true', OCLIF_TABLE_SKIP_CI_CHECK: 'true'}],
+    ['CI=true, skip check false', {CI: 'true', OCLIF_TABLE_SKIP_CI_CHECK: 'false'}],
+    ['SF_TABLE_LIMIT', {OCLIF_TABLE_SKIP_CI_CHECK: 'true', SF_TABLE_LIMIT: '2'}],
+    ['non-numeric limit', {OCLIF_TABLE_LIMIT: 'abc', OCLIF_TABLE_SKIP_CI_CHECK: 'true'}],
+  ]
+
+  it.each(rendererEnvs)('table, renderer choice: %s', async function (_name, vars) {
+    for (const [key, value] of Object.entries(vars)) vi.stubEnv(key, value)
     const expected = await v10Output(() => v10Table(data, columns))
     expect(await loggedOutput(() => table(data, columns))).toBe(expected)
   })

@@ -1,5 +1,6 @@
-import {printTable, TableOptions} from '@oclif/table'
+import {makeTable, printTable, TableOptions} from '@oclif/table'
 import {orderBy} from 'natural-orderby'
+import {env} from 'node:process'
 import {format} from 'node:util'
 
 import parseKeyValue from '../utils/parse-key-value.js'
@@ -156,46 +157,58 @@ function renderCSV<T extends Record<string, unknown>>(
   return lines.join('\n');
 }
 
+function isTruthy(value: string | undefined): boolean {
+  return value !== '0' && value !== 'false'
+}
+
 /**
- * Runs `printTable` and returns what it would have written to stdout, without writing it.
+ * Whether `printTable` would use its plain-text renderer instead of ink: in CI, or at
+ * OCLIF_TABLE_LIMIT rows or more. `@oclif/table` doesn't export this check, so it is copied
+ * from `printTable` and `shouldUsePlainTable` (@oclif/table 1.0.8, lib/table.js and
+ * lib/utils.js), quirks included: `CI=''` counts as CI. The heroku-cli-util 10.x parity tests
+ * fail if this drifts from upstream.
+ */
+function usesPlainRenderer(rowCount: number): boolean {
+  const limit = Number.parseInt(env.OCLIF_TABLE_LIMIT ?? env.SF_TABLE_LIMIT ?? '10000', 10)
+  if (rowCount >= limit) return true
+
+  if (env.OCLIF_TABLE_SKIP_CI_CHECK && isTruthy(env.OCLIF_TABLE_SKIP_CI_CHECK)) return false
+  return isTruthy(env.CI)
+    && ('CI' in env || 'CONTINUOUS_INTEGRATION' in env || Object.keys(env).some(key => key.startsWith('CI_')))
+}
+
+/**
+ * Renders a table to a string, byte-for-byte identical to what `printTable` prints (minus the
+ * final newline, which `this.log()` adds back), so output matches heroku-cli-util 10.x.
  *
- * `makeTable` would be the obvious choice, but it always renders with ink. `printTable` falls
- * back to a plain-text renderer in CI and for very large tables (OCLIF_TABLE_LIMIT, default
- * 10,000 rows), and that renderer is not exported. Capturing keeps output byte-for-byte
- * identical to heroku-cli-util 10.x.
+ * The ink renderer goes through `makeTable`, which is `printTable`'s ink path returning the frame
+ * instead of writing it. (ink itself still swaps `console.log` while rendering, its default
+ * `patchConsole` behavior, as it did in 10.x.) `makeTable` has no plain-text fallback, and the
+ * plain renderer isn't exported, so for that case `printTable` runs with `console.log` (the only
+ * way that renderer writes) temporarily replaced to collect its lines. `console.log` is replaced directly, not
+ * reached via `process.stdout.write`, because test runners (e.g. vitest by default) swap
+ * `console` for one that doesn't write to `process.stdout`.
  *
- * Both output paths are captured: the ink path calls `process.stdout.write`, and the plain path
- * calls `console.log`. `console.log` is replaced directly, not just reached via
- * `process.stdout.write`, because test runners (e.g. vitest by default) swap `console` for one
- * that doesn't write to `process.stdout`.
- *
- * `printTable` is synchronous, so asynchronous writes from elsewhere can't land in the capture.
- * Synchronous writes made during the call (e.g. from a cell value's `toString()`) would.
+ * The plain render is synchronous, so asynchronous logs from elsewhere can't land in the capture.
+ * Synchronous `console.log` calls made during it (e.g. from a cell value's `toString()`) would.
  */
 function renderTable<T extends Record<string, unknown>>(options: TableOptions<T>): string {
-  const chunks: string[] = [];
-  const originalWrite = process.stdout.write;
-  const originalLog = console.log;
+  if (!usesPlainRenderer(options.data.length)) return makeTable(options)
 
-  process.stdout.write = ((chunk: string | Uint8Array, encodingOrCallback?: unknown, callback?: unknown) => {
-    chunks.push(typeof chunk === 'string' ? chunk : Buffer.from(chunk).toString());
-    const done = typeof encodingOrCallback === 'function' ? encodingOrCallback : callback;
-    if (typeof done === 'function') done();
-    return true;
-  }) as typeof process.stdout.write;
+  const lines: string[] = []
+  const originalLog = console.log
   console.log = (...args: unknown[]) => {
-    chunks.push(format(...args) + '\n');
-  };
-
-  try {
-    printTable(options);
-  } finally {
-    process.stdout.write = originalWrite;
-    console.log = originalLog;
+    lines.push(format(...args))
   }
 
-  // Drop the final newline: callers pass the result to this.log(), which adds it back.
-  return chunks.join('').replace(/\n$/, '');
+  try {
+    printTable(options)
+  } finally {
+    console.log = originalLog
+  }
+
+  // Each line was printed with its own newline; joining drops the final one.
+  return lines.join('\n')
 }
 
 /**
