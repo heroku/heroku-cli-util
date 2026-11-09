@@ -12,8 +12,10 @@ type Dependencies = {
 }
 
 export type OpenUrlOptions = {
-  /** Test seam for the key prompt and the browser launcher. */
-  dependencies?: Dependencies
+  /** What the browser is for, shown in the prompt and the fallback warning (e.g. `'view the documentation'`). */
+  action?: string
+  /** Browser app to open (e.g. a `--browser` flag value). Defaults to the system browser. */
+  browser?: string
   /**
    * Wait for a keypress before opening the browser (default `true`). Pass `false` for commands
    * whose whole job is to open the URL, such as `heroku open`; they then also work without a TTY.
@@ -21,11 +23,14 @@ export type OpenUrlOptions = {
   prompt?: boolean
 }
 
+/**
+ * Open `url` in a browser. The status line, prompt, and warnings go to stderr.
+ * `dependencies` is a test seam for the key prompt and the browser launcher.
+ */
 export async function openUrl(
   url: string,
-  browser?: string,
-  action?: string,
-  {dependencies, prompt = true}: OpenUrlOptions = {},
+  {action, browser, prompt = true}: OpenUrlOptions = {},
+  dependencies?: Dependencies,
 ): Promise<void> {
   if (!dependencies) {
     const openModule = await import('open')
