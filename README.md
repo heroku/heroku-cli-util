@@ -42,6 +42,27 @@ The package directly uses oclif core v5. The command v14 dependency may bring
 its own core v4 copy; both versions intentionally coexist, without dependency
 overrides.
 
+### Breaking: output helpers return strings
+
+`hux.styledHeader`, `hux.styledJSON`, `hux.styledObject`, and `hux.table` no
+longer write to stdout. Each returns the rendered string; wrap calls in
+`this.log(...)` (or `ux.stdout(...)` outside a command):
+
+```diff
+- hux.table(apps, columns)
++ this.log(hux.table(apps, columns))
+```
+
+Logging the return value produces the same bytes the helper used to print,
+including the plain-text table fallback in CI and above `OCLIF_TABLE_LIMIT`.
+
+The `printLine` option on `hux.table` has been removed. Use the returned string
+instead.
+
+`styledObject` on a primitive (string, number, boolean, null, undefined) used to
+return the value as a string without printing it, and it still does. Logging
+that return value now prints it, which v10 never did.
+
 ## Usage
 
 Import only the utilities you need for better performance and smaller bundle sizes.
@@ -64,31 +85,37 @@ import { AddonResolver } from '@heroku/heroku-cli-util/utils/addons';
 
 ### Output Utilities
 
+`styledHeader`, `styledJSON`, `styledObject`, and `table` are pure formatters: they
+return the rendered string and write nothing. Inside an oclif command, pass the result
+to `this.log()` so it is suppressed under `--json`.
+
 ```js
 import { styledHeader, styledJSON, styledObject, table, wait } from '@heroku/heroku-cli-util/hux';
 
-// Styled header
-styledHeader('My CLI Header');
+// Styled header (includes a trailing newline, so a blank line follows it when logged)
+this.log(styledHeader('My CLI Header'));
 
 // Styled JSON
-styledJSON({ foo: 'bar' });
+this.log(styledJSON({ foo: 'bar' }));
 
 // Styled object
-styledObject({ foo: 'bar' });
+this.log(styledObject({ foo: 'bar' }));
 
-// Table output
-table([
+// Table output (also returns a string when `csv: true`)
+this.log(table([
   {name: 'Alice', age: 30},
   {name: 'Bob', age: 25},
 ], {
   name: {header: 'Name'},
   age: {header: 'Age'},
-});
+}));
 
-// Wait indicator
-const stop = wait('Processing...');
-// ...do async work...
-stop();
+// Because they return strings, the output can be composed or asserted on directly
+const summary = styledObject({ app: 'my-app', region: 'us' });
+this.warn(`Current settings:\n${summary}`);
+
+// Pause for a number of milliseconds
+await wait(1000);
 ```
 
 ### User Interaction

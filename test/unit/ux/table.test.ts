@@ -1,8 +1,13 @@
 import {captureOutput} from '@heroku-cli/test-utils'
+import {ux} from '@oclif/core/ux'
+import {printTable} from '@oclif/table'
 import ansis from 'ansis'
-import {describe, expect, it} from 'vitest'
+import {
+  afterEach, beforeEach, describe, expect, it, vi,
+} from 'vitest'
 
 import {table} from '../../../src/ux/table.js'
+import {expectPure} from '../../helpers/expect-pure.js'
 
 const removeAllWhitespace = (str: string): string => ansis.strip(str).replaceAll(/\s+/g, '')
 
@@ -13,9 +18,9 @@ describe('table', function () {
       {baz: 7, foo: 'qux'},
     ]
     const columns = {baz: {header: 'Baz'}, foo: {header: 'Foo'}}
-    const {stdout} = await captureOutput(() => table(data, columns, {noStyle: true}))
+    const output = await expectPure(() => table(data, columns, {noStyle: true}))
 
-    const strippedOutput = removeAllWhitespace(stdout)
+    const strippedOutput = removeAllWhitespace(output)
     expect(strippedOutput).toContain(removeAllWhitespace('Baz   Foo'))
     expect(strippedOutput).toContain(removeAllWhitespace('42    bar'))
     expect(strippedOutput).toContain(removeAllWhitespace('7     qux'))
@@ -28,13 +33,13 @@ describe('table', function () {
       {age: 35, name: 'Charlie'},
     ]
     const columns = {age: {header: 'Age'}, name: {header: 'Name'}}
-    const {stdout} = await captureOutput(() =>
+    const output = await expectPure(() =>
       table(data, columns, {
         noStyle: true,
         sort: 'age',
       }))
 
-    const strippedOutput = removeAllWhitespace(stdout)
+    const strippedOutput = removeAllWhitespace(output)
     // Should be sorted by age in ascending order
     expect(strippedOutput).toContain(removeAllWhitespace('Age   Name'))
     expect(strippedOutput).toContain(removeAllWhitespace('25    Bob'))
@@ -49,12 +54,12 @@ describe('table', function () {
         {age: 25, city: 'LA', name: 'Bob'},
       ]
       const columns = {age: {header: 'Age'}, city: {header: 'City'}, name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           columns: 'Name,City',
         }))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
       expect(strippedOutput).toContain(removeAllWhitespace('Name   City'))
       expect(strippedOutput).toContain(removeAllWhitespace('Alice  NYC'))
       expect(strippedOutput).toContain(removeAllWhitespace('Bob    LA'))
@@ -67,12 +72,12 @@ describe('table', function () {
         {age: 25, name: 'Bob'},
       ]
       const columns = {age: {header: 'Age'}, name: {}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           columns: 'name',
         }))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
       expect(strippedOutput).toContain('name')
       expect(strippedOutput).toContain('Alice')
       expect(strippedOutput).toContain('Bob')
@@ -84,12 +89,12 @@ describe('table', function () {
         {age: 30, city: 'NYC', name: 'Alice'},
       ]
       const columns = {age: {header: 'Age'}, city: {header: 'City'}, name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           columns: 'City,Name,Age',
         }))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
       const cityIndex = strippedOutput.indexOf('City')
       const nameIndex = strippedOutput.indexOf('Name')
       const ageIndex = strippedOutput.indexOf('Age')
@@ -103,12 +108,12 @@ describe('table', function () {
         {age: 30, name: 'Alice'},
       ]
       const columns = {age: {header: 'Age'}, name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           columns: 'Name,Name,Age',
         }))
 
-      const nameOccurrences = (stdout.match(/Name/g) || []).length
+      const nameOccurrences = (output.match(/Name/g) || []).length
 
       expect(nameOccurrences).toBe(1)
     })
@@ -133,12 +138,12 @@ describe('table', function () {
         {age: 25, name: 'Bob'},
       ]
       const columns = {age: {header: 'Age'}, name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           csv: true,
         }))
 
-      expect(stdout.trim()).toBe('Age,Name\n30,Alice\n25,Bob')
+      expect(output.trim()).toBe('Age,Name\n30,Alice\n25,Bob')
     })
 
     it('should escape CSV when values contain commas', async function () {
@@ -147,12 +152,12 @@ describe('table', function () {
         {name: 'Bob', role: 'Manager, Lead'},
       ]
       const columns = {name: {header: 'Name'}, role: {header: 'Role'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           csv: true,
         }))
 
-      const lines = stdout.trim().split('\n')
+      const lines = output.trim().split('\n')
       expect(lines[0]).toBe('Name,Role')
       expect(lines[1]).toBe('"Alice, Jr.",Developer')
       expect(lines[2]).toBe('Bob,"Manager, Lead"')
@@ -164,12 +169,12 @@ describe('table', function () {
         {message: 'Normal text', status: 'read'},
       ]
       const columns = {message: {header: 'Message'}, status: {header: 'Status'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           csv: true,
         }))
 
-      const lines = stdout.trim().split('\n')
+      const lines = output.trim().split('\n')
       expect(lines[0]).toBe('Message,Status')
       expect(lines[1]).toBe('"She said ""hello""",sent')
       expect(lines[2]).toBe('Normal text,read')
@@ -181,12 +186,12 @@ describe('table', function () {
         {message: 'Normal', status: 'read'},
       ]
       const columns = {message: {header: 'Message'}, status: {header: 'Status'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           csv: true,
         }))
 
-      expect(stdout.trim()).toBe('Message,Status\n"Line 1\nLine 2",sent\nNormal,read')
+      expect(output.trim()).toBe('Message,Status\n"Line 1\nLine 2",sent\nNormal,read')
     })
 
     it('should escape CSV when values contain carriage returns', async function () {
@@ -195,12 +200,12 @@ describe('table', function () {
         {message: 'Normal', status: 'read'},
       ]
       const columns = {message: {header: 'Message'}, status: {header: 'Status'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           csv: true,
         }))
 
-      expect(stdout.trim()).toBe('Message,Status\n"Line 1\r\nLine 2",sent\nNormal,read')
+      expect(output.trim()).toBe('Message,Status\n"Line 1\r\nLine 2",sent\nNormal,read')
     })
   })
 
@@ -212,12 +217,12 @@ describe('table', function () {
         {age: 35, name: 'Charlie'},
       ]
       const columns = {age: {header: 'Age'}, name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           filter: 'name=li',
         }))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
       expect(strippedOutput).toContain('Alice')
       expect(strippedOutput).toContain('Charlie')
       expect(strippedOutput).not.toContain('Bob')
@@ -230,12 +235,12 @@ describe('table', function () {
         {age: 35, name: 'Charlie'},
       ]
       const columns = {age: {header: 'Age'}, name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           filter: 'name=Alice',
         }))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
       expect(strippedOutput).toContain('Alice')
       expect(strippedOutput).not.toContain('Charlie')
       expect(strippedOutput).not.toContain('Bob')
@@ -286,12 +291,12 @@ describe('table', function () {
         {age: 35, name: 'Charlie'},
       ]
       const columns = {age: {header: 'Age'}, name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           sort: 'age',
         }))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
       const bobIndex = strippedOutput.indexOf('Bob')
       const aliceIndex = strippedOutput.indexOf('Alice')
       const charlieIndex = strippedOutput.indexOf('Charlie')
@@ -308,12 +313,12 @@ describe('table', function () {
         {age: 30, city: 'LA', name: 'Charlie'},
       ]
       const columns = {age: {header: 'Age'}, city: {header: 'City'}, name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           sort: 'age,city',
         }))
 
-      const stripped = removeAllWhitespace(stdout)
+      const stripped = removeAllWhitespace(output)
       const bobIndex = stripped.indexOf('Bob')     // age 25, city LA
       const dianaIndex = stripped.indexOf('Diana')  // age 25, city NYC
       const charlieIndex = stripped.indexOf('Charlie') // age 30, city LA
@@ -350,10 +355,10 @@ describe('table', function () {
         name: {header: 'Name'},
         secret: {extended: true, header: 'Secret'},
       }
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {}))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
       expect(strippedOutput).toContain('Name')
       expect(strippedOutput).toContain('Age')
       expect(strippedOutput).not.toContain('Secret')
@@ -369,12 +374,12 @@ describe('table', function () {
         name: {header: 'Name'},
         secret: {extended: true, header: 'Secret'},
       }
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           extended: true,
         }))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
       expect(strippedOutput).toContain('Name')
       expect(strippedOutput).toContain('Age')
       expect(strippedOutput).toContain('Secret')
@@ -390,13 +395,13 @@ describe('table', function () {
         name: {header: 'Name'},
         secret: {extended: true, header: 'Secret'},
       }
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           columns: 'Name',
           extended: true,
         }))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
       expect(strippedOutput).toContain('Name')
       expect(strippedOutput).not.toContain('Age')
       expect(strippedOutput).not.toContain('Secret')
@@ -412,14 +417,14 @@ describe('table', function () {
         {age: 28, city: 'LA', name: 'Diana'},
       ]
       const columns = {age: {header: 'Age'}, city: {header: 'City'}, name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           columns: 'Name,Age',
           filter: 'name=li',
           sort: 'age',
         }))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
 
       // Columns flag
       expect(strippedOutput).toContain(removeAllWhitespace('Name   Age'))
@@ -455,7 +460,7 @@ describe('table', function () {
       const columns = {
         age: {header: 'Age'}, city: {header: 'City'}, name: {header: 'Name'}, role: {header: 'Role'},
       }
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           columns: 'Age,City,Name',
           csv: true,
@@ -463,7 +468,7 @@ describe('table', function () {
           sort: 'age',
         }))
 
-      const lines = stdout.trim().split('\n')
+      const lines = output.trim().split('\n')
       expect(lines[0]).toBe('Age,City,Name')
       expect(lines[1]).toBe('30,NYC,Alice')
       expect(lines[2]).toBe('35,NYC,Charlie')
@@ -475,10 +480,10 @@ describe('table', function () {
     it('should handle empty data array', async function () {
       const data: Array<{age: number; name: string}> = []
       const columns = {age: {header: 'Age'}, name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
       expect(strippedOutput).toContain('Name')
       expect(strippedOutput).toContain('Age')
     })
@@ -486,36 +491,98 @@ describe('table', function () {
     it('should handle empty data array with CSV', async function () {
       const data: Array<{age: number; name: string}> = []
       const columns = {age: {header: 'Age'}, name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           csv: true,
         }))
 
-      expect(stdout.trim()).toBe('Age,Name')
+      expect(output.trim()).toBe('Age,Name')
     })
 
     it('should handle empty data array with filter', async function () {
       const data: Array<{name: string}> = []
       const columns = {name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           filter: 'name=test',
         }))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
       expect(strippedOutput).toContain('Name')
     })
 
     it('should handle empty data array with sort', async function () {
       const data: Array<{name: string}> = []
       const columns = {name: {header: 'Name'}}
-      const {stdout} = await captureOutput(() =>
+      const output = await expectPure(() =>
         table(data, columns, {
           sort: 'name',
         }))
 
-      const strippedOutput = removeAllWhitespace(stdout)
+      const strippedOutput = removeAllWhitespace(output)
       expect(strippedOutput).toContain('Name')
+    })
+  })
+
+  describe('pure formatter contract', function () {
+    const data = [
+      {baz: 42, foo: 'bar'},
+      {baz: 7, foo: 'qux'},
+    ]
+    const columns = {baz: {header: 'Baz'}, foo: {header: 'Foo'}}
+    const printTableOptions = {
+      columns: [{key: 'baz', name: 'Baz'}, {key: 'foo', name: 'Foo'}],
+      data,
+      noStyle: true,
+    }
+
+    beforeEach(function () {
+      vi.stubEnv('OCLIF_TABLE_SKIP_CI_CHECK', '')
+    })
+
+    afterEach(function () {
+      vi.unstubAllEnvs()
+    })
+
+    it('restores process.stdout.write after rendering', async function () {
+      const originalWrite = process.stdout.write
+      await expectPure(() => table(data, columns))
+      expect(process.stdout.write).toBe(originalWrite)
+    })
+
+    it('ux.stdout(table(...)) matches pre-v11 printTable output: ink-rendered table', async function () {
+      vi.stubEnv('CI', '')
+      const {stdout: expected} = await captureOutput(() => printTable(printTableOptions))
+      const rendered = await expectPure(() => table(data, columns, {noStyle: true}))
+      const {stdout} = await captureOutput(() => ux.stdout(rendered))
+      expect(stdout).toBe(expected)
+      expect(ansis.strip(stdout)).toMatch(/Baz\s+Foo/)
+    })
+
+    it('ux.stdout(table(...)) matches pre-v11 printTable output: plain table used in CI', async function () {
+      vi.stubEnv('CI', 'true')
+      const {stdout: expected} = await captureOutput(() => printTable(printTableOptions))
+      const rendered = await expectPure(() => table(data, columns, {noStyle: true}))
+      const {stdout} = await captureOutput(() => ux.stdout(rendered))
+      expect(stdout).toBe(expected)
+      // Sanity check that this really is the plain renderer: dashed header rule.
+      expect(ansis.strip(stdout)).toMatch(/Baz\s+Foo\s*\n-+\n/)
+    })
+
+    it('ux.stdout(table(...)) matches pre-v11 printTable output: plain table used at or above OCLIF_TABLE_LIMIT', async function () {
+      vi.stubEnv('CI', '')
+      vi.stubEnv('OCLIF_TABLE_LIMIT', '2')
+      const {stdout: expected} = await captureOutput(() => printTable(printTableOptions))
+      const rendered = await expectPure(() => table(data, columns, {noStyle: true}))
+      const {stdout} = await captureOutput(() => ux.stdout(rendered))
+      expect(stdout).toBe(expected)
+      expect(ansis.strip(stdout)).toMatch(/Baz\s+Foo\s*\n-+\n/)
+    })
+
+    it('csv logged through ux.stdout ends with a single newline', async function () {
+      const rendered = await expectPure(() => table(data, columns, {csv: true}))
+      const {stdout} = await captureOutput(() => ux.stdout(rendered))
+      expect(stdout).toBe('Baz,Foo\n42,bar\n7,qux\n')
     })
   })
 })

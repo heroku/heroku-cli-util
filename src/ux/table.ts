@@ -1,4 +1,3 @@
-import {ux} from '@oclif/core/ux'
 import {printTable, TableOptions} from '@oclif/table'
 import {orderBy} from 'natural-orderby'
 
@@ -135,15 +134,14 @@ function escapeCSV(value: string): string {
   return needsEscaping ? `"${value.replaceAll('"', '""')}"` : value;
 }
 
-function outputCSV<T extends Record<string, unknown>>(
-  data: T[],
+function renderCSV<T extends Record<string, unknown>>(
+  data: Array<Record<string, unknown>>,
   columns: Columns<T>,
-  printLine: (s: string) => void,
-): void {
+): string {
   const columnEntries = Object.entries(columns);
   const columnHeaders = columnEntries.map(([key, col]) => col.header || key);
 
-  printLine(columnHeaders.join(','));
+  const lines = [columnHeaders.join(',')];
 
   for (const row of data) {
     const values = columnEntries.map(([key]) => {
@@ -151,15 +149,51 @@ function outputCSV<T extends Record<string, unknown>>(
       return escapeCSV(String(value ?? ''));
     });
 
-    printLine(values.join(','));
+    lines.push(values.join(','));
   }
+
+  return lines.join('\n');
 }
 
+/**
+ * Runs `printTable` and returns what it would have written to stdout, without writing it.
+ *
+ * `makeTable` would be the obvious choice, but it always renders with ink. `printTable` falls
+ * back to a plain-text renderer in CI and for very large tables (OCLIF_TABLE_LIMIT, default
+ * 10,000 rows), and that renderer is not exported. Capturing keeps output byte-for-byte
+ * identical to the pre-v11 behavior. `printTable` is synchronous, so the swap cannot
+ * swallow unrelated writes.
+ */
+function renderTable<T extends Record<string, unknown>>(options: TableOptions<T>): string {
+  const chunks: string[] = [];
+  const originalWrite = process.stdout.write;
+
+  process.stdout.write = ((chunk: string | Uint8Array, encodingOrCallback?: unknown, callback?: unknown) => {
+    chunks.push(typeof chunk === 'string' ? chunk : Buffer.from(chunk).toString());
+    const done = typeof encodingOrCallback === 'function' ? encodingOrCallback : callback;
+    if (typeof done === 'function') done();
+    return true;
+  }) as typeof process.stdout.write;
+
+  try {
+    printTable(options);
+  } finally {
+    process.stdout.write = originalWrite;
+  }
+
+  // Drop the final newline: callers pass the result to this.log(), which adds it back.
+  return chunks.join('').replace(/\n$/, '');
+}
+
+/**
+ * Renders data as a table (or CSV with `csv: true`). Pure: returns the string and writes nothing.
+ * Pass the result to `this.log()` so it is suppressed under `--json`.
+ */
 export function table<T extends Record<string, unknown>>(
   data: T[],
   columns: Columns<T>,
-  options?: Omit<TableOptions<T>, 'columns' | 'data' | 'filter' | 'sort'> & TableFlags & {printLine?(s: unknown): void;},
-) {
+  options?: Omit<TableOptions<T>, 'columns' | 'data' | 'filter' | 'sort'> & TableFlags,
+): string {
   const selectedColumns = selectColumns(columns, {
     columns: options?.columns,
     extended: options?.extended,
@@ -182,31 +216,30 @@ export function table<T extends Record<string, unknown>>(
   }
 
   if (options?.csv) {
-    const printFn = options?.printLine || ux.stdout;
-    outputCSV(processedData, selectedColumns, printFn);
-  } else {
-    const cols = Object.entries(selectedColumns).map(([key, opts]) => {
-      if (opts.header) return {key, name: opts.header};
-      return key;
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {columns, csv, extended, filter, printLine, sort, ...tableOptions} = options || {};
-
-    printTable({
-      ...(tableOptions?.noStyle
-        ? {}
-        : {
-          borderColor: 'whiteBright',
-          borderStyle: 'headers-only-with-underline',
-          headerOptions: {
-            bold: true,
-            color: 'white', // or 'reset' to use default terminal color
-          },
-        }),
-      ...tableOptions,
-      columns: cols,
-      data: processedData as T[],
-    });
+    return renderCSV(processedData, selectedColumns);
   }
+
+  const cols = Object.entries(selectedColumns).map(([key, opts]) => {
+    if (opts.header) return {key, name: opts.header};
+    return key;
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const {columns: _columns, csv, extended, filter, sort, ...tableOptions} = options || {};
+
+  return renderTable({
+    ...(tableOptions?.noStyle
+      ? {}
+      : {
+        borderColor: 'whiteBright',
+        borderStyle: 'headers-only-with-underline',
+        headerOptions: {
+          bold: true,
+          color: 'white', // or 'reset' to use default terminal color
+        },
+      }),
+    ...tableOptions,
+    columns: cols,
+    data: processedData as T[],
+  });
 }
