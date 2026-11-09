@@ -1,5 +1,14 @@
 # Changelog
 
+## [10.10.3](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.10.2...heroku-cli-util-v10.10.3) (2026-11-09)
+
+
+### Dependencies
+
+* bump @heroku-cli/command from 13.0.0 to 13.2.5 ([#415](https://github.com/heroku/heroku-cli-util/issues/415)) ([4d0c514](https://github.com/heroku/heroku-cli-util/commit/4d0c5149b866b991dda5f1cf6427cccf3c1887dd))
+* bump @heroku/http-call from 5.6.1 to 5.6.3 ([#416](https://github.com/heroku/heroku-cli-util/issues/416)) ([14eabad](https://github.com/heroku/heroku-cli-util/commit/14eabadb560d0609f7429c50f814630cf2a22904))
+* bump @oclif/core from 4.8.0 to 4.14.0 ([#412](https://github.com/heroku/heroku-cli-util/issues/412)) ([e045e43](https://github.com/heroku/heroku-cli-util/commit/e045e43d4f293ef9300886e1f47ef3e67c5b1494))
+
 ## [10.10.2](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.10.1...heroku-cli-util-v10.10.2) (2026-10-01)
 
 
