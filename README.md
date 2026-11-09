@@ -45,23 +45,58 @@ overrides.
 ### Breaking: output helpers return strings
 
 `hux.styledHeader`, `hux.styledObject`, and `hux.table` no longer write to
-stdout. Each returns the rendered string; wrap calls in
-`this.log(...)` (or `ux.stdout(...)` outside a command):
+stdout. Each returns the rendered string. Inside an oclif command, wrap the call
+in `this.log(...)`:
 
 ```diff
+- hux.styledHeader(`${app.name} Info`)
+- hux.styledObject(info, ['Owner', 'Region'])
 - hux.table(apps, columns)
++ this.log(hux.styledHeader(`${app.name} Info`))
++ this.log(hux.styledObject(info, ['Owner', 'Region']))
 + this.log(hux.table(apps, columns))
 ```
 
 Logging the return value produces the same bytes the helper used to print,
 including the plain-text table fallback in CI and above `OCLIF_TABLE_LIMIT`.
 
-The `printLine` option on `hux.table` has been removed. Use the returned string
-instead.
+> [!WARNING]
+> A call you forget to migrate still compiles and runs, but prints nothing.
+> TypeScript does not flag an unused string return value. Search for every call
+> site, and consider a lint rule that rejects these helpers as bare statements,
+> for example:
+>
+> ```js
+> 'no-restricted-syntax': ['error', {
+>   selector: ":matches(ExpressionStatement > CallExpression, ExpressionStatement > AwaitExpression > CallExpression)[callee.object.name='hux'][callee.property.name=/^(styledHeader|styledObject|table)$/]",
+>   message: 'hux formatters return strings; wrap the call in this.log().',
+> }]
+> ```
 
-`styledObject` on a primitive (string, number, boolean, null, undefined) used to
-return the value as a string without printing it, and it still does. Logging
-that return value now prints it, which v10 never did.
+**Outside a command** (a helper function in `lib/`), there is no `this.log`.
+Return the string to the command, or accept a log function from it. Don't use
+`ux.stdout(...)` there: it is not silenced under `--json`.
+
+**`--json` suppression** comes from `this.log`, and oclif only applies it to
+commands that set `static enableJsonFlag = true`. A command that declares its own
+`json` flag gets no suppression from this change.
+
+**`printLine` removed.** The `printLine` option on `hux.table` is gone. It was
+only used for `csv: true` output. Other tables were always written straight to
+stdout and ignored it. Use the returned string:
+
+```diff
+- hux.table(rows, columns, {printLine: line => lines.push(line)})
++ lines.push(hux.table(rows, columns))
+```
+
+**Tests that stub these helpers** must return a string. A stub returning
+`undefined` makes `this.log(hux.table(...))` print a blank line.
+
+**`styledObject` on a primitive** (string, number, boolean, `null`, `undefined`)
+returns it as a string without printing, as before. Logging that return value
+now prints it, so `this.log(hux.styledObject(null))` prints `null`, which
+heroku-cli-util 10.x never did. Guard falsy values if they can occur.
 
 ### Breaking: `hux.openUrl` status message moved to stderr
 
@@ -76,12 +111,25 @@ should not offer `--json`, and they are exempt from direct-output and
 
 ### Breaking: `hux.styledJSON` removed
 
-`hux.styledJSON` was a passthrough to oclif's `ux.colorizeJson`. Call that directly:
+`hux.styledJSON` was a passthrough to oclif's `ux.colorizeJson`. Choose the
+replacement by what the JSON is for:
+
+- **It is the command's `--json` output** (the usual case). With
+  `enableJsonFlag`, return the object from `run()` and oclif prints it. In a
+  hand-rolled `if (flags.json)` branch, use `this.logJson(obj)`.
+  `this.logJson` is not silenced under `--json`. It prints the same bytes as
+  `hux.styledJSON` unless the user has an oclif JSON color theme configured.
+- **It is human-readable output**, such as a config value that happens to be JSON:
+  `this.log(ux.colorizeJson(obj))`.
 
 ```diff
-- hux.styledJSON(obj)
-+ this.log(ux.colorizeJson(obj))
+- if (flags.json) hux.styledJSON(app)
++ if (flags.json) this.logJson(app)
 ```
+
+Don't use `this.log(ux.colorizeJson(...))` for `--json` output. On a command
+with `enableJsonFlag`, `this.log` is silenced under `--json`, so the JSON
+disappears.
 
 ## Usage
 
