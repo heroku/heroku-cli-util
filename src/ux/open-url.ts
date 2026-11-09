@@ -60,7 +60,17 @@ export async function openUrl(
     }
   }
 
-  const cp = await dependencies.urlOpener(url, {wait: false, ...(browser ? {app: {name: browser}} : {})})
+  let cp: Awaited<ReturnType<typeof open>>
+  try {
+    // With `wait: false`, `open` rejects if the launcher can't be spawned (e.g. no `xdg-open`).
+    cp = await dependencies.urlOpener(url, {wait: false, ...(browser ? {app: {name: browser}} : {})})
+  } catch (error) {
+    ux.warn(error as Error)
+    showBrowserError(browser)
+    return
+  }
+
+  // `open` unrefs the launcher, so these fire only if the CLI is still running when it exits.
   cp.on('error', (err: Error) => {
     ux.warn(err)
     showBrowserError(browser)

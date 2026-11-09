@@ -99,6 +99,22 @@ describe('openUrl', function () {
       })
     })
 
+    describe('when the browser launcher can\'t be spawned', function () {
+      beforeEach(function () {
+        urlOpenerSpy = vi.fn((..._args: Parameters<typeof open>) => Promise.reject(new Error('spawn xdg-open ENOENT')))
+      })
+
+      it('shows a warning instead of throwing', async function () {
+        const {stderr} = await captureOutput(async () => {
+          await expect(openUrl(url, {prompt: false}, {anykey: anyKeySpy, urlOpener: urlOpenerSpy})).resolves.toBeUndefined()
+        })
+
+        expect(ansis.strip(stderr)).toContain('spawn xdg-open ENOENT')
+        expect(ansis.strip(stderr)).toContain('Warning: We can\'t open your default browser.')
+        expect(ansis.strip(stderr)).toContain(url)
+      })
+    })
+
     describe('when the browser closes with a non-zero exit status', function () {
       beforeEach(function () {
         urlOpenerSpy = vi.fn((..._args: Parameters<typeof open>) => ({
