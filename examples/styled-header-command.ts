@@ -3,11 +3,11 @@ import {Command} from '@oclif/core'
 import {styledHeader} from '../src/ux/styled-header.js'
 
 export default class StyledJSONCommand extends Command {
-  static description = 'Example command demonstrating styledJSON usage'
+  static description = 'Example command demonstrating styledHeader usage'
 
   async run() {
     const header = 'My Test Header'
-    styledHeader(header)
+    this.log(styledHeader(header))
   }
 }
 

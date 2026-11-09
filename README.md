@@ -44,8 +44,8 @@ overrides.
 
 ### Breaking: output helpers return strings
 
-`hux.styledHeader`, `hux.styledJSON`, `hux.styledObject`, and `hux.table` no
-longer write to stdout. Each returns the rendered string; wrap calls in
+`hux.styledHeader`, `hux.styledObject`, and `hux.table` no longer write to
+stdout. Each returns the rendered string; wrap calls in
 `this.log(...)` (or `ux.stdout(...)` outside a command):
 
 ```diff
@@ -62,6 +62,15 @@ instead.
 `styledObject` on a primitive (string, number, boolean, null, undefined) used to
 return the value as a string without printing it, and it still does. Logging
 that return value now prints it, which v10 never did.
+
+### Breaking: `hux.styledJSON` removed
+
+`hux.styledJSON` was a passthrough to oclif's `ux.colorizeJson`. Call that directly:
+
+```diff
+- hux.styledJSON(obj)
++ this.log(ux.colorizeJson(obj))
+```
 
 ## Usage
 
@@ -85,18 +94,15 @@ import { AddonResolver } from '@heroku/heroku-cli-util/utils/addons';
 
 ### Output Utilities
 
-`styledHeader`, `styledJSON`, `styledObject`, and `table` are pure formatters: they
+`styledHeader`, `styledObject`, and `table` are pure formatters: they
 return the rendered string and write nothing. Inside an oclif command, pass the result
 to `this.log()` so it is suppressed under `--json`.
 
 ```js
-import { styledHeader, styledJSON, styledObject, table, wait } from '@heroku/heroku-cli-util/hux';
+import { styledHeader, styledObject, table, wait } from '@heroku/heroku-cli-util/hux';
 
 // Styled header (includes a trailing newline, so a blank line follows it when logged)
 this.log(styledHeader('My CLI Header'));
-
-// Styled JSON
-this.log(styledJSON({ foo: 'bar' }));
 
 // Styled object
 this.log(styledObject({ foo: 'bar' }));

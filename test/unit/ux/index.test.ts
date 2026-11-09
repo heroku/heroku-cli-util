@@ -48,10 +48,6 @@ describe('ux index exports', function () {
     expect(hux.styledHeader).toBeTypeOf('function')
   })
 
-  it('exports styledJSON', function () {
-    expect(hux.styledJSON).toBeTypeOf('function')
-  })
-
   it('exports styledObject', function () {
     expect(hux.styledObject).toBeTypeOf('function')
   })
