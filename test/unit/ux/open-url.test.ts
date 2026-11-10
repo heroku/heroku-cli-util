@@ -106,7 +106,7 @@ describe('openUrl', function () {
 
       it('shows a warning instead of throwing', async function () {
         const {stderr} = await captureOutput(async () => {
-          await expect(openUrl(url, {prompt: false}, {anykey: anyKeySpy, urlOpener: urlOpenerSpy})).resolves.toBeUndefined()
+          await expect(openUrl(url, {prompt: false}, {anykey: anyKeySpy, urlOpener: urlOpenerSpy})).resolves.toBe(false)
         })
 
         expect(ansis.strip(stderr)).toContain('spawn xdg-open ENOENT')
@@ -173,12 +173,21 @@ describe('openUrl', function () {
       anyKeySpy = vi.fn((..._args: Parameters<typeof anykey>) => Promise.reject(new Error('should not prompt')))
     })
 
+    it('resolves to true once the launcher has started', async function () {
+      let opened: boolean | undefined
+      await captureOutput(async () => {
+        opened = await openUrl(url, {prompt: false}, {anykey: anyKeySpy, urlOpener: urlOpenerSpy})
+      })
+      expect(opened).toBe(true)
+    })
+
     it('opens the browser without prompting', async function () {
       const {stderr, stdout} = await captureOutput(() =>
         openUrl(url, {action: 'view something', browser: 'firefox', prompt: false}, {anykey: anyKeySpy, urlOpener: urlOpenerSpy}))
 
       expect(anyKeySpy).not.toHaveBeenCalled()
       expect(urlOpenerSpy).toHaveBeenCalledWith(url, {app: {name: 'firefox'}, wait: false})
+      expect(stderr).not.toContain("can't open")
       expect(ansis.strip(stderr)).toContain(`Opening ${url} in firefox browser…`)
       expect(stdout).toBe('')
     })

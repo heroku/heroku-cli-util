@@ -26,12 +26,17 @@ export type OpenUrlOptions = {
 /**
  * Open `url` in a browser. The status line, prompt, and warnings go to stderr.
  * `dependencies` is a test seam for the key prompt and the browser launcher.
+ *
+ * Resolves to `false` if the browser launcher couldn't be started (after warning with the URL),
+ * so commands whose only job is to open it can exit non-zero. Resolves to `true` once the launcher
+ * has started; a launcher that later exits non-zero only produces the warning, since the command
+ * has usually finished by then.
  */
 export async function openUrl(
   url: string,
   {action, browser, prompt = true}: OpenUrlOptions = {},
   dependencies?: Dependencies,
-): Promise<void> {
+): Promise<boolean> {
   if (!dependencies) {
     const openModule = await import('open')
     dependencies = {
@@ -67,7 +72,7 @@ export async function openUrl(
   } catch (error) {
     ux.warn(error as Error)
     showBrowserError(browser)
-    return
+    return false
   }
 
   // `open` unrefs the launcher, so these fire only if the CLI is still running when it exits.
@@ -78,4 +83,5 @@ export async function openUrl(
   cp.on('close', (code: number) => {
     if (code !== 0) showBrowserError(browser)
   })
+  return true
 }

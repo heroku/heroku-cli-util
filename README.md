@@ -125,6 +125,19 @@ step. Commands whose whole job is to open the URL, such as `heroku open`, pass
 await hux.openUrl(url, {prompt: false})
 ```
 
+### `hux.openUrl` resolves to whether the browser launcher started
+
+`openUrl` now resolves to `false` when the browser launcher can't be started
+(for example, no `xdg-open` on a headless Linux machine), after warning with the
+URL to visit; previously the spawn error was thrown. It resolves to `true` once
+the launcher has started. A launcher that starts and then exits non-zero only
+produces the warning, because the command has usually finished by then.
+Commands whose only job is to open the URL can exit non-zero on `false`:
+
+```ts
+if (!await hux.openUrl(url, {prompt: false})) this.exit(1)
+```
+
 `openUrl` and the prompt helpers (`prompt`, `confirm`, `confirmCommand`,
 `anykey`) are interactive and still write to stderr. Commands that use them
 should not offer `--json`, and they are exempt from direct-output and
