@@ -30,7 +30,6 @@ import {formatPrice} from './ux/format-price.js'
 import {openUrl} from './ux/open-url.js'
 import {prompt} from './ux/prompt.js'
 import {styledHeader} from './ux/styled-header.js'
-import {styledJSON} from './ux/styled-json.js'
 import {styledObject} from './ux/styled-object.js'
 import {table} from './ux/table.js'
 import {toTitleCase} from './ux/to-title-case.js'
@@ -83,7 +82,6 @@ export const hux = {
   openUrl,
   prompt,
   styledHeader,
-  styledJSON,
   styledObject,
   table,
   toHumanReadableDataSize,

@@ -1,6 +1,7 @@
-import {ux} from '@oclif/core/ux'
-import {printTable, TableOptions} from '@oclif/table'
+import {makeTable, printTable, TableOptions} from '@oclif/table'
 import {orderBy} from 'natural-orderby'
+import {env} from 'node:process'
+import {format} from 'node:util'
 
 import parseKeyValue from '../utils/parse-key-value.js'
 
@@ -135,15 +136,14 @@ function escapeCSV(value: string): string {
   return needsEscaping ? `"${value.replaceAll('"', '""')}"` : value;
 }
 
-function outputCSV<T extends Record<string, unknown>>(
-  data: T[],
+function renderCSV<T extends Record<string, unknown>>(
+  data: Array<Record<string, unknown>>,
   columns: Columns<T>,
-  printLine: (s: string) => void,
-): void {
+): string {
   const columnEntries = Object.entries(columns);
   const columnHeaders = columnEntries.map(([key, col]) => col.header || key);
 
-  printLine(columnHeaders.join(','));
+  const lines = [columnHeaders.join(',')];
 
   for (const row of data) {
     const values = columnEntries.map(([key]) => {
@@ -151,15 +151,84 @@ function outputCSV<T extends Record<string, unknown>>(
       return escapeCSV(String(value ?? ''));
     });
 
-    printLine(values.join(','));
+    lines.push(values.join(','));
   }
+
+  return lines.join('\n');
 }
 
+function isTruthy(value: string | undefined): boolean {
+  return value !== '0' && value !== 'false'
+}
+
+/**
+ * Whether `printTable` would use its plain-text renderer instead of ink: in CI, or at
+ * OCLIF_TABLE_LIMIT rows or more. `@oclif/table` doesn't export this check, so it is copied
+ * from `printTable` and `shouldUsePlainTable` (@oclif/table 1.0.8, lib/table.js and
+ * lib/utils.js), quirks included: `CI=''` counts as CI. If it drifts from upstream, tables
+ * render in the other style (never to stdout; see `renderTable`), and the heroku-cli-util 10.x
+ * parity tests fail.
+ */
+function usesPlainRenderer(rowCount: number): boolean {
+  const limit = Number.parseInt(env.OCLIF_TABLE_LIMIT ?? env.SF_TABLE_LIMIT ?? '10000', 10)
+  if (rowCount >= limit) return true
+
+  if (env.OCLIF_TABLE_SKIP_CI_CHECK && isTruthy(env.OCLIF_TABLE_SKIP_CI_CHECK)) return false
+  return isTruthy(env.CI)
+    && ('CI' in env || 'CONTINUOUS_INTEGRATION' in env || Object.keys(env).some(key => key.startsWith('CI_')))
+}
+
+/**
+ * Renders a table to a string, byte-for-byte identical to what `printTable` prints (minus the
+ * final newline, which `this.log()` adds back), so output matches heroku-cli-util 10.x.
+ *
+ * The ink renderer goes through `makeTable`, which is `printTable`'s ink path returning the frame
+ * instead of writing it. (ink itself still swaps `console.log` while rendering, its default
+ * `patchConsole` behavior, as it did in 10.x.) `makeTable` has no plain-text fallback, and the
+ * plain renderer isn't exported, so for that case `printTable` runs with `console.log` (the only
+ * way that renderer writes) temporarily replaced to collect its lines, and with
+ * `OCLIF_TABLE_LIMIT=0` so it can't choose ink instead. `console.log` is replaced directly, not
+ * reached via `process.stdout.write`, because test runners (e.g. vitest by default) swap
+ * `console` for one that doesn't write to `process.stdout`.
+ *
+ * The plain render is synchronous, so asynchronous logs from elsewhere can't land in the capture.
+ * Synchronous `console.log` calls made during it (e.g. from a cell value's `toString()`) would.
+ */
+function renderTable<T extends Record<string, unknown>>(options: TableOptions<T>): string {
+  if (!usesPlainRenderer(options.data.length)) return makeTable(options)
+
+  const lines: string[] = []
+  const originalLog = console.log
+  const originalLimit = env.OCLIF_TABLE_LIMIT
+  console.log = (...args: unknown[]) => {
+    lines.push(format(...args))
+  }
+
+  // Force `printTable` onto its plain renderer, so that if `usesPlainRenderer` ever drifts from
+  // upstream, the result is only a style difference: ink would write the frame straight to
+  // `process.stdout`, bypassing the capture.
+  env.OCLIF_TABLE_LIMIT = '0'
+  try {
+    printTable(options)
+  } finally {
+    console.log = originalLog
+    if (originalLimit === undefined) delete env.OCLIF_TABLE_LIMIT
+    else env.OCLIF_TABLE_LIMIT = originalLimit
+  }
+
+  // Each line was printed with its own newline; joining drops the final one.
+  return lines.join('\n')
+}
+
+/**
+ * Renders data as a table (or CSV with `csv: true`). Pure: returns the string and writes nothing.
+ * Pass the result to `this.log()` so it is suppressed under `--json`.
+ */
 export function table<T extends Record<string, unknown>>(
   data: T[],
   columns: Columns<T>,
-  options?: Omit<TableOptions<T>, 'columns' | 'data' | 'filter' | 'sort'> & TableFlags & {printLine?(s: unknown): void;},
-) {
+  options?: Omit<TableOptions<T>, 'columns' | 'data' | 'filter' | 'sort'> & TableFlags,
+): string {
   const selectedColumns = selectColumns(columns, {
     columns: options?.columns,
     extended: options?.extended,
@@ -182,31 +251,30 @@ export function table<T extends Record<string, unknown>>(
   }
 
   if (options?.csv) {
-    const printFn = options?.printLine || ux.stdout;
-    outputCSV(processedData, selectedColumns, printFn);
-  } else {
-    const cols = Object.entries(selectedColumns).map(([key, opts]) => {
-      if (opts.header) return {key, name: opts.header};
-      return key;
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {columns, csv, extended, filter, printLine, sort, ...tableOptions} = options || {};
-
-    printTable({
-      ...(tableOptions?.noStyle
-        ? {}
-        : {
-          borderColor: 'whiteBright',
-          borderStyle: 'headers-only-with-underline',
-          headerOptions: {
-            bold: true,
-            color: 'white', // or 'reset' to use default terminal color
-          },
-        }),
-      ...tableOptions,
-      columns: cols,
-      data: processedData as T[],
-    });
+    return renderCSV(processedData, selectedColumns);
   }
+
+  const cols = Object.entries(selectedColumns).map(([key, opts]) => {
+    if (opts.header) return {key, name: opts.header};
+    return key;
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const {columns: _columns, csv, extended, filter, sort, ...tableOptions} = options || {};
+
+  return renderTable({
+    ...(tableOptions?.noStyle
+      ? {}
+      : {
+        borderColor: 'whiteBright',
+        borderStyle: 'headers-only-with-underline',
+        headerOptions: {
+          bold: true,
+          color: 'white', // or 'reset' to use default terminal color
+        },
+      }),
+    ...tableOptions,
+    columns: cols,
+    data: processedData as T[],
+  });
 }
