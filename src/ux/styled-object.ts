@@ -1,4 +1,3 @@
-import {ux} from '@oclif/core/ux'
 import {inspect} from 'node:util'
 
 import * as color from './colors.js'
@@ -17,7 +16,13 @@ function prettyPrint(obj: unknown): string {
   return inspect(obj)
 }
 
-export function styledObject(obj: unknown, keys?: string[]) {
+/**
+ * @description Renders an object as aligned `key: value` lines. Pure: returns the string and writes nothing.
+ * @param obj - The object to render. Primitives are returned as their string form.
+ * @param keys - Optional keys to render, in order. Defaults to all keys of `obj`.
+ * @returns The rendered object.
+ */
+export function styledObject(obj: unknown, keys?: string[]): string {
   if (!obj) return inspect(obj)
   if (typeof obj === 'string') return obj
   if (typeof obj === 'number') return obj.toString()
@@ -52,5 +57,5 @@ export function styledObject(obj: unknown, keys?: string[]) {
     }
   }
 
-  ux.stdout(output.join('\n'))
+  return output.join('\n')
 }

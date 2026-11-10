@@ -67,10 +67,9 @@ export default class TableCommand extends Command {
     }
 
     // Display the table with flags
-    table(data, columns, {
+    this.log(table(data, columns, {
       ...flags,  // Pass all flags to table function
-      printLine: this.log.bind(this),
-    })
+    }))
   }
 }
 
