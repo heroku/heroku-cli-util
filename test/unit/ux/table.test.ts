@@ -545,6 +545,36 @@ describe('table', function () {
       expect(console.log).toBe(originalLog)
     })
 
+    // If the copied renderer check ever disagreed with upstream, printTable would pick ink and
+    // write straight to process.stdout, past the capture. table() forces the plain path instead.
+    it('forces printTable onto its plain renderer while capturing', async function () {
+      vi.stubEnv('CI', 'true')
+      let limitDuringRender: string | undefined
+      const cell = {
+        toString() {
+          limitDuringRender = process.env.OCLIF_TABLE_LIMIT
+          return 'cell'
+        },
+      }
+      await expectPure(() => table([{foo: cell}], {foo: {}}))
+      expect(limitDuringRender).toBe('0')
+    })
+
+    it('leaves OCLIF_TABLE_LIMIT unset after a plain render', async function () {
+      vi.stubEnv('CI', 'true')
+      // eslint-disable-next-line unicorn/no-useless-undefined -- undefined unsets the variable
+      vi.stubEnv('OCLIF_TABLE_LIMIT', undefined)
+      await expectPure(() => table(data, columns))
+      expect('OCLIF_TABLE_LIMIT' in process.env).toBe(false)
+    })
+
+    it('restores a set OCLIF_TABLE_LIMIT after a plain render', async function () {
+      vi.stubEnv('CI', 'true')
+      vi.stubEnv('OCLIF_TABLE_LIMIT', '5000')
+      await expectPure(() => table(data, columns))
+      expect(process.env.OCLIF_TABLE_LIMIT).toBe('5000')
+    })
+
     // ink itself swaps console.log while it renders (its patchConsole default), so only
     // process.stdout.write can show whether table() patched anything on the ink path.
     it('does not patch process.stdout.write for an ink render', async function () {

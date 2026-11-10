@@ -165,8 +165,9 @@ function isTruthy(value: string | undefined): boolean {
  * Whether `printTable` would use its plain-text renderer instead of ink: in CI, or at
  * OCLIF_TABLE_LIMIT rows or more. `@oclif/table` doesn't export this check, so it is copied
  * from `printTable` and `shouldUsePlainTable` (@oclif/table 1.0.8, lib/table.js and
- * lib/utils.js), quirks included: `CI=''` counts as CI. The heroku-cli-util 10.x parity tests
- * fail if this drifts from upstream.
+ * lib/utils.js), quirks included: `CI=''` counts as CI. If it drifts from upstream, tables
+ * render in the other style (never to stdout; see `renderTable`), and the heroku-cli-util 10.x
+ * parity tests fail.
  */
 function usesPlainRenderer(rowCount: number): boolean {
   const limit = Number.parseInt(env.OCLIF_TABLE_LIMIT ?? env.SF_TABLE_LIMIT ?? '10000', 10)
@@ -185,7 +186,8 @@ function usesPlainRenderer(rowCount: number): boolean {
  * instead of writing it. (ink itself still swaps `console.log` while rendering, its default
  * `patchConsole` behavior, as it did in 10.x.) `makeTable` has no plain-text fallback, and the
  * plain renderer isn't exported, so for that case `printTable` runs with `console.log` (the only
- * way that renderer writes) temporarily replaced to collect its lines. `console.log` is replaced directly, not
+ * way that renderer writes) temporarily replaced to collect its lines, and with
+ * `OCLIF_TABLE_LIMIT=0` so it can't choose ink instead. `console.log` is replaced directly, not
  * reached via `process.stdout.write`, because test runners (e.g. vitest by default) swap
  * `console` for one that doesn't write to `process.stdout`.
  *
@@ -197,14 +199,21 @@ function renderTable<T extends Record<string, unknown>>(options: TableOptions<T>
 
   const lines: string[] = []
   const originalLog = console.log
+  const originalLimit = env.OCLIF_TABLE_LIMIT
   console.log = (...args: unknown[]) => {
     lines.push(format(...args))
   }
 
+  // Force `printTable` onto its plain renderer, so that if `usesPlainRenderer` ever drifts from
+  // upstream, the result is only a style difference: ink would write the frame straight to
+  // `process.stdout`, bypassing the capture.
+  env.OCLIF_TABLE_LIMIT = '0'
   try {
     printTable(options)
   } finally {
     console.log = originalLog
+    if (originalLimit === undefined) delete env.OCLIF_TABLE_LIMIT
+    else env.OCLIF_TABLE_LIMIT = originalLimit
   }
 
   // Each line was printed with its own newline; joining drops the final one.
