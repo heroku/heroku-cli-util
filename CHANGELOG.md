@@ -1,5 +1,16 @@
 # Changelog
 
+## [11.0.0-beta.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v11.0.0-beta.0...heroku-cli-util-v11.0.0-beta.1) (2026-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* make hux output helpers pure formatters that return strings ([#419](https://github.com/heroku/heroku-cli-util/issues/419))
+
+### Features
+
+* make hux output helpers pure formatters that return strings ([#419](https://github.com/heroku/heroku-cli-util/issues/419)) ([4c1508f](https://github.com/heroku/heroku-cli-util/commit/4c1508f89413b24ad9c94b11099c257312cc7515))
+
 ## [11.0.0-beta.0](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.10.2...heroku-cli-util-v11.0.0-beta.0) (2026-10-13)
 
 
