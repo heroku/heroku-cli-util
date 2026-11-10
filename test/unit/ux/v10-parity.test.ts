@@ -118,6 +118,7 @@ describe('formatters match heroku-cli-util 10.x output byte-for-byte', function 
     vi.stubEnv('OCLIF_TABLE_SKIP_CI_CHECK', 'true')
     vi.stubEnv('OCLIF_TABLE_LIMIT', '2')
     const expected = await v10Output(() => v10Table(data, columns))
+    expect(expected).toContain('Alice')
     expect(expected).not.toContain('─')
     expect(await loggedOutput(() => table(data, columns))).toBe(expected)
   })
@@ -139,11 +140,13 @@ describe('formatters match heroku-cli-util 10.x output byte-for-byte', function 
   it.each(rendererEnvs)('table, renderer choice: %s', async function (_name, vars) {
     for (const [key, value] of Object.entries(vars)) vi.stubEnv(key, value)
     const expected = await v10Output(() => v10Table(data, columns))
+    expect(expected).toContain('Alice')
     expect(await loggedOutput(() => table(data, columns))).toBe(expected)
   })
 
   it('styledHeader', async function () {
     const expected = await v10Output(() => v10StyledHeader('My Header'))
+    expect(expected).toContain('My Header')
     expect(await loggedOutput(() => styledHeader('My Header'))).toBe(expected)
   })
 
@@ -155,12 +158,14 @@ describe('formatters match heroku-cli-util 10.x output byte-for-byte', function 
 
     it('all keys', async function () {
       const expected = await v10Output(() => v10StyledObject(obj))
+      expect(expected).toContain('my-app')
       expect(await loggedOutput(() => styledObject(obj))).toBe(expected)
     })
 
     it('selected keys in order', async function () {
       const keys = ['size', 'name', 'missing', 'regions']
       const expected = await v10Output(() => v10StyledObject(obj, keys))
+      expect(expected).toContain('my-app')
       expect(await loggedOutput(() => styledObject(obj, keys))).toBe(expected)
     })
   })
