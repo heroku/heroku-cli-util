@@ -47,9 +47,7 @@ describe('confirmCommand', function () {
   it('displays custom warning message', async function () {
     promptFunction.mockResolvedValue('myapp')
     const {stderr, stdout} = await captureOutput(() =>
-      confirmCommand({
-        comparison: 'myapp', promptFunction, warningMessage: 'custom message',
-      }))
+      confirmCommand({comparison: 'myapp', promptFunction, warningMessage: 'custom message'}))
     expect(stderr).toContain('custom message')
     expect(stdout).toBe('')
   })
@@ -62,9 +60,7 @@ describe('confirmCommand', function () {
 
   it('displays custom aborted message', async function () {
     const customMessage = 'custom aborted message'
-    await expect(confirmCommand({
-      abortedMessage: customMessage, comparison: 'myapp', confirmation: 'nope',
-    }))
+    await expect(confirmCommand({abortedMessage: customMessage, comparison: 'myapp', confirmation: 'nope'}))
       .rejects.toThrow(`Confirmation nope did not match myapp. ${customMessage}`)
   })
 
@@ -73,9 +69,7 @@ describe('confirmCommand', function () {
 
     promptFunction.mockRejectedValue(new ExitPromptError('SIGINT'))
     const {stdout} = await captureOutput(async () => {
-      await expect(confirmCommand({
-        abortedMessage: customMessage, comparison: 'myapp', promptFunction,
-      }))
+      await expect(confirmCommand({abortedMessage: customMessage, comparison: 'myapp', promptFunction}))
         .rejects.toThrow(`Cancelled with CTRL+C. ${customMessage}`)
     })
     expect(stdout).toBe('')
