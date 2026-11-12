@@ -141,7 +141,21 @@ if (!await hux.openUrl(url, {prompt: false})) this.exit(1)
 `openUrl` and the prompt helpers (`prompt`, `confirm`, `confirmCommand`,
 `anykey`) are interactive and still write to stderr. Commands that use them
 should not offer `--json`, and they are exempt from direct-output and
-`--json 2>&1` guardrails.
+`--json 2>&1` guardrails. The exception is `confirmCommand`; see below.
+
+### `hux.confirmCommand` takes `json`
+
+`confirmCommand` takes a `json` option, which defaults to `false`. Commands that
+offer `--json` should pass `this.jsonEnabled()`. Under JSON output it never
+prompts: without a confirmation it throws
+`To proceed, re-run this command with --confirm <comparison>. Commands don't prompt for confirmation with --json.`
+A provided confirmation is checked as before. Commands that confirm through
+`confirmCommand` can offer `--json`.
+
+```diff
+- await hux.confirmCommand({comparison: flags.app, confirmation: flags.confirm})
++ await hux.confirmCommand({comparison: flags.app, confirmation: flags.confirm, json: this.jsonEnabled()})
+```
 
 ### Breaking: `hux.styledJSON` removed
 
