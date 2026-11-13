@@ -74,4 +74,25 @@ describe('confirmCommand', function () {
     })
     expect(stdout).toBe('')
   })
+
+  describe('under JSON output', function () {
+    it('errs instead of prompting when no confirmation was provided', async function () {
+      const {stderr, stdout} = await captureOutput(async () => {
+        await expect(confirmCommand({comparison: 'myapp', json: true, promptFunction}))
+          .rejects.toThrow('To proceed, re-run this command with --confirm myapp. Commands don\'t prompt for confirmation with --json.')
+      })
+      expect(promptFunction).not.toHaveBeenCalled()
+      expect(stderr).toBe('')
+      expect(stdout).toBe('')
+    })
+
+    it('accepts a matching confirmation', async function () {
+      await expect(confirmCommand({comparison: 'myapp', confirmation: 'myapp', json: true})).resolves.toBeUndefined()
+    })
+
+    it('errs on a confirmation mismatch', async function () {
+      await expect(confirmCommand({comparison: 'myapp', confirmation: 'nope', json: true}))
+        .rejects.toThrow('Confirmation nope did not match myapp. Aborted.')
+    })
+  })
 })
