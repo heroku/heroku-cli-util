@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.0.0-beta.2](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v11.0.0-beta.1...heroku-cli-util-v11.0.0-beta.2) (2026-11-13)
+
+
+### Features
+
+* **beta:** add a json option to hux.confirmCommand that never prompts under --json ([#423](https://github.com/heroku/heroku-cli-util/issues/423)) ([e6d5419](https://github.com/heroku/heroku-cli-util/commit/e6d54190df6afa76ed6037aa2009b5a2c4201dca))
+
 ## [11.0.0-beta.1](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v11.0.0-beta.0...heroku-cli-util-v11.0.0-beta.1) (2026-11-10)
 
 
