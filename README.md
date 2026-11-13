@@ -145,13 +145,15 @@ interactive and still write to stderr. Commands that use them should not offer
 
 ### `hux.confirmCommand` takes `json`
 
-`confirmCommand` takes a `json` option, which defaults to `false`. Commands that
-offer `--json` should pass `this.jsonEnabled()`. Under JSON output it never
-prompts: without a confirmation it throws
+`confirmCommand` takes a `json` option, which defaults to `false`. With
+`json: true` it never prompts: without a confirmation it throws
 `To proceed, re-run this command with --confirm <comparison>. Commands don't prompt for confirmation with --json.`
 and writes nothing to stderr. A provided confirmation is checked as before.
-Commands that confirm through `confirmCommand` can offer `--json`. Without
-`json`, it warns and prompts on stderr like the other prompt helpers.
+
+A command that confirms through `confirmCommand` can offer `--json` only if it
+passes `json: this.jsonEnabled()`. Without it, `confirmCommand` warns and
+prompts on stderr like the other prompt helpers, and a script that runs the
+command with `--json` waits on that prompt.
 
 ```diff
 - await hux.confirmCommand({comparison: flags.app, confirmation: flags.confirm})
