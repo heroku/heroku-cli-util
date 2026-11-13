@@ -8,6 +8,12 @@ type ConfirmCommandOptions = {
   abortedMessage?: string
   comparison: string
   confirmation?: string
+  /**
+   * Whether the command's output is JSON. Pass `this.jsonEnabled()` from any command
+   * that offers `--json`: under JSON output a prompt would hang a script, so a
+   * missing confirmation is an error instead. Defaults to false.
+   */
+  json?: boolean
   promptFunction?: typeof prompt // dependency injection for testing
   warningMessage?: string
 }
@@ -21,14 +27,17 @@ type ConfirmCommandOptions = {
  * but can be other identifiers like a Private Space name.
  * @param options.confirmation - Pre-provided confirmation string to validate without prompting (optional). If provided
  * and matches comparison, returns immediately without prompting.
+ * @param options.json - Whether the command's output is JSON (default: false; pass `this.jsonEnabled()`). When true
+ * and no confirmation was provided, throws instead of prompting.
  * @param options.promptFunction - Function to use for prompting (default: prompt, used for dependency injection in tests).
  * @param options.warningMessage - Custom warning message to display before prompting (optional). Default message assumes
  * comparison is an app name. Provide a custom message if using a different identifier.
  * @returns Promise that resolves if confirmation matches, or throws an error if it doesn't.
- * @throws {Error} When confirmation doesn't match the comparison string.
+ * @throws {Error} When confirmation doesn't match the comparison string, or under JSON output when no confirmation
+ * was provided.
  * @example
- *   // Interactive prompt
- *   await confirmCommand({comparison: 'my-app'})
+ *   // Interactive prompt, or an error under --json
+ *   await confirmCommand({comparison: flags.app, confirmation: flags.confirm, json: this.jsonEnabled()})
  *
  *   // Pre-provided confirmation (no prompt)
  *   await confirmCommand({comparison: 'my-app', confirmation: 'my-app'})
@@ -41,7 +50,7 @@ type ConfirmCommandOptions = {
  *   })
  */
 export async function confirmCommand({
-  abortedMessage, comparison, confirmation, promptFunction = prompt, warningMessage,
+  abortedMessage, comparison, confirmation, json = false, promptFunction = prompt, warningMessage,
 }: ConfirmCommandOptions) {
   const heredoc = tsheredoc.default
 
@@ -52,6 +61,10 @@ export async function confirmCommand({
   if (confirmation) {
     if (confirmation === comparison) return
     throw new Error(`Confirmation ${color.warning(confirmation)} did not match ${color.info(comparison)}. ${abortedMessage}`)
+  }
+
+  if (json) {
+    throw new Error(`To proceed, re-run this command with --confirm ${comparison}. Commands don't prompt for confirmation with --json.`)
   }
 
   if (!warningMessage) {
