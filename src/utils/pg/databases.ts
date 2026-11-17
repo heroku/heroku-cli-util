@@ -13,6 +13,18 @@ import {bastionKeyPlan, fetchBastionConfig, getBastionConfig} from './bastion.js
 import {getConfig, getConfigVarName, getConfigVarNameFromAttachment} from './config-vars.js'
 const pgDebug = debug('pg')
 
+/**
+ * Percent-decodes a connection string component. A malformed sequence (for example a lone `%`)
+ * is returned unchanged rather than throwing, since libpq accepts it as a literal value.
+ */
+function decodeUriComponent(value: string): string {
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return value
+  }
+}
+
 export default class DatabaseResolver {
   private readonly addonAttachmentResolver: AddonAttachmentResolver
   private readonly addonHeaders: Readonly<{Accept: string, 'Accept-Expansion': string}> = {
@@ -39,18 +51,20 @@ export default class DatabaseResolver {
    * @returns Connection details object with parsed connection information
    */
   public static parsePostgresConnectionString(connStringOrDbName: string): ConnectionDetails {
-    const dbPath = /:\/\//.test(connStringOrDbName) ? connStringOrDbName : `postgres:///${connStringOrDbName}`
+    const isConnectionString = /:\/\//.test(connStringOrDbName)
+    const dbPath = isConnectionString ? connStringOrDbName : `postgres:///${connStringOrDbName}`
     const url = new URL(dbPath)
     const {hostname, password, pathname, port, username} = url
 
     return {
-      database: pathname.slice(1), // remove the leading slash from the pathname
+      // A bare database name is already a literal value, so only URI components are percent-decoded.
+      database: isConnectionString ? decodeUriComponent(pathname.slice(1)) : connStringOrDbName,
       host: hostname,
-      password,
+      password: decodeUriComponent(password),
       pathname,
       port: port || process.env.PGPORT || (hostname && '5432'),
       url: dbPath,
-      user: username,
+      user: decodeUriComponent(username),
     }
   }
 

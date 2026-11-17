@@ -699,6 +699,78 @@ describe('DatabaseResolver', function () {
       })
     })
 
+    describe('when the connection string contains percent-encoded characters', function () {
+      it('decodes the user, password and database', function () {
+        const connString = 'postgres://u%40corp:p%23ss%2Fw@db.example.com:5433/my%20db'
+        const result = DatabaseResolver.parsePostgresConnectionString(connString)
+
+        expect(result.user).toBe('u@corp')
+        expect(result.password).toBe('p#ss/w')
+        expect(result.database).toBe('my db')
+      })
+
+      it('decodes multi-byte UTF-8 sequences', function () {
+        const connString = 'postgres://user1:p%C3%A4ss@host.example.com/caf%C3%A9'
+        const result = DatabaseResolver.parsePostgresConnectionString(connString)
+
+        expect(result.password).toBe('päss')
+        expect(result.database).toBe('café')
+      })
+
+      it('keeps the original url and encoded pathname unchanged', function () {
+        const connString = 'postgres://u%40corp:p%23ss%2Fw@db.example.com:5433/my%20db'
+        const result = DatabaseResolver.parsePostgresConnectionString(connString)
+
+        expect(result.url).toBe(connString)
+        expect(result.pathname).toBe('/my%20db')
+        expect(result.host).toBe('db.example.com')
+        expect(result.port).toBe('5433')
+      })
+
+      it('does not decode a plus sign into a space', function () {
+        const connString = 'postgres://user1:pa+ss@host.example.com/db+name'
+        const result = DatabaseResolver.parsePostgresConnectionString(connString)
+
+        expect(result.password).toBe('pa+ss')
+        expect(result.database).toBe('db+name')
+      })
+
+      it('does not decode more than once', function () {
+        const connString = 'postgres://user1:100%2525@host.example.com/db1'
+        const result = DatabaseResolver.parsePostgresConnectionString(connString)
+
+        expect(result.password).toBe('100%25')
+      })
+
+      it('falls back to the raw value when a percent sequence is malformed', function () {
+        const connString = 'postgres://user1:50%zz@host.example.com/db%'
+        const result = DatabaseResolver.parsePostgresConnectionString(connString)
+
+        expect(result.password).toBe('50%zz')
+        expect(result.database).toBe('db%')
+      })
+    })
+
+    describe('when a bare database name contains special characters', function () {
+      it('uses the name as given without encoding it', function () {
+        const result = DatabaseResolver.parsePostgresConnectionString('my db')
+
+        expect(result.database).toBe('my db')
+      })
+
+      it('uses a non-ASCII name as given', function () {
+        const result = DatabaseResolver.parsePostgresConnectionString('café')
+
+        expect(result.database).toBe('café')
+      })
+
+      it('does not decode a literal percent sequence in the name', function () {
+        const result = DatabaseResolver.parsePostgresConnectionString('db%20name')
+
+        expect(result.database).toBe('db%20name')
+      })
+    })
+
     describe('when PGPORT environment variable is set', function () {
       it('uses PGPORT when no port is specified in connection string', function () {
         process.env = {
