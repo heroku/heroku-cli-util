@@ -1,5 +1,19 @@
 # Changelog
 
+## [10.10.4](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.10.3...heroku-cli-util-v10.10.4) (2026-11-20)
+
+
+### Bug Fixes
+
+* decode percent-encoded user, password and database in pg connection strings ([#429](https://github.com/heroku/heroku-cli-util/issues/429)) ([41064ee](https://github.com/heroku/heroku-cli-util/commit/41064ee87468366d1053fbb13342a31c7afbafd7))
+
+
+### Dependencies
+
+* bump @heroku-cli/command from 13.2.5 to 13.2.6 ([#426](https://github.com/heroku/heroku-cli-util/issues/426)) ([2757eef](https://github.com/heroku/heroku-cli-util/commit/2757eeff25629177f968008695a216b1854bd4b5))
+* bump ansis from 4.3.1 to 4.5.0 ([#428](https://github.com/heroku/heroku-cli-util/issues/428)) ([434f7dd](https://github.com/heroku/heroku-cli-util/commit/434f7ddefa18ff70e982f2132ffb144a4dd0127c))
+* bump open from 11.0.0 to 11.0.4 ([#427](https://github.com/heroku/heroku-cli-util/issues/427)) ([bee484a](https://github.com/heroku/heroku-cli-util/commit/bee484ae66da03e08af97a7599b6959e83fbfc76))
+
 ## [10.10.3](https://github.com/heroku/heroku-cli-util/compare/heroku-cli-util-v10.10.2...heroku-cli-util-v10.10.3) (2026-11-09)
 
 
